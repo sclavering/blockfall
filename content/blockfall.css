@@ -122,6 +122,16 @@
 .hex-btm-9 { -moz-image-region: rect(10px 264px 20px 240px); }
 .hex-top-10 { -moz-image-region: rect(0px 288px 10px 264px); }
 .hex-btm-10 { -moz-image-region: rect(10px 288px 20px 264px); }
+.hex-top-11 { -moz-image-region: rect(0px 312px 10px 288px); }
+.hex-btm-11 { -moz-image-region: rect(10px 312px 20px 288px); }
+.hex-top-12 { -moz-image-region: rect(0px 336px 10px 312px); }
+.hex-btm-12 { -moz-image-region: rect(10px 336px 20px 312px); }
+.hex-top-13 { -moz-image-region: rect(0px 360px 10px 336px); }
+.hex-btm-13 { -moz-image-region: rect(10px 360px 20px 336px); }
+.hex-top-14 { -moz-image-region: rect(0px 384px 10px 360px); }
+.hex-btm-14 { -moz-image-region: rect(10px 384px 20px 360px); }
+.hex-top-15 { -moz-image-region: rect(0px 408px 10px 384px); }
+.hex-btm-15 { -moz-image-region: rect(10px 408px 20px 384px); }
 
 
 
