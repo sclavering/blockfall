@@ -9,10 +9,10 @@
   persist="screenX screenY"
   >
 
+  <script src="blockfall.js" type="application/x-javascript"/>
   <script src="blocks.js" type="application/x-javascript"/>
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
   <script src="blocks-triangular.js" type="application/x-javascript"/>
-  <script src="blockfall.js" type="application/x-javascript"/>
 
   <toolbar id="main-toolbar">
     <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
@@ -21,7 +21,7 @@
         oncommand="Blocks.change('sqr');" label="Sqr">
       <menupopup id="blocks-sqr-types" oncommand="changeBlocks(this);" shape="sqr">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
-        <menuitem type="checkbox" label="Strange Triples" value="triples2"/>
+        <menuitem type="checkbox" label="Strange Triples" value="triples-strange"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
       </menupopup>
@@ -31,16 +31,14 @@
       <menupopup id="blocks-hex-types" oncommand="changeBlocks(this);" shape="hex">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
-        <!--
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
-        -->
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="blocks-tri" type="menu-button"
         oncommand="Blocks.change('tri');" label="Tri">
       <menupopup id="blocks-tri-types" oncommand="changeBlocks(this);" shape="tri">
-        <menuitem type="checkbox" label="Tiny (2-3 tiles)"  value="tiny"/>
-        <menuitem type="checkbox" label="Small (4 tiles)" value="4" checked="true"/>
+        <menuitem type="checkbox" label="Tiny (2-3 tiles)" value="tiny"/>
+        <menuitem type="checkbox" label="Small (4 tiles)"  value="4" checked="true"/>
         <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>
 <!--
         <menuitem type="checkbox" label="Large (6 tiles)"  value="6"/>

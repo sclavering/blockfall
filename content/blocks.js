@@ -1,4 +1,6 @@
-const blocks_square_triples = [
+blocks["sqr"] = [];
+
+blocks["sqr"]["triples"] = [
   [[
   [ 0, 0, 0],
   [26,26,26],
@@ -29,7 +31,7 @@ const blocks_square_triples = [
 ];
 
 // 4 triples where diagonal joins are allowed
-const blocks_square_triples_strange = [
+blocks["sqr"]["triples-strange"] = [
   [[
   [ 0, 0, 0],
   [28, 0,28],
@@ -101,7 +103,7 @@ const blocks_square_triples_strange = [
 
 
 // 7 standard blocks
-const blocks_square_standard = [
+blocks["sqr"]["standard"] = [
   // l
   [[
   [0,0,0],
@@ -204,8 +206,8 @@ const blocks_square_standard = [
 
 
 
-// 18 square pentris blocks
-const blocks_square_pentris = [
+// 18 sqr pentris blocks
+blocks["sqr"]["pentris"] = [
   // f mirrored
   [[
   [0,0,0,0,0],
@@ -593,3 +595,5 @@ const blocks_square_pentris = [
   [ 0, 0, 0, 0, 0]
   ]]
 ];  
+
+blocks["sqr"]["current"] = blocks["sqr"]["standard"];

@@ -204,15 +204,16 @@ var Game = {
 
 
 
+var blocks = [];
 var Blocks = {
   currentSet: [],
   currentShape: null,
   shapeSets: [],
   
   init: function() {
-    this.shapeSets["sqr"] = blocks_square_standard;
-    this.shapeSets["hex"] = blocks_hexagonal_standard;
-    this.shapeSets["tri"] = blocks_tri_4;
+    this.shapeSets["sqr"] = blocks["sqr"]["current"];
+    this.shapeSets["hex"] = blocks["hex"]["current"];
+    this.shapeSets["tri"] = blocks["tri"]["current"];
   },
   
   _next: null,
@@ -241,46 +242,12 @@ var Blocks = {
     if(types) {
       var set = [];
       for(var i = 0; i < types.length; i++)
-        set = set.concat(this.getType(shape,types[i]));
+        set = set.concat(blocks[shape][types[i]]);
       this.currentSet = set;
     }
     if(shapeChanged) {
       changeMode(shape);
     }
-  },
-
-  getType: function(shape, type) {
-    if(shape=="sqr") {
-      switch(type) {
-      case "standard":
-        return blocks_square_standard;
-      case "pentris":
-        return blocks_square_pentris;
-      case "triples":
-        return blocks_square_triples;
-      case "triples2":
-        return blocks_square_triples_strange;
-      }
-    } else if(shape=="hex") {
-      switch(type) {
-      case "standard":
-        return blocks_hexagonal_standard;
-      case "pentris":
-        return blocks_hexagonal_pentris;
-      case "triples":
-        return blocks_hexagonal_triples;
-      }
-    } else {
-      switch(type) {
-      case "tiny":
-        return blocks_tri_tiny;
-      case "4":
-        return blocks_tri_4;
-      case "5":
-        return blocks_tri_5;
-      }
-    }
-    return [];
   }
 }
 

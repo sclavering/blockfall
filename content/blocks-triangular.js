@@ -1,4 +1,6 @@
-const blocks_tri_tiny = [
+blocks["tri"] = [];
+
+blocks["tri"]["tiny"] = [
   [[
   [0,0],
   [0,0],
@@ -145,7 +147,7 @@ const blocks_tri_tiny = [
 ];
   
 
-const blocks_tri_4 = [
+blocks["tri"]["4"] = [
   [[
   [0,0,0,0],
   [0,2,0,0],
@@ -288,7 +290,7 @@ const blocks_tri_4 = [
 ];
 
 
-const blocks_tri_5 = [
+blocks["tri"]["5"] = [
   [[
   [0,0],
   [0,0],
@@ -416,3 +418,5 @@ const blocks_tri_5 = [
   ]]
   
 ];
+
+blocks["tri"]["current"] = blocks["tri"]["4"];
