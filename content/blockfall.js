@@ -101,7 +101,6 @@ function showSettingsDialogue() {
 }
 
 function onSettingsCancel() {
-  alert(game);
   if(game && !wasPausedBeforeSettings) unpause();
 }
 
@@ -501,7 +500,6 @@ Grids.base = {
   // takes abitrary num of row indices (sorted in increasing order) as args
   removeRows: function() {
     const a = arguments, n = a.length, g = this.grid, w = this.width;
-    //alert(a+"\n"+a.length);
     for(var i = 0; i != n; ++i) {
       var r = g.splice(a[i], 1);
       for(var x = 0; x != w; ++x) r[x] = 0;
