@@ -1,35 +1,3 @@
-// XXX: kill this.  use createHexBlock instead
-function createHexState(width, height, x, y, path) {
-  // because of representation being based on half-hexes
-  height = height * 2 + 1;
-  y = y * 2;
-  if(x%2==0) y++;
-
-  var state = new Array(height);
-  for(var i = 0; i < height; i++) {
-    state[i] = new Array(width);
-    for(var j = 0; j < width; j++) state[i][j] = 0;
-  }
-
-  state[y][x] = 1;
-  state[y+1][x] = 1;
-  for(var k = 0; k < path.length; k++) {
-    switch(path[k]) {
-      case N:  y-=2; break;
-      case NE: y--; x++; break;
-      case SE: y++; x++; break;
-      case S:  y+=2; break;
-      case SW: y++; x--; break;
-      case NW: y--; x--; break;
-    }
-    state[y][x] = 1;
-    state[y+1][x] = 1;
-  }
-
-  return state;
-}
-
-
 // make blocks a different colour
 var hexLastBlockNumber = 0;
 // update to match number of available hex tile images
@@ -109,25 +77,9 @@ function createHexBlockState(width, height, x, y, prepath, path, blockNum) {
 blocks["hex"] = [];
 
 blocks["hex"]["triples"] = [
-  [
-  createHexState(3,3,1,1,[NE,S]),
-  createHexState(3,3,1,1,[S,NE])
-  ],
-
-  [
-  createHexState(3,3,0,1,[NE,NE]),
-  createHexState(3,3,0,0,[SE,SE]),
-  createHexState(3,3,1,0,[S,S])
-  ],
-
-  [
-  createHexState(3,3,0,1,[NE,SE]),
-  createHexState(3,3,0,0,[SE, S]),
-  createHexState(3,3,1,0,[ S,SW]),
-  createHexState(3,3,2,0,[SW,NW]),
-  createHexState(3,3,2,1,[NW, N]),
-  createHexState(3,3,1,2,[ N,NE])
-  ]
+  createHexBlock(3, [], [hNE,hS]),
+  createHexBlock(3, [hSW], [hNE,hNE]),
+  createHexBlock(3, [hSW], [hNE,hSE]),
 ];
 
 
