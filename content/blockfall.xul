@@ -3,12 +3,13 @@
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	id="blockfall-window"
+	windowtype="blockfall-main"
 	title="BlockFall"
 	orient="vertical"
 	persist="screenX screenY"
 	>
 
-	<script src="blockfall-blocks.js" type="application/x-javascript"/>
+	<script src="blocks.js" type="application/x-javascript"/>
 	<script src="blockfall.js" type="application/x-javascript"/>
 
 	<menubar id="menubar-main">
@@ -16,7 +17,7 @@
 			<menupopup id="menupopup-game">
 				<menuitem label="New" oncommand="newGame();"/>
 				<menuseparator/>
-				<menuitem label="Pause" oncommand="pausePressed();"/>
+				<menuitem label="Pause" oncommand="Game.pause();"/>
 				<menuseparator/>
 				<menu id="menu-size" label="Size">
 					<menupopup id="menupopup-size">
@@ -60,11 +61,11 @@
 			<description value="Level:"/>
 			<description value="0" id="level-display"/>
 			<description value="Next Block:"/>
-			<box id="next-block-display"/>
+			<hbox id="next-block-display"/>
 		</vbox>
 
 		<spacer flex="1"/>
-		<box id="playing-field"/>
+		<hbox id="playing-field"/>
 		<spacer flex="1"/>
 	</hbox>
 
