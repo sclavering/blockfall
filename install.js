@@ -1,7 +1,7 @@
 const APP_DISPLAY_NAME = "BlockFall";
 const APP_NAME = "blockfall";
 const APP_PACKAGE = "/clav.co.uk/blockfall";
-const APP_VERSION = "0.3.1";
+const APP_VERSION = "0.5";
 
 const APP_JAR_FILE = "blockfall.jar";
 const APP_CONTENT_FOLDER = "content/";
