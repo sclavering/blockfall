@@ -26,7 +26,7 @@ function keyPressed(e) {
   else if((key == 38)||(key == 75)) // up or k
     FallingBlock.rotateClockwise();
   else if(key == 74) // j
-    FallingBlock.rotateAntilockwise();
+    FallingBlock.rotateAnticlockwise();
   else if(key == e.DOM_VK_SPACE)
     FallingBlock.drop();
   else if((key == 80)||(key == 19)) //p or pause
@@ -34,9 +34,22 @@ function keyPressed(e) {
 }
 
 
+function changeBlocks(menu) {
+  if(!menu) menu = document.getElementById("menu-blocktypes-popup");
+  Blocks = [];
+  // iterate across each menuitem and add appropriate blocks if checked
+  var menuitems = menu.childNodes;
+  for(var i = 0; i < menuitems.length; i++) {
+    var item = menuitems[i];
+    if(item.hasAttribute("checked"))
+      Blocks = Blocks.concat(blocks_all[item.value]);
+  }
+}
+
+
 
 window.onload = function() {
-  Blocks = getStandardBlocks();
+  changeBlocks();
   GridDisplay.init();
   NextBlockDisplay.create();
   newGame();
@@ -469,7 +482,7 @@ var NextBlockDisplay = {
 
   create: function() {
     this.container = document.getElementById("next-block-display");
-    this.setSize(4,4);
+    this.setSize(5,5);
   },
 
   setSize: function(width, height) {

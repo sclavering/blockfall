@@ -10,6 +10,7 @@
 	>
 
 	<script src="blocks.js" type="application/x-javascript"/>
+	<script src="blocks-pentris.js" type="application/x-javascript"/>
 	<script src="blockfall.js" type="application/x-javascript"/>
 
 	<menubar id="menubar-main">
@@ -41,6 +42,12 @@
 						<menuitem type="radio" label="Level 9" value="9"/>
 					</menupopup>
 				</menu>
+				<menu id="menu-blocktypes" label="Blocks">
+				  <menupopup id="menu-blocktypes-popup" oncommand="changeBlocks(this);">
+				    <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
+				    <menuitem type="checkbox" label="Pentris"  value="pentris"/>
+				  </menupopup>
+				</menu>
 			</menupopup>
 		</menu>
 		<!--
@@ -61,11 +68,11 @@
 			<description value="Level:"/>
 			<description value="0" id="level-display"/>
 			<description value="Next Block:"/>
-			<hbox id="next-block-display"/>
+			<hbox id="next-block-display" class="block-grid"/>
 		</vbox>
 
 		<spacer flex="1"/>
-		<hbox id="playing-field"/>
+		<hbox id="playing-field" class="block-grid"/>
 		<spacer flex="1"/>
 	</hbox>
 

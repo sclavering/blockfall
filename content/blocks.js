@@ -1,9 +1,8 @@
-// Last updated: 9th June 2002
+var blocks_all = [];
 
-// returns an array of arrays representing standard tetris block shapes
-// 0 represents an empty square and any other number is a different colour of tile;
-function getStandardBlocks() {
-  var l = [[
+const blocks_standard = [
+  // l
+  [[
     [0,0,0],
     [1,1,1],
     [1,0,0]
@@ -19,9 +18,10 @@ function getStandardBlocks() {
     [1,1,0],
     [0,1,0],
     [0,1,0]
-  ]];
-
-  var f = [[
+  ]],
+  
+  // f
+  [[
     [0,0,0],
     [2,2,2],
     [0,0,2]
@@ -37,9 +37,10 @@ function getStandardBlocks() {
     [0,2,0],
     [0,2,0],
     [2,2,0]
-  ]];
-
-  var s = [[
+  ]],
+  
+  // s
+  [[
     [0,0,0],
     [0,3,3],
     [3,3,0]
@@ -47,9 +48,10 @@ function getStandardBlocks() {
     [0,3,0],
     [0,3,3],
     [0,0,3]
-  ]];
-
-  var z = [[
+  ]],
+  
+  // z
+  [[
     [0,0,0],
     [4,4,0],
     [0,4,4]
@@ -57,15 +59,17 @@ function getStandardBlocks() {
     [0,0,4],
     [0,4,4],
     [0,4,0]
-  ]];
-
-  var o = [[
+  ]],
+  
+  // o
+  [[
     [0,0],
     [5,5],
     [5,5]
-  ]];
-
-  var t = [[
+  ]],
+    
+  // t
+  [[
     [0,0,0],
     [6,6,6],
     [0,6,0]
@@ -81,9 +85,10 @@ function getStandardBlocks() {
     [0,6,0],
     [6,6,0],
     [0,6,0]
-  ]];
-
-  var i = [[
+  ]],
+  
+  // i
+  [[
     [0,0,0,0],
     [7,7,7,7],
     [0,0,0,0],
@@ -93,7 +98,7 @@ function getStandardBlocks() {
     [0,0,7,0],
     [0,0,7,0],
     [0,0,7,0]
-  ]];
+  ]]
+];
 
-  return [s,z,o,t,i,f,l];
-}
+blocks_all["standard"] = blocks_standard;
