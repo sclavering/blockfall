@@ -15,7 +15,7 @@
   <script src="blocks-triangular.js" type="application/x-javascript"/>
 
   <toolbar id="main-toolbar">
-    <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
+    <toolbarbutton id="new-button" tooltiptext="New Game" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" tooltiptext="Pause/Unpause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-sqr" type="menu-button"
         oncommand="Blocks.change('sqr');" tooltiptext="Play with Square blocks">
