@@ -1,11 +1,50 @@
 /*
-To get a block (in all it's rotations) do:
+blockfall.js should ignore all of this file other than the "Blocks" object.
 
-blocks[shape][size][blockNum]
-  shape is "sqr", "hex" or "tri"
-  size is an int.  values correspond to those for the menuitems in settings.xul
-  blockNum is also an int
+Blocks consist of arrays of possible orientations that block can be in, which
+are in turn arrays of arrays (indexed by y then x coords) of tiles. Tiles are
+represented using ints - 0 for "no tile", any other number indicating there is
+a tile.  The precise number used just determines the colour of the tile.
 */
+
+
+var Blocks = {
+  currentSet: null, // an array of blocks, if using just one size
+  currentSets: null, // an array of arrays, if using several sizes
+
+  // get a random block (all rotations thereof) from the set(s) currently in use
+  getRandom: function() {
+    var set = this.currentSet, num, n;
+    if(!set) {
+      sets = this.currentSets;
+      num = sets.length;
+      do { n = Math.random(); } while(n == 1.0);
+      n = Math.floor(n * num);
+      set = sets[n];
+    }
+    num = set.length;
+    do { n = Math.random() } while(n == 1.0);
+    n = Math.floor(n * num);
+
+    return set[n];
+  },
+
+  // shape is from {"sqr","hex","tri"}.  sizes is an int array
+  use: function(shape, sizes) {
+    var all = blocks[shape];
+    if(sizes.length==1) {
+      this.currentSet = all[sizes[0]];
+      this.currentSets = null;
+    } else {
+      this.currentSet = null;
+      var current = this.currentSets = [];
+      for(var i = 0; i != sizes.length; ++i) current.push(all[sizes[i]]);
+    }
+  }
+}
+
+
+
 
 var blocks = {};
 

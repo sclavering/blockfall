@@ -219,41 +219,6 @@ var Game = {
 
 
 
-var Blocks = {
-  currentSet: null, // an array of blocks, if using just one size
-  currentSets: null, // an array of arrays, if using several sizes
-
-  getRandom: function() {
-    var set = this.currentSet, num, n;
-    if(!set) {
-      sets = this.currentSets;
-      num = sets.length;
-      do { n = Math.random(); } while(n == 1.0);
-      n = Math.floor(n * num);
-      set = sets[n];
-    }
-    num = set.length;
-    do { n = Math.random() } while(n == 1.0);
-    n = Math.floor(n * num);
-
-    return set[n];
-  },
-
-  // shape is from {"sqr","hex","tri"}.  sizes is an int array
-  use: function(shape, sizes) {
-    var all = blocks[shape];
-    if(sizes.length==1) {
-      this.currentSet = all[sizes[0]];
-      this.currentSets = null;
-    } else {
-      this.currentSet = null;
-      var current = this.currentSets = [];
-      for(var i = 0; i != sizes.length; ++i) current.push(all[sizes[i]]);
-    }
-  }
-}
-
-
 
 var Timer = {
   interval: null,
