@@ -14,15 +14,20 @@ function keyPressed(e) {
   }
   switch(key) {
     case 40: // down
+    case 190: // .
       FallingBlock.moveDown(); break;
     case 37: // left
+    case 188: // ,
       FallingBlock.moveLeft(); break;
     case 39: // right
+    case 191: // /
       FallingBlock.moveRight(); break;
     case 38: // up
     case 75: // k
+    case 88: // x
       FallingBlock.rotateClockwise(); break;
     case 74: // j
+    case 90: // z
       FallingBlock.rotateAnticlockwise(); break;
     case 72: // h
     case e.DOM_VK_SPACE:
