@@ -62,7 +62,6 @@ function changeMode(newshape) {
     Grid = HexGrid;
     height = 50;
   }
-//  Blocks.next();
   NextBlockDisplay.show();
   GridDisplay.show();
   Game.start(10,height);
@@ -221,11 +220,11 @@ var Blocks = {
   _next: null,
 
   next: function() {
-//    if(!this._next) this.setNext(); // for when a game is first started
-    FallingBlock.setBlock(this._next);
+    var gameNotLost = FallingBlock.setBlock(this._next);
     this.setNext();
     NextBlockDisplay.update(this._next[0]);
-    Timer.start();
+    if(gameNotLost) Timer.start();
+    else Game.end();
   },
 
   setNext: function() {
@@ -235,7 +234,6 @@ var Blocks = {
   },
 
   change: function(shape, types) {
-//    alert(shape+"|"+types.join("|"));
     var shapeChanged = (shape!=this.currentShape);
     if(shapeChanged) {
       this.shapeSets[this.currentShape] = this.currentSet;
@@ -262,6 +260,8 @@ var Blocks = {
         return blocks_square_pentris;
       case "triples":
         return blocks_square_triples;
+      case "triples2":
+        return blocks_square_triples_strange;
       }
     } else {
       switch(type) {
@@ -318,6 +318,7 @@ var BaseFallingBlock = {
   // y-x indexed
   grid: null,
 
+  // returns a bool for if the new block can be added
   setBlock: function(newblock) {
     // get the block
     var block = newblock[0];
@@ -330,8 +331,7 @@ var BaseFallingBlock = {
     for(var y = 0; y < height; y++) {
       for(var x = 0, x2 = left; x < width; x++, x2++) {
         if(Grid.getElement(x2,y) && block[y][x]) {
-          Game.end();
-          return;
+          return false;
         }
       }
     }
@@ -347,6 +347,7 @@ var BaseFallingBlock = {
     this.height = height;
 
     GridDisplay.updateArea(0, right, height, left);
+    return true;
   },
 
   addToGrid: function() {
@@ -452,8 +453,7 @@ var HexFallingBlock = {
     this.right--;
     this.top++;
     this.bottom++;
-//    GridDisplay.safeUpdateArea(this.top-1, this.right+1, this.bottom, this.left);
-    GridDisplay.safeUpdateArea(this.top-2, this.right+2, this.bottom+1, this.left-1);
+    GridDisplay.safeUpdateArea(this.top-1, this.right+1, this.bottom, this.left);
   },
 
   moveRight: function() {
@@ -463,7 +463,6 @@ var HexFallingBlock = {
     this.top++;
     this.bottom++;
     GridDisplay.safeUpdateArea(this.top-1, this.right, this.bottom, this.left-1);
-    GridDisplay.safeUpdateArea(this.top-2, this.right+1, this.bottom+1, this.left-2);
   },
 
   // must return a boolean for the timed drop function
@@ -472,7 +471,7 @@ var HexFallingBlock = {
     if(can) {
       this.top += 2;
       this.bottom += 2;
-      GridDisplay.safeUpdateArea(this.top-3, this.right+1, this.bottom+1, this.left-1);
+      GridDisplay.safeUpdateArea(this.top-2, this.right, this.bottom, this.left);
     }
     return can;
   }
@@ -755,9 +754,14 @@ var BaseNextBlockDisplay = {
   update: function(block) {
     if(!this.enabled) return;
     this.clear();
-    for(var y = 0; y < block.length && y < this.height; y++)
-      for(var x = 0; x < block[0].length && x < this.width; x++)
-        this.grid[x][y].setState(block[y][x]);
+    // Position the block in the centre of the space.
+    // This is *essential* for hexagonal games because otherwise the display
+    // ends up half a hex out, and it looks nice on square ones.
+    var top = parseInt((this.height-block.length)/2);
+    var left = parseInt((this.width-block[0].length)/2);
+    for(var y = 0, y2 = top; y < block.length && y2 < this.height; y++, y2++)
+      for(var x = 0, x2 = left; x < block[0].length && x2 < this.width; x++, x2++)
+        this.grid[x2][y2].setState(block[y][x]);
   },
 
   // enable or disable

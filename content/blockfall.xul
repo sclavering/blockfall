@@ -50,6 +50,7 @@
         oncommand="Blocks.change('square');" label="Sqr">
       <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="square">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
+        <menuitem type="checkbox" label="Strange Triples"  value="triples2"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
       </menupopup>

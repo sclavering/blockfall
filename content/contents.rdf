@@ -8,10 +8,10 @@
   </RDF:Seq>
 
   <RDF:Description about="urn:mozilla:package:blockfall"
-      chrome:displayName="BlockFall"
+      chrome:displayName="BlockFall 0.4b"
       chrome:author="Stephen Clavering"
       chrome:name="blockfall"
-      chrome:description="A Tetris-like game."
+      chrome:description="Various Tetris-like games."
       chrome:extension="true"
       />
 
