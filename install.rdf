@@ -6,7 +6,7 @@
   <r:Description about="urn:mozilla:install-manifest">
     <id>blockfall</id>
 
-    <name>BlockFall</name>
+    <name>Blockfall</name>
     <version>0.8</version>
     <description>A falling blocks game, with hexagonal and triangular variants.</description>
     <homepageURL>http://clav.mozdev.org/</homepageURL>

@@ -28,12 +28,14 @@ function createSqrBlock(size, prepath, path, numstates) {
   if(sqrLastBlockNumber==sqrMaxBlockNumber) sqrLastBlockNumber = 1;
 
   var block = new Array(numstates);
-  block[0] = createSqrBlockState(size, origin, origin, prepath, path, blockNum);
-  for(var i = 1; i != numstates; i++) {
+
+  var i = 0;
+  while(true) {
+    block[i] = createSqrBlockState(size, origin, origin, prepath, path, blockNum);
+    if(++i == numstates) break;
     // rotate the paths
     for(var j = 0; j != prepath.length; j++) prepath[j] = (prepath[j] + 2) % 8;
     for(var k = 0; k != path.length; k++) path[k] = (path[k] + 2) % 8;
-    block[i] = createSqrBlockState(size, origin, origin, prepath, path, blockNum);
   }
 
   return block;

@@ -1,17 +1,19 @@
 <!-- Firefox Tools menu entry -->
 
-<!ENTITY play-blockfall "BlockFall">
+<!ENTITY play-blockfall "Blockfall">
 
 
 <!-- Main window -->
 
-<!ENTITY blockfall "BlockFall">
+<!ENTITY blockfall "Blockfall">
 
 <!ENTITY new.label "New">
 <!ENTITY new.tip "Start a new game">
 <!ENTITY pause.label "Pause">
 <!ENTITY pause.tip "Pause or unpause the current game">
 <!ENTITY settings.label "Settings...">
+
+<!ENTITY msg.paused "Paused">
 
 
 <!-- Settings dialogue window -->

@@ -1,7 +1,10 @@
 @import url(chrome://global/skin/);
 
+
+#box-main {
+  background: #111;
+}
 #box-info {
-  background: black;
   color: white;
   font-weight: bold;
 }
@@ -27,6 +30,17 @@
 
 #box-main[nextblockhidden] #box-info {
   -moz-box-orient: horizontal;
+}
+
+.message {
+  background: #111;
+  color: white;
+  border: 1px solid #111;
+  -moz-border-radius: 5px;
+  padding: 3px;
+  font-size: 1.5em;
+  margin: 100px 20px 0;
+  text-align: center;
 }
 
 
@@ -117,7 +131,7 @@
 .tri-grid {
   list-style-image: url(triangles.png);
   padding-top: 9px;
-  background: black;
+  /*background: black;*/
 }
 
 .tri { margin-top: -10px; }

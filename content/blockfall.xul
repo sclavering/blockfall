@@ -16,15 +16,15 @@
 <script src="blocks.js" type="application/x-javascript"/>
 
 <commandset id="commands">
-  <command id="cmd.new" oncommand="Game.start();"/>
-  <command id="cmd.pause" oncommand="Game.pause();"/>
+  <command id="cmd.new" oncommand="newGame();"/>
+  <command id="cmd.pause" oncommand="togglePause();"/>
 
-  <command id="cmd.left" oncommand="if(!Game.paused) FallingBlock.moveLeft();"/>
-  <command id="cmd.right" oncommand="if(!Game.paused) FallingBlock.moveRight();"/>
-  <command id="cmd.down" oncommand="if(!Game.paused) FallingBlock.moveDown();"/>
-  <command id="cmd.drop" oncommand="if(!Game.paused) FallingBlock.drop();"/>
-  <command id="cmd.rotate.clockwise" oncommand="if(!Game.paused) FallingBlock.rotateClockwise();"/>
-  <command id="cmd.rotate.anticlockwise" oncommand="if(!Game.paused) FallingBlock.rotateAnticlockwise();"/>
+  <command id="cmd.left" oncommand="if(!gPaused) FallingBlock.moveLeft();"/>
+  <command id="cmd.right" oncommand="if(!gPaused) FallingBlock.moveRight();"/>
+  <command id="cmd.down" oncommand="if(!gPaused) FallingBlock.moveDown();"/>
+  <command id="cmd.drop" oncommand="if(!gPaused) FallingBlock.drop();"/>
+  <command id="cmd.rotate.clockwise" oncommand="if(!gPaused) FallingBlock.rotateClockwise();"/>
+  <command id="cmd.rotate.anticlockwise" oncommand="if(!gPaused) FallingBlock.rotateAnticlockwise();"/>
 </commandset>
 
 <keyset id="main">
@@ -49,7 +49,7 @@
 
 <toolbar id="main-toolbar">
   <toolbarbutton id="btn-new" label="&new.label;" tooltiptext="&new.tip;" oncommand="Game.start();"/>
-  <toolbarbutton id="btn-pause" type="checkbox" label="&pause.label;" tooltiptext="&pause.tip;" oncommand="Game.pause();"/>
+  <toolbarbutton id="btn-pause" label="&pause.label;" tooltiptext="&pause.tip;" command="cmd.pause"/>
   <toolbarbutton id="btn-settings" label="&settings.label;" oncommand="showSettingsDialogue();"/>
 </toolbar>
 
@@ -62,19 +62,17 @@
     <label value="Level:"/>
     <description value="0" id="level-display"/>
     <label value="Next Block:"/>
-<!--
-    <checkbox checked="true" label="Show" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
--->
     <hbox id="next-sqr-block-display" class="square-grid"/>
     <hbox id="next-hex-block-display" class="hex-grid"/>
     <hbox id="next-tri-block-display" class="tri-grid"/>
   </box>
 
-  <spacer flex="1"/>
-  <hbox id="sqr-playing-field" class="square-grid"/>
-  <hbox id="hex-playing-field" class="hex-grid"/>
-  <hbox id="tri-playing-field" class="tri-grid"/>
-  <spacer flex="1"/>
+  <stack id="stack-grids">
+    <hbox id="sqr-playing-field" class="square-grid"/>
+    <hbox id="hex-playing-field" class="hex-grid"/>
+    <hbox id="tri-playing-field" class="tri-grid"/>
+    <vbox id="msg-paused"><label class="message" value="&msg.paused;"/></vbox>
+  </stack>
 </box>
 
 </window>

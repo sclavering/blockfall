@@ -1,23 +1,66 @@
+// ui bits
+
+var gMsgPaused = "msg-paused";
+var gScoreDisplay = "score-display";
+var gLinesDisplay = "lines-display";
+var gLevelDisplay = "level-display";
+
+const gUiBits = ["gMsgPaused", "gScoreDisplay", "gLinesDisplay", "gLevelDisplay"];
+
+// globals
+
+var gPaused = false;
+
+
+
+function pause() {
+  if(gPaused) return;
+  Timer.stop();
+  gMsgPaused.hidden = false;
+  gPaused = true;
+}
+
+function unpause() {
+  if(!gPaused) return;
+  Timer.start()
+  gMsgPaused.hidden = true;
+  gPaused = false;
+}
+
+function togglePause() {
+  if(gPaused) unpause();
+  else pause();
+}
+
+function newGame() {
+  unpause();
+  Game.start();
+}
+
+
+
+// settings dialogue
+
 function showSettingsDialogue() {
   const url = "chrome://blockfall/content/settings.xul";
   const flags = "dialog,dependent,modal,chrome";//,resizable";
 
-  if(!Game.paused) Game.pause();
+  pause();
   openDialog(url, "flibble", flags);
 }
 
-
-// callbacks for settings.xul to use
-
 function onSettingsCancel() {
-  if(Game.paused) Game.pause(); // unpause
+  unpause();
 }
 
 function onSettingsAccept(shape, sizes) {
   changeBlocks(shape, sizes);
-  if(Game.paused) Game.pause(); // unpause
+  unpause();
 }
 
+
+
+// ugly things
 
 function changeBlocks(shape, sizes) {
   var shapeChanged = (shape!=Blocks.currentShape);
@@ -48,31 +91,29 @@ window.addEventListener("load", function() {
     GridDisplays[shape] = new GridDisplayObj(shape);
     NextBlockDisplays[shape] = new NextBlockDisplayObj(shape);
   }
-  NextBlockDisplays["sqr"].setSize(5,5);
-  NextBlockDisplays["hex"].setSize(7,13);
-  NextBlockDisplays["tri"].setSize(6,10);
-  Game.init();
+  NextBlockDisplays.sqr.setSize(5,5);
+  NextBlockDisplays.hex.setSize(7,13);
+  NextBlockDisplays.tri.setSize(6,10);
   changeBlocks(document.documentElement.getAttribute("pref-shape"), [1]); //xxx
+
+  for(i = 0; i != gUiBits.length; ++i) {
+    var bit = gUiBits[i];
+    window[bit] = document.getElementById(window[bit]);
+  }
+  gMsgPaused.hidden = true;
 }, false);
 
 
+
+
+// bad OOP (rest of file)
 
 var Game = {
   width: 10,
   height: 25,
   startingLevel: 0,
   levelsCompleted: 0,
-  paused: false,
 
-  scoreDisplay: null,
-  linesDisplay: null,
-  levelDisplay: null,
-
-  init: function() {
-    this.scoreDisplay = document.getElementById("score-display");
-    this.linesDisplay = document.getElementById("lines-display");
-    this.levelDisplay = document.getElementById("level-display");
-  },
 
   start: function(width, height, startingLevel) {
     this.end();
@@ -88,12 +129,12 @@ var Game = {
     this.levelsCompleted = 0;
     this.lines = 0;
     this.score = 0;
-    this.paused = false;
 
     Grid.newGrid(width, height);
     GridDisplay.setSize(width, height);
 
     Timer.resetDelay();
+    // < matters
     for(var i = 1; i < startingLevel; i++) Timer.reduceDelay();
 
     window.sizeToContent();
@@ -115,7 +156,7 @@ var Game = {
   },
   set score(val) {
     this._score = val;
-    this.scoreDisplay.value = val;
+    gScoreDisplay.value = val;
   },
 
   _lines: 0,
@@ -124,7 +165,7 @@ var Game = {
   },
   set lines(val) {
     this._lines = val;
-    this.linesDisplay.value = val;
+    gLinesDisplay.value = val;
   },
 
   _level: 0,
@@ -133,15 +174,7 @@ var Game = {
   },
   set level(val) {
     this._level = val;
-    this.levelDisplay.value = val;
-  },
-
-
-  // actually pause/unpause
-  pause: function() {
-    if(Game.paused) Timer.start();
-    else Timer.stop();
-    Game.paused = !Game.paused;
+    gLevelDisplay.value = val;
   },
 
 
