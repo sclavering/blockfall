@@ -188,7 +188,7 @@ var Game = {
   scoreBlockDropped: function(wasDropped) {
     var score = this.level;
     if(wasDropped) score *= 5;
-    if(NextBlockDisplay.enabled) score = parseInt(score / 2);
+    if(NextBlockDisplay.enabled) score = Math.floor(score / 2);
     this.score += score;
   },
 
