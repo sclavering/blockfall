@@ -708,7 +708,7 @@ var BaseGridDisplay = {
   },
   createTriTile: function(x, y) {
     var left = (x % 2 == y % 2);
-    var prefix = "tri-tile tri-" + (left ? "left-" : "right-");
+    var prefix = "tri tri-" + (left ? "left-" : "right-");
     var tile = document.createElement("image");
     tile.setState = function(state) {
       this.className = prefix + state;
