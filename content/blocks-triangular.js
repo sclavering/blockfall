@@ -1,6 +1,3 @@
-const E = 1, W = 2, N = 3, S = 4;
-
-
 // block state reallly
 function createTriBlock(width, height, x, y, directions) {
   var block = new Array(height);
@@ -746,4 +743,4 @@ blocks["tri"]["6"] = [
 
 
 
-blocks["tri"]["current"] = blocks["tri"]["6"];
+blocks["tri"]["current"] = blocks["tri"]["4"];

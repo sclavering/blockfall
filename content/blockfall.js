@@ -1,3 +1,6 @@
+const E = 1, W = 2, N = 3, S = 4, NE = 5, NW = 6, SE = 7, SW = 8;
+
+
 function setLevel(level) {
   Game.start(null, null, level);
 }
@@ -209,13 +212,13 @@ var Blocks = {
   currentSet: [],
   currentShape: null,
   shapeSets: [],
-  
+
   init: function() {
     this.shapeSets["sqr"] = blocks["sqr"]["current"];
     this.shapeSets["hex"] = blocks["hex"]["current"];
     this.shapeSets["tri"] = blocks["tri"]["current"];
   },
-  
+
   _next: null,
 
   next: function() {
@@ -619,7 +622,7 @@ var TriGrid = {
     // update score and lines
     Game.scoreRemovingLines(numLinesRemoved);
   },
-  
+
   tryRemoveLine: function(y) {
     var line = this.grid[y];
     var line2 = this.grid[y+1];
@@ -762,7 +765,7 @@ function GridDisplayObj(shape) {
   var id = shape + "-playing-field";
   this.container = document.getElementById(id);
   this.container.hidden = true;
-  
+
   this.createTile =
     (shape=="sqr") ? this.createSquareTile :
     (shape=="hex") ? this.createHexTile :
@@ -806,7 +809,7 @@ function NextBlockDisplayObj(shape) {
   var id = "next-" + shape + "-block-display";
   this.container = document.getElementById(id);
   this.container.hidden = true;
-  
+
   this.createTile =
     (shape=="sqr") ? this.createSquareTile :
     (shape=="hex") ? this.createHexTile :
