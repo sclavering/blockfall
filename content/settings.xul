@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="blockfall.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://blockfall/locale/blockfall.dtd">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    id="blockfall-settings"
+    title="&settings;"
+    ondialogaccept="onAccept();"
+    ondialogcancel="opener.onSettingsCancel();"
+    >
+
+<script type="application/x-javascript">
+<![CDATA[
+function changeShape(e) {
+  var shape = e.target.value;
+  var panel = document.getElementById("sizes-"+shape);
+  var deck = document.getElementById("sizes-deck");
+  deck.selectedPanel = panel;
+  //alert(e.target.value);
+}
+
+function onAccept() {
+  var shape = document.getElementById("shapes-list").value;
+
+  var sizes = [];
+  var tickboxes = document.getElementById("sizes-"+shape)
+  for(var tick = tickboxes.firstChild; tick; tick = tick.nextSibling)
+    if(tick.checked) sizes.push(tick.getAttribute("value"));
+
+  opener.onSettingsAccept(shape, sizes);
+}
+]]>
+</script>
+
+<groupbox>
+  <caption label="&blocks;"/>
+
+  <menulist id="shapes-list" oncommand="changeShape(event);">
+    <menupopup>
+      <menuitem value="sqr" label="&sqr;"/>
+      <menuitem value="hex" label="&hex;"/>
+      <menuitem value="tri" label="&tri;"/>
+    </menupopup>
+  </menulist>
+
+  <deck id="sizes-deck">
+    <vbox id="sizes-sqr">
+      <checkbox persist="checked" id="sizes-sqr-3" label="&small3tiles;" value="0"/>
+      <checkbox persist="checked" id="sizes-sqr-4" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox persist="checked" id="sizes-sqr-5" label="&large5tiles;" value="2"/>
+    </vbox>
+    <vbox id="sizes-hex">
+      <checkbox persist="checked" id="sizes-hex-3" label="&small3tiles;" value="0"/>
+      <checkbox persist="checked" id="sizes-hex-4" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox persist="checked" id="sizes-hex-5" label="&large5tiles;" value="2"/>
+    </vbox>
+    <vbox id="sizes-tri">
+      <checkbox persist="checked" id="sizes-tri-3" label="&tiny23tiles;" value="0"/>
+      <checkbox persist="checked" id="sizes-tri-4" label="&small4tiles;" value="1" checked="true"/>
+      <checkbox persist="checked" id="sizes-tri-5" label="&medium5tiles;" value="2" checked="true"/>
+      <checkbox persist="checked" id="sizes-tri-6" label="&large6tiles;" value="3"/>
+    </vbox>
+  </deck>
+</groupbox>
+
+<checkbox label="&shownextblock;" disabled="true"/>
+
+<hbox align="center">
+  <label value="&startinglevel;"/>
+  <!-- a textbox with spinbuttons would be nicer, but doesn't work -->
+  <menulist id="startinglevel-menu" disabled="true">
+    <menupopup>
+      <menuitem label="1" value="1"/>
+      <menuitem label="2" value="2"/>
+      <menuitem label="3" value="3"/>
+      <menuitem label="4" value="4"/>
+      <menuitem label="5" value="5"/>
+      <menuitem label="6" value="6"/>
+      <menuitem label="7" value="7"/>
+      <menuitem label="8" value="8"/>
+      <menuitem label="9" value="9"/>
+      <menuitem label="10" value="10"/>
+    </menupopup>
+  </menulist>
+</hbox>
+</dialog>

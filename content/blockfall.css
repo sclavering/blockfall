@@ -1,23 +1,159 @@
 @import url(chrome://global/skin/);
-@import url(squares.css);
-@import url(hexagons.css);
-@import url(triangles.css);
 
-#sidepanel {
-	background: black;
-	color: white;
-	font-weight: bold;
-}
-#sidepanel vbox {
-	margin-bottom: 8px;
+#box-info {
+  background: black;
+  color: white;
+  font-weight: bold;
 }
 #next-block-display {
-	margin: 10px;
+  margin: 10px;
 }
 
-#blocks-sqr, #blocks-hex, #blocks-tri, #pause-button, #new-button { list-style-image: url(icons.png); }
+#blocks-sqr, #blocks-hex, #blocks-tri { list-style-image: url(icons.png); }
 #blocks-sqr { -moz-image-region: rect(0 18px 16px 0); }
 #blocks-tri { -moz-image-region: rect(0 36px 16px 18px); }
 #blocks-hex { -moz-image-region: rect(0 54px 16px 36px); }
-#pause-button { -moz-image-region: rect(0 72px 16px 54px); }
-#new-button { -moz-image-region: rect(0 90px 16px 72px); }
+
+#box-main {
+  -moz-box-orient: horizontal;
+}
+#box-info {
+  -moz-box-orient: vertical;
+}
+
+#box-main[nextblockhidden] {
+  -moz-box-orient: vertical;
+}
+
+#box-main[nextblockhidden] #box-info {
+  -moz-box-orient: horizontal;
+}
+
+
+
+/* Square tiles */
+.square-grid { list-style-image: url(squares.png); }
+.square-0 { -moz-image-region: rect(0px 20px 20px 0px); }
+.square-1 { -moz-image-region: rect(0px 40px 20px 20px); }
+.square-2 { -moz-image-region: rect(0px 60px 20px 40px); }
+.square-3 { -moz-image-region: rect(0px 80px 20px 60px); }
+.square-4 { -moz-image-region: rect(0px 100px 20px 80px); }
+.square-5 { -moz-image-region: rect(0px 120px 20px 100px); }
+.square-6 { -moz-image-region: rect(0px 140px 20px 120px); }
+.square-7 { -moz-image-region: rect(0px 160px 20px 140px); }
+.square-8 { -moz-image-region: rect(20px 20px 40px 0px); }
+.square-9 { -moz-image-region: rect(20px 40px 40px 20px); }
+.square-10 { -moz-image-region: rect(20px 60px 40px 40px); }
+.square-11 { -moz-image-region: rect(20px 80px 40px 60px); }
+.square-12 { -moz-image-region: rect(20px 100px 40px 80px); }
+.square-13 { -moz-image-region: rect(20px 120px 40px 100px); }
+.square-14 { -moz-image-region: rect(20px 140px 40px 120px); }
+.square-15 { -moz-image-region: rect(20px 160px 40px 140px); }
+.square-16 { -moz-image-region: rect(40px 20px 60px 0px); }
+.square-17 { -moz-image-region: rect(40px 40px 60px 20px); }
+.square-18 { -moz-image-region: rect(40px 60px 60px 40px); }
+.square-19 { -moz-image-region: rect(40px 80px 60px 60px); }
+.square-20 { -moz-image-region: rect(40px 100px 60px 80px); }
+.square-21 { -moz-image-region: rect(40px 120px 60px 100px); }
+.square-22 { -moz-image-region: rect(40px 140px 60px 120px); }
+.square-23 { -moz-image-region: rect(40px 160px 60px 140px); }
+.square-24 { -moz-image-region: rect(60px 20px 80px 0px); }
+.square-25 { -moz-image-region: rect(60px 40px 80px 20px); }
+.square-26 { -moz-image-region: rect(60px 60px 80px 40px); }
+.square-27 { -moz-image-region: rect(60px 80px 80px 60px); }
+.square-28 { -moz-image-region: rect(60px 100px 80px 80px); }
+.square-29 { -moz-image-region: rect(60px 120px 80px 100px); }
+.square-30 { -moz-image-region: rect(60px 140px 80px 120px); }
+.square-31 { -moz-image-region: rect(60px 160px 80px 140px); }
+
+
+
+
+/* Hexagonal tiles */
+
+.hex-grid {
+  list-style-image: url(hexagons.png);
+  /* counteract negative margin */
+  padding-left: 5px;
+}
+.hex-grid > vbox { margin-left: -5px; }
+
+.hex-top-0 { -moz-image-region: rect( 0px 23px 10px 0); }
+.hex-btm-0 { -moz-image-region: rect(10px 23px 20px 0); }
+.hex-top-1 { -moz-image-region: rect( 0px 46px 10px 23px); }
+.hex-btm-1 { -moz-image-region: rect(10px 46px 20px 23px); }
+.hex-top-2 { -moz-image-region: rect( 0px 69px 10px 46px); }
+.hex-btm-2 { -moz-image-region: rect(10px 69px 20px 46px); }
+.hex-top-3 { -moz-image-region: rect( 0px 92px 10px 69px); }
+.hex-btm-3 { -moz-image-region: rect(10px 92px 20px 69px); }
+.hex-top-4 { -moz-image-region: rect( 0px 115px 10px 92px); }
+.hex-btm-4 { -moz-image-region: rect(10px 115px 20px 92px); }
+.hex-top-5 { -moz-image-region: rect( 0px 138px 10px 115px); }
+.hex-btm-5 { -moz-image-region: rect(10px 138px 20px 115px); }
+.hex-top-6 { -moz-image-region: rect( 0px 161px 10px 138px); }
+.hex-btm-6 { -moz-image-region: rect(10px 161px 20px 138px); }
+.hex-top-7 { -moz-image-region: rect( 0px 184px 10px 161px); }
+.hex-btm-7 { -moz-image-region: rect(10px 184px 20px 161px); }
+.hex-top-8 { -moz-image-region: rect( 0px 207px 10px 184px); }
+.hex-btm-8 { -moz-image-region: rect(10px 207px 20px 184px); }
+.hex-top-9 { -moz-image-region: rect( 0px 230px 10px 207px); }
+.hex-btm-9 { -moz-image-region: rect(10px 230px 20px 207px); }
+.hex-top-10 { -moz-image-region: rect( 0px 253px 10px 230px); }
+.hex-btm-10 { -moz-image-region: rect(10px 253px 20px 230px); }
+.hex-top-11 { -moz-image-region: rect( 0px 276px 10px 253px); }
+.hex-btm-11 { -moz-image-region: rect(10px 276px 20px 253px); }
+.hex-top-12 { -moz-image-region: rect( 0px 299px 10px 276px); }
+.hex-btm-12 { -moz-image-region: rect(10px 299px 20px 276px); }
+.hex-top-13 { -moz-image-region: rect( 0px 322px 10px 299px); }
+.hex-btm-13 { -moz-image-region: rect(10px 322px 20px 299px); }
+.hex-top-14 { -moz-image-region: rect( 0px 345px 10px 322px); }
+.hex-btm-14 { -moz-image-region: rect(10px 345px 20px 322px); }
+
+
+
+
+/* Triangular tiles */
+
+.tri-grid {
+  list-style-image: url(triangles.png);
+  padding-top: 9px;
+  background: black;
+}
+
+.tri { margin-top: -10px; }
+
+.tri-left-0,
+.tri-right-0 {
+  list-style-image: none;
+  width: 22px;
+  height: 21px;
+}
+
+.tri-left-1  { -moz-image-region: rect(0 22px 21px 0); }
+.tri-right-1 { -moz-image-region: rect(0 44px 21px 22px); }
+.tri-left-2  { -moz-image-region: rect(21px 22px 42px 0); }
+.tri-right-2 { -moz-image-region: rect(21px 44px 42px 22px); }
+.tri-left-3  { -moz-image-region: rect(42px 22px 63px 0); }
+.tri-right-3 { -moz-image-region: rect(42px 44px 63px 22px); }
+.tri-left-4  { -moz-image-region: rect(63px 22px 84px 0); }
+.tri-right-4 { -moz-image-region: rect(63px 44px 84px 22px); }
+.tri-left-5  { -moz-image-region: rect(84px 22px 105px 0); }
+.tri-right-5 { -moz-image-region: rect(84px 44px 105px 22px); }
+.tri-left-6  { -moz-image-region: rect(105px 22px 126px 0); }
+.tri-right-6 { -moz-image-region: rect(105px 44px 126px 22px); }
+.tri-left-7  { -moz-image-region: rect(126px 22px 147px 0); }
+.tri-right-7 { -moz-image-region: rect(126px 44px 147px 22px); }
+.tri-left-8  { -moz-image-region: rect(147px 22px 168px 0); }
+.tri-right-8 { -moz-image-region: rect(147px 44px 168px 22px); }
+.tri-left-9  { -moz-image-region: rect(168px 22px 189px 0); }
+.tri-right-9 { -moz-image-region: rect(168px 44px 189px 22px); }
+.tri-left-10  { -moz-image-region: rect(189px 22px 210px 0); }
+.tri-right-10 { -moz-image-region: rect(189px 44px 210px 22px); }
+.tri-left-11  { -moz-image-region: rect(210px 22px 231px 0); }
+.tri-right-11 { -moz-image-region: rect(210px 44px 231px 22px); }
+.tri-left-12  { -moz-image-region: rect(231px 22px 252px 0); }
+.tri-right-12 { -moz-image-region: rect(231px 44px 252px 22px); }
+.tri-left-13  { -moz-image-region: rect(252px 22px 273px 0); }
+.tri-right-13 { -moz-image-region: rect(252px 44px 273px 22px); }
+.tri-left-14  { -moz-image-region: rect(273px 22px 294px 0); }
+.tri-right-14 { -moz-image-region: rect(273px 44px 294px 22px); }

@@ -1,0 +1,37 @@
+<!-- Firefox Tools menu entry -->
+
+<!ENTITY play-blockfall "BlockFall">
+
+
+<!-- Main window -->
+
+<!ENTITY blockfall "BlockFall">
+
+<!ENTITY new.label "New">
+<!ENTITY new.tip "Start a new game">
+<!ENTITY pause.label "Pause">
+<!ENTITY pause.tip "Pause or unpause the current game">
+<!ENTITY settings.label "Settings...">
+
+
+<!-- Settings dialogue window -->
+
+<!ENTITY settings "Settings">
+
+<!ENTITY blocks "Blocks">
+
+<!ENTITY sqr "Square blocks">
+<!ENTITY hex "Hexagonal blocks">
+<!ENTITY tri "Triangular blocks">
+
+<!ENTITY small3tiles "Small blocks (3 tiles)">
+<!ENTITY normal4tiles "Normal blocks (4 tiles)">
+<!ENTITY large5tiles "Large blocks (5 tiles)">
+<!ENTITY tiny23tiles "Tiny blocks (2 or 3 tiles)">
+<!ENTITY small4tiles "Small blocks (4 tiles)">
+<!ENTITY medium5tiles "Medium blocks (5 tiles)">
+<!ENTITY large6tiles "Large blocks (6 tiles)">
+
+<!ENTITY shownextblock "Show the next block that will fall">
+
+<!ENTITY startinglevel "Starting level:">

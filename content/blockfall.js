@@ -1,21 +1,28 @@
-function setLevel(level) {
-  Game.start(null, null, level);
-}
-function setSize(width, height) {
-  Game.start(width, height, null);
+function showSettingsDialogue() {
+  const url = "chrome://blockfall/content/settings.xul";
+  const flags = "dialog,dependent,modal,chrome";//,resizable";
+
+  if(!Game.paused) Game.pause();
+  openDialog(url, "flibble", flags);
 }
 
 
-function changeBlocks(shape, event) {
+// callbacks for settings.xul to use
+
+function onSettingsCancel() {
+  if(Game.paused) Game.pause(); // unpause
+}
+
+function onSettingsAccept(shape, sizes) {
+  changeBlocks(shape, sizes);
+  if(Game.paused) Game.pause(); // unpause
+}
+
+
+function changeBlocks(shape, sizes) {
   var shapeChanged = (shape!=Blocks.currentShape);
-  // don't rebuild the blocks if user has clicked button for current game type
-  if(event && event.originalTarget.localName=='toolbarbutton' && !shapeChanged) {
-    Game.start();
-    return;
-  }
-  //
   document.documentElement.setAttribute("pref-shape",shape);
-  Blocks.change(shape);
+  Blocks.change(shape, sizes);
   if(shapeChanged) changeMode(shape);
 }
 
@@ -23,14 +30,7 @@ function changeMode(newshape) {
   Game.end();
   if(NextBlockDisplay) NextBlockDisplay.hide();
   if(GridDisplay) GridDisplay.hide();
-  var height;
-  if(newshape=="sqr") {
-    height = 25;
-  } else if(newshape=="hex") {
-    height = 50;
-  } else {
-    height = 51;
-  }
+  var height = {sqr: 25, hex: 50, tri: 51}[newshape];
   NextBlockDisplay = NextBlockDisplays[newshape];
   GridDisplay = GridDisplays[newshape];
   FallingBlock = FallingBlocks[newshape];
@@ -43,7 +43,7 @@ function changeMode(newshape) {
 
 window.addEventListener("load", function() {
   var shapes = ["sqr","hex","tri"];
-  for(var i = 0; i < shapes.length; i++) {
+  for(var i = 0; i != shapes.length; i++) {
     shape = shapes[i];
     GridDisplays[shape] = new GridDisplayObj(shape);
     NextBlockDisplays[shape] = new NextBlockDisplayObj(shape);
@@ -52,7 +52,7 @@ window.addEventListener("load", function() {
   NextBlockDisplays["hex"].setSize(7,13);
   NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
-  changeBlocks(document.documentElement.getAttribute("pref-shape"));
+  changeBlocks(document.documentElement.getAttribute("pref-shape"), [1]); //xxx
 }, false);
 
 
@@ -166,7 +166,6 @@ var Game = {
     }
   },
 
-
   blockReachedBottom: function(wasDropped) {
     Timer.stop();
     FallingBlock.addToGrid();
@@ -180,9 +179,9 @@ var Game = {
 
 
 
-var blocks = [];
 var Blocks = {
-  currentSet: [],
+  currentSet: null, // an array of blocks, if using just one size
+  currentSets: null, // an array of arrays, if using several sizes
   currentShape: null,
 
   _next: null,
@@ -196,24 +195,33 @@ var Blocks = {
   },
 
   setNext: function() {
-    var blockNumber = parseInt(Math.random() * this.currentSet.length);
-    if(blockNumber == this.currentSet.length) blockNumber--;
-    this._next = this.currentSet[blockNumber];
+    var set = this.currentSet, num, n;
+    if(!set) {
+      sets = this.currentSets;
+      num = sets.length;
+      do { n = Math.random(); } while(n == 1.0);
+      n = Math.floor(n * num);
+      set = sets[n];
+    }
+    num = set.length;
+    do { n = Math.random() } while(n == 1.0);
+    n = Math.floor(n * num);
+    this._next = set[n];
   },
 
-  // first elt of array is shape, remaining elts are types (e.g. standard, pentris,...)
-  change: function(shape, refreshTypes) {
+  // shape is from {"sqr","hex","tri"}.  sizes is an int array
+  change: function(shape, sizes) {
     this.currentShape = shape;
 
-    var menu = document.getElementById("blocks-"+shape+"-types");
-    // iterate across each menuitem and add appropriate blocks if checked
-    var set = [];
-    var items = menu.childNodes;
-    for(var i = 0; i < items.length; i++) {
-      if(items[i].getAttribute("checked")!="true") continue;
-      set = set.concat(blocks[shape][items[i].value]);
+    var all = blocks[shape];
+    if(sizes.length==1) {
+      this.currentSet = all[sizes[0]];
+      this.currentSets = null;
+    } else {
+      this.currentSet = null;
+      var current = this.currentSets = [];
+      for(var i = 0; i != sizes.length; ++i) current.push(all[sizes[i]]);
     }
-    this.currentSet = set;
   }
 }
 
@@ -236,13 +244,16 @@ var Timer = {
     this.delay = 1000;
   },
   reduceDelay: function() {
-    this.delay = parseInt(this.delay * 0.8);
+    this.delay = Math.ceil(this.delay * 0.8);
   }
 }
 
 
 
 
+
+var FallingBlocks = {}; // shape -> obj map
+var FallingBlock = null;
 
 var BaseFallingBlock = {
   top: 0,
@@ -265,16 +276,10 @@ var BaseFallingBlock = {
     var height = block.length;
     var width = block[0].length;
     // determine left edge where block will be placed from
-    var left = parseInt((Game.width-width)/2);
+    var left = Math.floor((Game.width-width)/2);
     var right = left + width;
-    // see if the block can be copied
-    for(var y = 0; y < height; y++) {
-      for(var x = 0, x2 = left; x < width; x++, x2++) {
-        if(Grid.getElement(x2,y) && block[y][x]) {
-          return false;
-        }
-      }
-    }
+
+    if(!Grid.canAdd(block, left, 0)) return false;
 
     this.state = 0;
     this.block = newblock;
@@ -291,12 +296,16 @@ var BaseFallingBlock = {
   },
 
   addToGrid: function() {
-    for(var x = 0, x2 = this.left; x < this.width; x++, x2++) {
-      for(var y = 0, y2 = this.top; y < this.height; y++, y2++) {
-        var val = this.grid[y][x];
-        if(val) Grid.setElement(x2,y2,val);
+    Grid.addBlock(this.grid, this.left, this.top);
+    /*
+    const width = this.width, height = this.height, grid = this.grid;
+    for(var x = 0, x2 = this.left; x != width; x++, x2++) {
+      for(var y = 0, y2 = this.top; y != height; y++, y2++) {
+        var val = grid[y][x];
+        if(val) Grid.setElement(x2, y2, val);
       }
     }
+    */
   },
 
   // bounds checked.  coords in terms of the whole grid
@@ -314,34 +323,24 @@ var BaseFallingBlock = {
     if(newstate==this.block.length) newstate = 0;
     this.tryRotate(newstate);
   },
+
   rotateAnticlockwise: function() {
     var newstate = this.state - 1;
     if(newstate==-1) newstate += this.block.length;
     this.tryRotate(newstate);
   },
+
   tryRotate: function(newstate) {
     var newgrid = this.block[newstate];
-    if(!this.canRotate(newgrid)) return;
+    //if(!this.canRotate(newgrid)) return;
+    if(!Grid.canAdd(newgrid, this.left, this.top)) return;
     this.state = newstate;
     this.grid = newgrid;
     GridDisplay.safeUpdateArea(this.top, this.right, this.bottom, this.left);
   },
-  canRotate: function(newgrid) {
-    for(var x = 0, x2 = this.left; x < this.width; x++, x2++)
-      for(var y = 0, y2 = this.top; y < this.height; y++, y2++)
-        // if we have an element out of the grid, or overlapping another tile...
-        if(newgrid[y][x] && !Grid.elementFree(x2,y2)) return false;
-    return true;
-  },
 
   canMoveTo: function(leftchange, topchange) {
-    var newleft = this.left+leftchange;
-    var newtop = this.top+topchange;
-    for(var x = 0, x2 = newleft; x < this.width; x++, x2++)
-      for(var y = 0, y2 = newtop; y < this.height; y++, y2++)
-        // if we have an element out of the grid, or overlapping another tile...
-        if(this.grid[y][x] && !Grid.elementFree(x2,y2)) return false;
-    return true;
+    return Grid.canAdd(this.grid, this.left+leftchange, this.top+topchange);
   },
 
   drop: function() {
@@ -355,7 +354,7 @@ var BaseFallingBlock = {
 }
 
 
-var SquareFallingBlock = {
+FallingBlocks.sqr = {
   __proto__: BaseFallingBlock,
 
   moveLeft: function() {
@@ -387,7 +386,7 @@ var SquareFallingBlock = {
 
 // in the hexagonal grid it is impossible to just move left or right, we must move down a line too.
 // also moving down a line actually means moving down 2 lines, because the arrays are of half hexes
-var HexFallingBlock = {
+var HexFallingBlock = FallingBlocks.hex = {
   __proto__: BaseFallingBlock,
 
   moveLeft: function() {
@@ -421,7 +420,7 @@ var HexFallingBlock = {
 }
 
 
-var TriFallingBlock = {
+FallingBlocks.tri = {
   // as for hex games, move left or right also goes down a line, so share code
   __proto__: HexFallingBlock,
 
@@ -437,13 +436,6 @@ var TriFallingBlock = {
     return can;
   }
 }
-
-
-var FallingBlocks = [];
-FallingBlocks["sqr"] = SquareFallingBlock;
-FallingBlocks["hex"] = HexFallingBlock;
-FallingBlocks["tri"] = TriFallingBlock;
-var FallingBlock;
 
 
 
@@ -474,26 +466,47 @@ var BaseGrid = {
   },
 
   inBounds: function(x, y) {
-    return (x>=0 && x<this.width && y>=0 && y<this.height);
+    return x>=0 && x<this.width && y>=0 && y<this.height;
   },
 
   getElement: function(x, y) {
     return this.grid[y][x];
   },
 
-  // false if coords out of bounds, or refer to an occupied element
-  elementFree: function(x, y) {
-    return (this.inBounds(x,y) && this.grid[y][x]===0);
-  },
-
-  setElement: function(x, y, val) {
-    this.grid[y][x] = val;
-  },
-
   lineIsFull: function(y) {
     var line = this.grid[y];
     for(var x = 0; x != this.width; x++) if(!line[x]) return false;
     return true;
+  },
+
+  canAdd: function(block, x, y) {
+    const grid = this.grid, gwidth = this.width, gheight = this.height;
+    const height = block.length, width = block[0].length;
+    var yi, yj, xi, xj;
+    for(yi = 0, yj = y; yi != height; ++yi, ++yj) {
+      if(yj < 0 || yj >= gheight) {
+        // beyond bottom/top of grid, so all tiles of block must be empty
+        for(xi = 0; xi != width; ++xi)
+          if(block[yi][xi]) return false;
+      } else {
+        // if block has a tile here must fall inside grid, and not on a tile in the grid
+        for(var xi = 0, xj = x; xi != width; ++xi, ++xj) {
+          if(block[yi][xi] && (xj < 0 || xj >= gwidth || grid[yj][xj])) return false;
+        }
+      }
+    }
+    return true;
+  },
+
+  // assumes canAdd(...) is true
+  addBlock: function(block, x, y) {
+    const grid = this.grid, height = block.length, width = block[0].length;
+    for(var yi = 0, yj = y; yi != height; ++yi, ++yj) {
+      for(var xi = 0, xj = x; xi != width; ++xi, ++xj) {
+        var val = block[yi][xi];
+        if(val) grid[yj][xj] = val;
+      }
+    }
   }
 }
 
@@ -544,14 +557,15 @@ var HexGrid = {
     Game.scoreRemovingLines(numLinesRemoved);
   },
 
-  /* Here we're trying to remove something like this:
-     .#.#.#.#.#.        #.#.#.#.#.
-     ###########   or   ##########    <--- y
-     #.#.#.#.#.#        .#.#.#.#.#
-     from a y-x indexed array.
-     We copy alternate elements of the bottom line into the top one, remove the
-     bottom two lines, then insert two blank rows at y = 0.
-     */
+  /*
+  Here we're trying to remove something like this:
+  .#.#.#.#.#.        #.#.#.#.#.
+  ###########   or   ##########    <--- y
+  #.#.#.#.#.#        .#.#.#.#.#
+  from a y-x indexed array.
+  We copy alternate elements of the bottom line into the top one, remove the
+  bottom two lines, then insert two blank rows at y = 0.
+  */
   removeLine: function(row, wigglesUp) {
     var top = row - 1;
     var btm = row + 1;
@@ -567,10 +581,11 @@ var HexGrid = {
 var TriGrid = {
   __proto__: BaseGrid,
 
-  /* "Lines" start from the left at a tile pointing right, and then go either
-     up or down for the next tile, and then procede across and always form a
-     solid block filling the two lines (which is why we just count down in 1s)
-     */
+  /*
+  "Lines" start from the left at a tile pointing right, and then go either
+  up or down for the next tile, and then procede across and always form a
+  solid block filling the two lines (which is why we just count down in 1s)
+  */
   removeCompleteLines: function() {
     var numLinesRemoved = 0;
     for(var y = this.height - 2; y >= 0; y--)
@@ -623,10 +638,10 @@ var BaseGridDisplay = {
     this.height = height;
 
     this.grid = new Array(width);
-    for(var x = 0; x < width; x++) {
+    for(var x = 0; x != width; x++) {
       this.grid[x] = new Array(height);
       var col = document.createElement("vbox");
-      for(var y = 0; y < height; y++) {
+      for(var y = 0; y != height; y++) {
         var el = this.createTile(x, y);
         this.grid[x][y] = el;
         col.appendChild(el);
@@ -747,8 +762,8 @@ var BaseNextBlockDisplay = {
     // Position the block in the centre of the space.
     // This is *essential* for hexagonal games because otherwise the display
     // ends up half a hex out, and it looks nice on square ones.
-    var top = parseInt((this.height-block.length)/2);
-    var left = parseInt((this.width-block[0].length)/2);
+    var top = Math.floor((this.height-block.length)/2);
+    var left = Math.floor((this.width-block[0].length)/2);
     for(var y = 0, y2 = top; y < block.length && y2 < this.height; y++, y2++)
       for(var x = 0, x2 = left; x < block[0].length && x2 < this.width; x++, x2++)
         this.grid[x2][y2].setState(block[y][x]);

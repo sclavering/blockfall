@@ -7,24 +7,25 @@
     <id>blockfall</id>
 
     <name>BlockFall</name>
-    <version>0.7</version>
-    <description>A falling blocks game, with hexagonal and triangular variants</description>
-
-    <creator>Stephen Clavering</creator>
+    <version>0.8</version>
+    <description>A falling blocks game, with hexagonal and triangular variants.</description>
     <homepageURL>http://clav.mozdev.org/</homepageURL>
     <updateURL>http://clav.mozdev.org/updates.rdf</updateURL>
+
+    <creator>Stephen Clavering</creator>
 
     <targetApplication>
       <r:Description>
         <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
         <minVersion>0.9</minVersion>
-        <maxVersion>0.10</maxVersion>
+        <maxVersion>1.0</maxVersion>
       </r:Description>
     </targetApplication>
 
     <file>
       <r:Description about="urn:mozilla:extension:file:blockfall.jar">
         <package>content/</package>
+        <locale>locale/en/</locale>
       </r:Description>
     </file>
   </r:Description>

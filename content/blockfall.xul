@@ -1,22 +1,21 @@
 <?xml version="1.0"?>
+
 <?xml-stylesheet href="blockfall.css" type="text/css"?>
 
+<!DOCTYPE window SYSTEM "chrome://blockfall/locale/blockfall.dtd">
+
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  id="blockfall-window"
-  windowtype="blockfall-main"
-  title="BlockFall"
-  orient="vertical"
-  persist="screenX screenY pref-shape"
+    id="blockfall-window"
+    windowtype="blockfall-main"
+    title="&blockfall;"
+    persist="screenX screenY pref-shape"
+    pref-shape="sqr"
+    >
 
-  pref-shape="sqr"
-  >
+<script src="blockfall.js" type="application/x-javascript"/>
+<script src="blocks.js" type="application/x-javascript"/>
 
-  <script src="blockfall.js" type="application/x-javascript"/>
-  <script src="blocks.js" type="application/x-javascript"/>
-  <script src="blocks-hexagonal.js" type="application/x-javascript"/>
-  <script src="blocks-triangular.js" type="application/x-javascript"/>
-
-<commandset id="commands.main">
+<commandset id="commands">
   <command id="cmd.new" oncommand="Game.start();"/>
   <command id="cmd.pause" oncommand="Game.pause();"/>
 
@@ -48,72 +47,34 @@
   <key id="key.rotate.anticlockwise2" key="z" command="cmd.rotate.anticlockwise"/>
 </keyset>
 
-  <toolbar id="main-toolbar">
-    <toolbarbutton id="new-button" tooltiptext="New Game" oncommand="Game.start();"/>
-    <toolbarbutton id="pause-button" tooltiptext="Pause/Unpause" oncommand="Game.pause();"/>
-    <toolbarbutton id="blocks-sqr" type="menu-button"
-        oncommand="changeBlocks('sqr',event);" tooltiptext="Play with Square blocks">
-      <menupopup id="blocks-sqr-types">
-        <menuitem type="checkbox" label="Triples"  value="triples"/>
-        <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
-        <menuitem type="checkbox" label="Pentris"  value="pentris"/>
-      </menupopup>
-    </toolbarbutton>
-    <toolbarbutton id="blocks-hex" type="menu-button"
-        oncommand="changeBlocks('hex',event);" tooltiptext="Play with Hexagonal blocks">
-      <menupopup id="blocks-hex-types">
-        <menuitem type="checkbox" label="Triples"  value="triples"/>
-        <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
-        <menuitem type="checkbox" label="Pentris"  value="pentris"/>
-      </menupopup>
-    </toolbarbutton>
-    <toolbarbutton id="blocks-tri" type="menu-button"
-        oncommand="changeBlocks('tri',event);" tooltiptext="Play with Triangular blocks">
-      <menupopup id="blocks-tri-types">
-        <menuitem type="checkbox" label="Tiny (2-3 tiles)" value="tiny"/>
-        <menuitem type="checkbox" label="Small (4 tiles)"  value="4" checked="true"/>
-        <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>
-        <menuitem type="checkbox" label="Large (6 tiles)"  value="6"/>
-      </menupopup>
-    </toolbarbutton>
-    <toolbarbutton id="menu-level" type="menu" label="Level">
-      <menupopup oncommand="setLevel(event.target.value);">
-        <menuitem type="radio" label="Level 0" value="0" checked="true"/>
-        <menuitem type="radio" label="Level 1" value="1"/>
-        <menuitem type="radio" label="Level 2" value="2"/>
-        <menuitem type="radio" label="Level 3" value="3"/>
-        <menuitem type="radio" label="Level 4" value="4"/>
-        <menuitem type="radio" label="Level 5" value="5"/>
-        <menuitem type="radio" label="Level 6" value="6"/>
-        <menuitem type="radio" label="Level 7" value="7"/>
-        <menuitem type="radio" label="Level 8" value="8"/>
-        <menuitem type="radio" label="Level 9" value="9"/>
-      </menupopup>
-    </toolbarbutton>
-  </toolbar>
+<toolbar id="main-toolbar">
+  <toolbarbutton id="btn-new" label="&new.label;" tooltiptext="&new.tip;" oncommand="Game.start();"/>
+  <toolbarbutton id="btn-pause" type="checkbox" label="&pause.label;" tooltiptext="&pause.tip;" oncommand="Game.pause();"/>
+  <toolbarbutton id="btn-settings" label="&settings.label;" oncommand="showSettingsDialogue();"/>
+</toolbar>
 
-  <hbox>
-    <vbox id="sidepanel">
-      <label value="Score:"/>
-      <description value="0" id="score-display"/>
-      <label value="Lines:"/>
-      <description value="0" id="lines-display"/>
-      <label value="Level:"/>
-      <description value="0" id="level-display"/>
-      <label value="Next Block:"/>
+<box id="box-main">
+  <box id="box-info">
+    <label value="Score:"/>
+    <description value="0" id="score-display"/>
+    <label value="Lines:"/>
+    <description value="0" id="lines-display"/>
+    <label value="Level:"/>
+    <description value="0" id="level-display"/>
+    <label value="Next Block:"/>
 <!--
-      <checkbox checked="true" label="Show" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
+    <checkbox checked="true" label="Show" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
 -->
-      <hbox id="next-sqr-block-display" class="square-grid"/>
-      <hbox id="next-hex-block-display" class="hex-grid"/>
-      <hbox id="next-tri-block-display" class="tri-grid"/>
-    </vbox>
+    <hbox id="next-sqr-block-display" class="square-grid"/>
+    <hbox id="next-hex-block-display" class="hex-grid"/>
+    <hbox id="next-tri-block-display" class="tri-grid"/>
+  </box>
 
-    <spacer flex="1"/>
-    <hbox id="sqr-playing-field" class="square-grid"/>
-    <hbox id="hex-playing-field" class="hex-grid"/>
-    <hbox id="tri-playing-field" class="tri-grid"/>
-    <spacer flex="1"/>
-  </hbox>
+  <spacer flex="1"/>
+  <hbox id="sqr-playing-field" class="square-grid"/>
+  <hbox id="hex-playing-field" class="hex-grid"/>
+  <hbox id="tri-playing-field" class="tri-grid"/>
+  <spacer flex="1"/>
+</box>
 
 </window>
