@@ -14,7 +14,7 @@ var blocks = {};
 // direction consts.
 const sN = 0, sNE = 1, sE = 2, sSE = 3, sS = 4, sSW = 5, sW = 6, sNW = 7;
 
-var sqrLastBlockNumber = 0; //25; // use the nice colours for the 4-tile blocks
+var sqrLastBlockNumber = 25; // use the nice colours for the 4-tile blocks
 // update to match number of available sqr tile images
 const sqrMaxBlockNumber = 31;
 
@@ -24,27 +24,26 @@ function createSqrBlock(size, prepath, path, numstates) {
   var origin = Math.ceil(size/2) - 1;
   if(!numstates) numstates = 4;
 
-  sqrLastBlockNumber++;
-  var blockNum = sqrLastBlockNumber;
-  sqrLastBlockNumber %= sqrMaxBlockNumber;
+  var blockNum = sqrLastBlockNumber++;
+  if(sqrLastBlockNumber==sqrMaxBlockNumber) sqrLastBlockNumber = 1;
 
   var block = new Array(numstates);
-  block[0] = createSqrBlockState(size, size, origin, origin, prepath, path, blockNum);
+  block[0] = createSqrBlockState(size, origin, origin, prepath, path, blockNum);
   for(var i = 1; i != numstates; i++) {
     // rotate the paths
     for(var j = 0; j != prepath.length; j++) prepath[j] = (prepath[j] + 2) % 8;
     for(var k = 0; k != path.length; k++) path[k] = (path[k] + 2) % 8;
-    block[i] = createSqrBlockState(size, size, origin, origin, prepath, path, blockNum);
+    block[i] = createSqrBlockState(size, origin, origin, prepath, path, blockNum);
   }
 
   return block;
 }
 
-function createSqrBlockState(width, height, x, y, prepath, path, blockNum) {
-  var state = new Array(height);
-  for(var i = 0; i < height; i++) {
-    state[i] = new Array(width);
-    for(var j = 0; j < width; j++) state[i][j] = 0;
+function createSqrBlockState(size, x, y, prepath, path, blockNum) {
+  var state = new Array(size);
+  for(var i = 0; i < size; i++) {
+    state[i] = new Array(size);
+    for(var j = 0; j < size; j++) state[i][j] = 0;
   }
 
   // changes in x and y directions

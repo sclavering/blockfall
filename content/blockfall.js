@@ -297,15 +297,6 @@ var BaseFallingBlock = {
 
   addToGrid: function() {
     Grid.addBlock(this.grid, this.left, this.top);
-    /*
-    const width = this.width, height = this.height, grid = this.grid;
-    for(var x = 0, x2 = this.left; x != width; x++, x2++) {
-      for(var y = 0, y2 = this.top; y != height; y++, y2++) {
-        var val = grid[y][x];
-        if(val) Grid.setElement(x2, y2, val);
-      }
-    }
-    */
   },
 
   // bounds checked.  coords in terms of the whole grid
@@ -490,7 +481,7 @@ var BaseGrid = {
           if(block[yi][xi]) return false;
       } else {
         // if block has a tile here must fall inside grid, and not on a tile in the grid
-        for(var xi = 0, xj = x; xi != width; ++xi, ++xj) {
+        for(xi = 0, xj = x; xi != width; ++xi, ++xj) {
           if(block[yi][xi] && (xj < 0 || xj >= gwidth || grid[yj][xj])) return false;
         }
       }
@@ -676,7 +667,7 @@ var BaseGridDisplay = {
   },
   createHexTile: function(x, y) {
     var up = (x % 2 == y % 2);
-    var prefix = "hex-" + (up ? "top-" : "btm-");
+    const prefix = "hex-" + (up ? "top-" : "btm-");
     var tile = document.createElement("image");
     tile.setState = function(state) {
       this.className = prefix + state;
@@ -686,7 +677,7 @@ var BaseGridDisplay = {
   },
   createTriTile: function(x, y) {
     var left = (x % 2 == y % 2);
-    var prefix = "tri tri-" + (left ? "left-" : "right-");
+    const prefix = "tri tri-" + (left ? "left-" : "right-");
     var tile = document.createElement("image");
     tile.setState = function(state) {
       this.className = prefix + state;

@@ -18,7 +18,6 @@ function changeShape(e) {
   var panel = document.getElementById("sizes-"+shape);
   var deck = document.getElementById("sizes-deck");
   deck.selectedPanel = panel;
-  //alert(e.target.value);
 }
 
 function onAccept() {
