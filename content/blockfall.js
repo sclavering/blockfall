@@ -606,11 +606,9 @@ var HexGrid = {
     var top = row - 1;
     var mid = this.grid[row];
     var btm = row + 1;
-    for(var i = 0, up = downForSecondTile; i < this.width; i++, up = !up) {
-      if(up) this.grid[top][i] = this.grid[btm][i];
-    }
-//    for(var x = downForSecondTile; x < this.width; x += 2)
-//      top[x] = btm[x];
+    var x = downForSecondTile ? 0 : 1;
+    for(; x < this.width; x += 2)
+      this.grid[top][x] = this.grid[btm][x];
     this.grid.splice(row,2);
     this.grid.unshift(this.newEmptyRow());
     this.grid.unshift(this.newEmptyRow());
