@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<overlay id="BlockFallOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<menupopup id="menu_ToolsPopup">
+  <menuitem id="blockfall" label="Play BlockFall" insertbefore="prefSep"
+      oncommand="window.open('chrome://blockfall/content/', null,'chrome,resizable');"/>
+</menupopup>
+
+</overlay>

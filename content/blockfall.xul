@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="blockfall.css" type="text/css"?>
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="blockfall-window"
+	title="BlockFall"
+	orient="vertical"
+	persist="screenX screenY"
+	>
+
+	<script src="blockfall-blocks.js" type="application/x-javascript"/>
+	<script src="blockfall.js" type="application/x-javascript"/>
+
+	<menubar id="menubar-main">
+		<menu id="menu-game" label="Game">
+			<menupopup id="menupopup-game">
+				<menuitem label="New" oncommand="newGame();"/>
+				<menuseparator/>
+				<menuitem label="Pause" oncommand="pausePressed();"/>
+				<menuseparator/>
+				<menu id="menu-size" label="Size">
+					<menupopup id="menupopup-size">
+						<menuitem type="radio" label="Small (8x20)" oncommand="setSize(8,20);"/>
+						<menuitem type="radio" label="Medium (10x25)" oncommand="setSize(10,25);" checked="true"/>
+						<menuitem type="radio" label="Large (12x30)" oncommand="setSize(12,30);"/>
+						<menuitem type="radio" label="Huge (15x35)" oncommand="setSize(15,35);"/>
+					</menupopup>
+				</menu>
+				<menu id="menu-level" label="Starting Level">
+					<menupopup oncommand="setLevel(event.target.value);">
+						<menuitem type="radio" label="Level 0" value="0" checked="true"/>
+						<menuitem type="radio" label="Level 1" value="1"/>
+						<menuitem type="radio" label="Level 2" value="2"/>
+						<menuitem type="radio" label="Level 3" value="3"/>
+						<menuitem type="radio" label="Level 4" value="4"/>
+						<menuitem type="radio" label="Level 5" value="5"/>
+						<menuitem type="radio" label="Level 6" value="6"/>
+						<menuitem type="radio" label="Level 7" value="7"/>
+						<menuitem type="radio" label="Level 8" value="8"/>
+						<menuitem type="radio" label="Level 9" value="9"/>
+					</menupopup>
+				</menu>
+			</menupopup>
+		</menu>
+		<!--
+		<menu id="menu-themes" label="Theme">
+			<menupopup id="menupopup-themes">
+				<menuitem type="radio" checked="true" label="Black Marble" oncommand="setTheme('Black Marble');"/>
+			</menupopup>
+		</menu>
+		-->
+	</menubar>
+
+	<hbox>
+		<vbox id="sidepanel">
+			<description value="Score:"/>
+			<description value="0" id="score-display"/>
+			<description value="Lines:"/>
+			<description value="0" id="lines-display"/>
+			<description value="Level:"/>
+			<description value="0" id="level-display"/>
+			<description value="Next Block:"/>
+			<box id="next-block-display"/>
+		</vbox>
+
+		<spacer flex="1"/>
+		<box id="playing-field"/>
+		<spacer flex="1"/>
+	</hbox>
+
+</window>
