@@ -18,7 +18,7 @@
     <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" label="Pause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-sqr" type="menu-button"
-        oncommand="Blocks.change('sqr');" label="Sqr">
+        oncommand="Blocks.change('sqr');" tooltiptext="Play with Square blocks">
       <menupopup id="blocks-sqr-types" oncommand="changeBlocks(this);" shape="sqr">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Strange Triples" value="triples-strange"/>
@@ -27,7 +27,7 @@
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="blocks-hex" type="menu-button"
-        oncommand="Blocks.change('hex');" label="Hex">
+        oncommand="Blocks.change('hex');" tooltiptext="Play with Hexagonal blocks">
       <menupopup id="blocks-hex-types" oncommand="changeBlocks(this);" shape="hex">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
@@ -35,7 +35,7 @@
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="blocks-tri" type="menu-button"
-        oncommand="Blocks.change('tri');" label="Tri">
+        oncommand="Blocks.change('tri');" tooltiptext="Play with Triangular blocks">
       <menupopup id="blocks-tri-types" oncommand="changeBlocks(this);" shape="tri">
         <menuitem type="checkbox" label="Tiny (2-3 tiles)" value="tiny"/>
         <menuitem type="checkbox" label="Small (4 tiles)"  value="4" checked="true"/>
@@ -43,14 +43,6 @@
 <!--
         <menuitem type="checkbox" label="Large (6 tiles)"  value="6"/>
 -->
-      </menupopup>
-    </toolbarbutton>
-    <toolbarbutton id="size-button" type="menu" label="Size">
-      <menupopup id="size-menupopup">
-        <menuitem type="radio" label="Small (8x20)" oncommand="setSize(8,20);"/>
-        <menuitem type="radio" label="Medium (10x25)" oncommand="setSize(10,25);" checked="true"/>
-        <menuitem type="radio" label="Large (12x30)" oncommand="setSize(12,30);"/>
-        <menuitem type="radio" label="Huge (15x35)" oncommand="setSize(15,35);"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="menu-level" type="menu" label="Level">
