@@ -272,8 +272,10 @@ var Blocks = {
       }
     } else {
       switch(type) {
-      case "3":
-        return blocks_tri_3;
+      case "tiny":
+        return blocks_tri_tiny;
+      case "tiny-strange":
+        return blocks_tri_tiny_strange;
       case "4":
         return blocks_tri_4;
       }
