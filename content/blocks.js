@@ -180,7 +180,7 @@ blocks.sqr = [
 // make blocks a different colour
 var hexLastBlockNumber = 0;
 // update to match number of available hex tile images
-var hexMaxBlockNumber = 14;
+var hexMaxBlockNumber = 10;
 
 
 // direction constants for use with function below.

@@ -88,40 +88,34 @@
 .hex-grid {
   list-style-image: url(hexagons.png);
   /* counteract negative margin */
-  padding-left: 5px;
+  padding-left: 4px;
 }
-.hex-grid > vbox { margin-left: -5px; }
+.hex-grid > vbox { margin-left: -4px; }
 
-.hex-top-0 { -moz-image-region: rect( 0px 23px 10px 0); }
-.hex-btm-0 { -moz-image-region: rect(10px 23px 20px 0); }
-.hex-top-1 { -moz-image-region: rect( 0px 46px 10px 23px); }
-.hex-btm-1 { -moz-image-region: rect(10px 46px 20px 23px); }
-.hex-top-2 { -moz-image-region: rect( 0px 69px 10px 46px); }
-.hex-btm-2 { -moz-image-region: rect(10px 69px 20px 46px); }
-.hex-top-3 { -moz-image-region: rect( 0px 92px 10px 69px); }
-.hex-btm-3 { -moz-image-region: rect(10px 92px 20px 69px); }
-.hex-top-4 { -moz-image-region: rect( 0px 115px 10px 92px); }
-.hex-btm-4 { -moz-image-region: rect(10px 115px 20px 92px); }
-.hex-top-5 { -moz-image-region: rect( 0px 138px 10px 115px); }
-.hex-btm-5 { -moz-image-region: rect(10px 138px 20px 115px); }
-.hex-top-6 { -moz-image-region: rect( 0px 161px 10px 138px); }
-.hex-btm-6 { -moz-image-region: rect(10px 161px 20px 138px); }
-.hex-top-7 { -moz-image-region: rect( 0px 184px 10px 161px); }
-.hex-btm-7 { -moz-image-region: rect(10px 184px 20px 161px); }
-.hex-top-8 { -moz-image-region: rect( 0px 207px 10px 184px); }
-.hex-btm-8 { -moz-image-region: rect(10px 207px 20px 184px); }
-.hex-top-9 { -moz-image-region: rect( 0px 230px 10px 207px); }
-.hex-btm-9 { -moz-image-region: rect(10px 230px 20px 207px); }
-.hex-top-10 { -moz-image-region: rect( 0px 253px 10px 230px); }
-.hex-btm-10 { -moz-image-region: rect(10px 253px 20px 230px); }
-.hex-top-11 { -moz-image-region: rect( 0px 276px 10px 253px); }
-.hex-btm-11 { -moz-image-region: rect(10px 276px 20px 253px); }
-.hex-top-12 { -moz-image-region: rect( 0px 299px 10px 276px); }
-.hex-btm-12 { -moz-image-region: rect(10px 299px 20px 276px); }
-.hex-top-13 { -moz-image-region: rect( 0px 322px 10px 299px); }
-.hex-btm-13 { -moz-image-region: rect(10px 322px 20px 299px); }
-.hex-top-14 { -moz-image-region: rect( 0px 345px 10px 322px); }
-.hex-btm-14 { -moz-image-region: rect(10px 345px 20px 322px); }
+.gridlines .hex-top-0  { -moz-image-region: rect(0 19px 8px 0); }
+.gridlines .hex-btm-0 { -moz-image-region: rect(8px 19px 16px 0); }
+.hex-top-0 { -moz-image-region: rect(0 38px 8px 19px); }
+.hex-btm-0 { -moz-image-region: rect(8px 38px 16px 19px); }
+.hex-top-1 { -moz-image-region: rect(0 57px 8px 38px); }
+.hex-btm-1 { -moz-image-region: rect(8px 57px 16px 38px); }
+.hex-top-2 { -moz-image-region: rect(0 76px 8px 57px); }
+.hex-btm-2 { -moz-image-region: rect(8px 76px 16px 57px); }
+.hex-top-3 { -moz-image-region: rect(0 95px 8px 76px); }
+.hex-btm-3 { -moz-image-region: rect(8px 95px 16px 76px); }
+.hex-top-4 { -moz-image-region: rect(0 114px 8px 95px); }
+.hex-btm-4 { -moz-image-region: rect(8px 114px 16px 95px); }
+.hex-top-5 { -moz-image-region: rect(0 133px 8px 114px); }
+.hex-btm-5 { -moz-image-region: rect(8px 133px 16px 114px); }
+.hex-top-6 { -moz-image-region: rect(0 152px 8px 133px); }
+.hex-btm-6 { -moz-image-region: rect(8px 152px 16px 133px); }
+.hex-top-7 { -moz-image-region: rect(0 171px 8px 152px); }
+.hex-btm-7 { -moz-image-region: rect(8px 171px 16px 152px); }
+.hex-top-8 { -moz-image-region: rect(0 190px 8px 171px); }
+.hex-btm-8 { -moz-image-region: rect(8px 190px 16px 171px); }
+.hex-top-9 { -moz-image-region: rect(0 209px 8px 190px); }
+.hex-btm-9 { -moz-image-region: rect(8px 209px 16px 190px); }
+.hex-top-10 { -moz-image-region: rect(0 228px 8px 209px); }
+.hex-btm-10 { -moz-image-region: rect(8px 228px 16px 209px); }
 
 
 
