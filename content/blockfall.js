@@ -6,7 +6,7 @@ var ui = {
   gameOverMsg: "msg-gameover",
   score: "score-display",
   lines: "lines-display",
-  level: "level-display",
+  level: "level-display"
 };
 
 var commands = {
@@ -16,7 +16,7 @@ var commands = {
   drop: "cmd.drop",
   rotateClockwise: "cmd.rotate.clockwise",
   rotateAnticlockwise: "cmd.rotate.anticlockwise",
-  pause: "cmd.pause",
+  pause: "cmd.pause"
 };
 
 var game = null; // a Game
@@ -101,6 +101,7 @@ function showSettingsDialogue() {
 }
 
 function onSettingsCancel() {
+  alert(game);
   if(game && !wasPausedBeforeSettings) unpause();
 }
 
@@ -122,7 +123,7 @@ function onSettingsAccept(shape, sizes, showgridlines) {
   gShowGridLines = showgridlines;
 
   // continue, or not
-  if(!wasPausedBeforeSettings) unpause();
+  if(game && !wasPausedBeforeSettings) unpause();
   if(old != shape) {
     endGame();
     NextBlockDisplay.hide();
