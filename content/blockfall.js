@@ -10,8 +10,8 @@ function newGame() {
   Game.start();
 }
 
-function keyPressed(eventObj) {
-  var key = eventObj.keyCode;
+function keyPressed(e) {
+  var key = e.keyCode;
   if(Game.paused) {
     if((key == 80)||(key == 19)) //p or pause
       Game.pause();
@@ -27,6 +27,8 @@ function keyPressed(eventObj) {
     FallingBlock.rotateClockwise();
   else if(key == 74) // j
     FallingBlock.rotateAntilockwise();
+  else if(key == e.DOM_VK_SPACE)
+    FallingBlock.drop();
   else if((key == 80)||(key == 19)) //p or pause
     Game.pause();
 }
@@ -298,6 +300,12 @@ var FallingBlock = {
         // if we have an element out of the grid, or overlapping another tile...
         if(this.grid[y][x] && (!Grid.inBounds(x2,y2) || Grid.getElement(x2,y2))) return false;
     return true;
+  },
+  
+  drop: function() {
+    while(FallingBlock.moveDown());
+    // XXX: should score more points for a drop
+    Game.blockReachedBottom();
   },
   
   timedMoveDown: function() {
