@@ -6,7 +6,7 @@ const APP_VERSION = "0.2";
 const APP_JAR_FILE = "blockfall.jar";
 const APP_CONTENT_FOLDER = "/content/";
 
-const APP_SUCCESS_MESSAGE = "You will need to restart your browser before the pref buttons are available.";
+const APP_SUCCESS_MESSAGE = "You will need to restart your browser you can play BlockFall.";
 
 const INST_TO_PROFILE = "Do you wish to install "+APP_DISPLAY_NAME+" to you profile?\nThis will mean it does not need reinstalling when you update your browser.\n(Click Cancel if you want "+APP_DISPLAY_NAME+" installing to the browser directory.)";
 
