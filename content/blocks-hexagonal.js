@@ -26,7 +26,7 @@ function createHexBlock(size, prepath, path) {
 
   hexLastBlockNumber++;
   var blockNum = hexLastBlockNumber;
-  hexLastBlockNumber = hexLastBlockNumber % hexMaxBlockNumber;
+  hexLastBlockNumber %= hexMaxBlockNumber;
 
   var block = new Array(6);
   block[0] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
