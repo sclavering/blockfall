@@ -7,12 +7,14 @@
     <id>blockfall</id>
 
     <name>Blockfall</name>
-    <version>0.8</version>
+    <version>0.8.5</version>
     <description>A falling blocks game, with hexagonal and triangular variants.</description>
     <homepageURL>http://clav.mozdev.org/</homepageURL>
     <updateURL>http://clav.mozdev.org/updates.rdf</updateURL>
 
     <creator>Stephen Clavering</creator>
+    <contributor>Viljo Viitanen (mostly wrote Blockfall 0.3)</contributor>
+    <contributor>Conrad Knauer (testing, suggestions)</contributor>
 
     <targetApplication>
       <r:Description>
