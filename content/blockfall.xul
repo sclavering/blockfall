@@ -16,6 +16,10 @@
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
   <script src="blocks-triangular.js" type="application/x-javascript"/>
 
+<keyset id="main">
+  <key id="key.new" key="n" modifiers="accel" oncommand="Game.start();"/>
+</keyset>
+
   <toolbar id="main-toolbar">
     <toolbarbutton id="new-button" tooltiptext="New Game" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" tooltiptext="Pause/Unpause" oncommand="Game.pause();"/>
