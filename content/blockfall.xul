@@ -16,7 +16,7 @@
 
   <toolbar id="main-toolbar">
     <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
-    <toolbarbutton id="pause-button" label="Pause" oncommand="Game.pause();"/>
+    <toolbarbutton id="pause-button" tooltiptext="Pause/Unpause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-sqr" type="menu-button"
         oncommand="Blocks.change('sqr');" tooltiptext="Play with Square blocks">
       <menupopup id="blocks-sqr-types" oncommand="changeBlocks(this);" shape="sqr">

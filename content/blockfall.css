@@ -15,8 +15,9 @@
 	margin: 10px;
 }
 
-#blocks-sqr, #blocks-hex, #blocks-tri { list-style-image: url(icons.png); }
+#blocks-sqr, #blocks-hex, #blocks-tri, #pause-button { list-style-image: url(icons.png); }
 #blocks-sqr { -moz-image-region: rect(0 18px 16px 0); }
 #blocks-tri { -moz-image-region: rect(0 36px 16px 18px); }
 #blocks-hex { -moz-image-region: rect(0 54px 16px 36px); }
+#pause-button { -moz-image-region: rect(0 72px 16px 54px); }
 
