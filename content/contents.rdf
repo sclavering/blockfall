@@ -12,7 +12,7 @@
       chrome:author="Stephen Clavering"
       chrome:name="blockfall"
       chrome:description="A Tetris-like game."
-      chrome:extension="true">
+      chrome:extension="true"
       />
 
   <!-- overlay information -->

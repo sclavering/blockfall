@@ -1,10 +1,10 @@
 const APP_DISPLAY_NAME = "BlockFall";
 const APP_NAME = "blockfall";
 const APP_PACKAGE = "/clav.co.uk/blockfall";
-const APP_VERSION = "0.2";
+const APP_VERSION = "0.3";
 
 const APP_JAR_FILE = "blockfall.jar";
-const APP_CONTENT_FOLDER = "/content/";
+const APP_CONTENT_FOLDER = "content/";
 
 const APP_SUCCESS_MESSAGE = "You will need to restart your browser you can play BlockFall.";
 
