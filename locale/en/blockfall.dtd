@@ -19,6 +19,7 @@
 <!ENTITY settings.akey "S">
 
 <!ENTITY msg.paused "Paused">
+<!ENTITY msg.gameover "Game Over">
 
 
 <!-- Settings dialogue window -->

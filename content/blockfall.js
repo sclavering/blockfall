@@ -1,18 +1,30 @@
 const shapes = ["sqr", "hex", "tri"];
 
-// ui bits
+var ui = {
+  grids: "stack-grids",
+  pausedMsg: "msg-paused",
+  gameOverMsg: "msg-gameover",
+  score: "score-display",
+  lines: "lines-display",
+  level: "level-display",
+};
 
-var gGrids = "stack-grids";
-var gMsgPaused = "msg-paused";
-var gScoreDisplay = "score-display";
-var gLinesDisplay = "lines-display";
-var gLevelDisplay = "level-display";
+var commands = {
+  left: "cmd.left",
+  right: "cmd.right",
+  down: "cmd.down",
+  drop: "cmd.drop",
+  rotateClockwise: "cmd.rotate.clockwise",
+  rotateAnticlockwise: "cmd.rotate.anticlockwise",
+  pause: "cmd.pause",
+};
 
-const gUiBits = ["gGrids", "gMsgPaused", "gScoreDisplay", "gLinesDisplay", "gLevelDisplay"];
+var game = null; // a Game
 
-// globals
+// width/height of the most-recently started game (which might now be over)
+var gWidth = 0;
+var gHeight = 0;
 
-var gPaused = false;
 var gTileShape = null; // sqr/hex/tri usually
 var gBlockSizes = {}; // shape -> int array
 var gShowGridLines = false;
@@ -31,43 +43,65 @@ var GridDisplay = null;
 
 
 function pause() {
-  if(gPaused) return;
+  if(game.paused) return;
   Timer.stop();
-  gMsgPaused.hidden = false;
-  gPaused = true;
+  ui.pausedMsg.hidden = false;
+  game.paused = true;
+  for(var i in commands)
+    if(i != "pause")
+      commands[i].setAttribute("disabled", "true");
 }
 
 function unpause() {
-  if(!gPaused) return;
+  if(!game.paused) return;
   Timer.start()
-  gMsgPaused.hidden = true;
-  gPaused = false;
+  ui.pausedMsg.hidden = true;
+  game.paused = false;
+  for(var i in commands)
+    if(i != "pause")
+      commands[i].removeAttribute("disabled");
 }
 
 function togglePause() {
-  if(gPaused) unpause();
+  if(game.paused) unpause();
   else pause();
 }
 
-function newGame() {
-  unpause();
-  Game.start();
+function newGame(width, height, level) {
+  if(game) game.end();
+  ui.pausedMsg.hidden = true;
+  ui.gameOverMsg.hidden = true;
+  game = new Game(width || gWidth, height || gHeight, level || 1);
+  game.begin();
+  for(var i in commands) commands[i].removeAttribute("disabled");
+}
+
+function endGame() {
+  if(!game) return;
+  game.end();
+  game = null;
+  for(var i in commands) commands[i].setAttribute("disabled", "true");
+  ui.gameOverMsg.hidden = false;
 }
 
 
-
 // settings dialogue
+
+var wasPausedBeforeSettings = false;
 
 function showSettingsDialogue() {
   const url = "chrome://blockfall/content/settings.xul";
   const flags = "dialog,dependent,modal,chrome";//,resizable";
 
-  pause();
+  if(game) {
+    wasPausedBeforeSettings = game.paused;
+    if(!wasPausedBeforeSettings) pause();
+  }
   openDialog(url, "flibble", flags, gTileShape, gBlockSizes, gShowGridLines);
 }
 
 function onSettingsCancel() {
-  unpause();
+  if(game && !wasPausedBeforeSettings) unpause();
 }
 
 function onSettingsAccept(shape, sizes, showgridlines) {
@@ -84,13 +118,13 @@ function onSettingsAccept(shape, sizes, showgridlines) {
   Blocks.use(shape, sizes[shape]);
 
   if(gShowGridLines != showgridlines)
-    gGrids.className = showgridlines ? "gridlines" : "";
+    ui.grids.className = showgridlines ? "gridlines" : "";
   gShowGridLines = showgridlines;
 
   // continue, or not
-  unpause();
+  if(!wasPausedBeforeSettings) unpause();
   if(old != shape) {
-    Game.end();
+    endGame();
     NextBlockDisplay.hide();
     GridDisplay.hide();
     tileShapeChanged(shape);
@@ -108,16 +142,20 @@ function tileShapeChanged(shape) {
   NextBlockDisplay.show();
   GridDisplay.show();
   // xxx hex and tri games make assumptions about their sizes.
-  Game.start(10, {sqr: 25, hex: 50, tri: 51}[shape]);
+  gWidth = 10;
+  gHeight = {sqr: 25, hex: 50, tri: 51}[shape];
+  newGame();
 }
 
+
+function onWindowBlur() {
+  if(game) pause();
+}
+
+
 window.onload = function onLoad() {
-  // ui init
-  for(var i = 0; i != gUiBits.length; ++i) {
-    var bit = gUiBits[i];
-    window[bit] = document.getElementById(window[bit]);
-  }
-  gMsgPaused.hidden = true;
+  for(var i in ui) ui[i] = document.getElementById(ui[i]);
+  for(i in commands) commands[i] = document.getElementById(commands[i]);
 
   // random init fun
   GridDisplays.sqr = new GridDisplayObj("sqr");
@@ -136,7 +174,7 @@ window.onload = function onLoad() {
     for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
   gShowGridLines = root.getAttribute("pref-gridlines")=="true";
-  if(gShowGridLines) gGrids.className = "gridlines";
+  if(gShowGridLines) ui.grids.className = "gridlines";
 /*
   shape = "sqr";
   gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
@@ -151,40 +189,39 @@ window.onload = function onLoad() {
 
 // bad OOP (rest of file)
 
-var Game = {
-  width: 10,
-  height: 25,
-  startingLevel: 0,
+function Game(width, height, startingLevel) {
+  this.width = width;
+  this.height = height;
+  this.startingLevel = startingLevel;
+}
+
+
+Game.prototype = {
+  paused: false,
+
+  width: 0,
+  height: 0,
+  startingLevel: 1,
   levelsCompleted: 0,
 
   score: 0,
   lines: 0,
-  level: 0,
+  level: 1,
 
   _nextBlock: null,
 
-  start: function(width, height, startingLevel) {
-    this.end();
+  begin: function() {
+    const width = this.width, height = this.height, startingLevel = this.startingLevel;
 
-    if(width) this.width = width;
-    else width = this.width;
-    if(height) this.height = height;
-    else height = this.height;
-
-    if(startingLevel || startingLevel===0) this.startingLevel = startingLevel;
-    gLevelDisplay.value = this.level = this.startingLevel;
-
+    ui.level.value = this.level = this.startingLevel;
     this.levelsCompleted = 0;
-    gLinesDisplay.value = this.lines = 0;
-    gScoreDisplay.value = this.score = 0;
+    ui.lines.value = this.lines = 0;
+    ui.score.value = this.score = 0;
 
     Grid.newGrid(width, height);
     GridDisplay.setSize(width, height);
 
-    Timer.resetDelay();
-    // < matters
-    for(var i = 1; i < startingLevel; i++) Timer.reduceDelay();
-
+    Timer.setDelay(startingLevel);
     window.sizeToContent();
     GridDisplay.updateAll();
     this._nextBlock = Blocks.getRandom();
@@ -193,28 +230,27 @@ var Game = {
 
   end: function() {
     Timer.stop();
-    document.onkeydown = null;
   },
 
   // score 20 points for a line, 60 for 2 lines, 120 for 3 lines, 200 for 4 lines
   scoreRemovingLines: function(numlines) {
-    gLinesDisplay.value = this.lines += numlines;
+    ui.lines.value = this.lines += numlines;
     for(var i = 1; i <= numlines; i++) this.score += i * 20;
-    gScoreDisplay.value = this.score;
+    ui.score.value = this.score;
   },
 
   scoreBlockDropped: function(wasDropped) {
     var score = this.level;
     if(wasDropped) score *= this.level / 4;
     if(NextBlockDisplay.enabled) score /= 2;
-    gScoreDisplay.value = this.score += Math.ceil(score);
+    ui.score.value = this.score += Math.ceil(score);
   },
 
   // increase level if appropriate
   updateLevel: function() {
     if(this.lines >= (this.levelsCompleted+1)*10) {
       this.levelsCompleted++;
-      gLevelDisplay.value = ++this.level;
+      ui.level.value = ++this.level;
       Timer.reduceDelay();
     }
   },
@@ -234,7 +270,7 @@ var Game = {
       NextBlockDisplay.update(this._nextBlock);
       Timer.start();
     } else {
-      Game.end();
+      endGame();
     }
   }
 }
@@ -255,8 +291,10 @@ var Timer = {
     this.interval = null;
   },
   // these are only ever called while the timer is stopped, so we don't need to restart it
-  resetDelay: function() {
-    this.delay = 1000;
+  setDelay: function(level) {
+    var delay = 1000;
+    for(var i = 1; i != level; ++i) delay *= 0.8;
+    this.delay = delay;
   },
   reduceDelay: function() {
     this.delay = Math.ceil(this.delay * 0.8);
@@ -289,7 +327,7 @@ FallingBlocks.base = {
     var height = block.length;
     var width = block[0].length;
     // determine left edge where block will be placed from
-    var left = Math.floor((Game.width-width)/2);
+    var left = Math.floor((game.width-width)/2);
     var right = left + width;
 
     if(!Grid.canAdd(block, left, 0)) return false;
@@ -341,11 +379,11 @@ FallingBlocks.base = {
 
   drop: function() {
     while(this.moveDown());
-    Game.blockReachedBottom(true);
+    game.blockReachedBottom(true);
   },
 
   timedMoveDown: function() {
-    if(!FallingBlock.moveDown()) Game.blockReachedBottom();
+    if(!FallingBlock.moveDown()) game.blockReachedBottom();
   }
 }
 
@@ -459,10 +497,15 @@ Grids.base = {
     }
   },
 
-  newEmptyRow: function() {
-    var line = new Array(this.width);
-    for(var x = 0; x != this.width; x++) line[x] = 0;
-    this.grid.unshift(line);
+  // takes abitrary num of row indices (sorted in increasing order) as args
+  removeRows: function() {
+    const a = arguments, n = a.length, g = this.grid, w = this.width;
+    //alert(a+"\n"+a.length);
+    for(var i = 0; i != n; ++i) {
+      var r = g.splice(a[i], 1);
+      for(var x = 0; x != w; ++x) r[x] = 0;
+      g.unshift(r);
+    }
   },
 
   inBounds: function(x, y) {
@@ -520,18 +563,16 @@ Grids.sqr = {
   __proto__: Grids.base,
 
   removeCompleteLines: function() {
-    // work out which lines need removing
-    var linesToRemove = [];
-    for(var y = FallingBlock.top; y < this.height; y++)
-      if(this.lineIsFull(y))
-        linesToRemove.push(y);
-    // remove each line and insert a blank one at top of array
-    for(var i = 0; i < linesToRemove.length; i++) {
-      this.grid.splice(linesToRemove[i],1);
-      this.newEmptyRow();
+    const y0 = FallingBlock.top;
+    var y1 = FallingBlock.bottom;
+    if(y1 > this.height) y1 = this.height;
+    var num = 0;
+    for(var y = y0; y != y1; ++y) {
+      if(!this.lineIsFull(y)) continue;
+      this.removeRows(y);
+      ++num;
     }
-    // update score and lines
-    Game.scoreRemovingLines(linesToRemove.length);
+    game.scoreRemovingLines(num);
   }
 }
 
@@ -559,7 +600,7 @@ Grids.hex = {
       }
     }
     // update score and lines
-    Game.scoreRemovingLines(numLinesRemoved);
+    game.scoreRemovingLines(numLinesRemoved);
   },
 
   /*
@@ -576,9 +617,7 @@ Grids.hex = {
     var btm = row + 1;
     for(var x = wigglesUp ? 0 : 1; x < this.width; x += 2)
       this.grid[top][x] = this.grid[btm][x];
-    this.grid.splice(row,2);
-    this.newEmptyRow();
-    this.newEmptyRow();
+    this.removeRows(row, row+1);
   }
 }
 
@@ -596,7 +635,7 @@ Grids.tri = {
     for(var y = this.height - 2; y >= 0; y--)
       while(this.tryRemoveLine(y)) numLinesRemoved++;
     // update score and lines
-    Game.scoreRemovingLines(numLinesRemoved);
+    game.scoreRemovingLines(numLinesRemoved);
   },
 
   tryRemoveLine: function(y) {
@@ -604,10 +643,7 @@ Grids.tri = {
     var line2 = this.grid[y+1];
     for(var x = 0; x < this.width; x++)
       if(!line[x] || !line2[x]) return false;
-    // remove
-    this.grid.splice(y, 2);
-    this.newEmptyRow();
-    this.newEmptyRow();
+    this.removeRows(y, y+1);
     return true;
   }
 }

@@ -8,7 +8,7 @@
     id="blockfall-window"
     windowtype="blockfall-main"
     title="&blockfall;"
-    onblur="pause();"
+    onblur="onWindowBlur();"
 
     persist="screenX screenY pref-tileshape pref-sqr-sizes pref-hex-sizes pref-tri-sizes pref-gridlines"
 
@@ -25,13 +25,14 @@
 <commandset id="commands">
   <command id="cmd.new" oncommand="newGame();"/>
   <command id="cmd.pause" oncommand="togglePause();"/>
+  <command id="cmd.settings" oncommand="showSettingsDialogue();"/>
 
-  <command id="cmd.left" oncommand="if(!gPaused) FallingBlock.moveLeft();"/>
-  <command id="cmd.right" oncommand="if(!gPaused) FallingBlock.moveRight();"/>
-  <command id="cmd.down" oncommand="if(!gPaused) FallingBlock.moveDown();"/>
-  <command id="cmd.drop" oncommand="if(!gPaused) FallingBlock.drop();"/>
-  <command id="cmd.rotate.clockwise" oncommand="if(!gPaused) FallingBlock.rotateClockwise();"/>
-  <command id="cmd.rotate.anticlockwise" oncommand="if(!gPaused) FallingBlock.rotateAnticlockwise();"/>
+  <command id="cmd.left" oncommand="FallingBlock.moveLeft();"/>
+  <command id="cmd.right" oncommand="FallingBlock.moveRight();"/>
+  <command id="cmd.down" oncommand="FallingBlock.moveDown();"/>
+  <command id="cmd.drop" oncommand="FallingBlock.drop();"/>
+  <command id="cmd.rotate.clockwise" oncommand="FallingBlock.rotateClockwise();"/>
+  <command id="cmd.rotate.anticlockwise" oncommand="FallingBlock.rotateAnticlockwise();"/>
 </commandset>
 
 <keyset id="main">
@@ -54,11 +55,11 @@
 </keyset>
 
 <toolbar id="main-toolbar">
-  <toolbarbutton id="btn-new" oncommand="Game.start();"
+  <toolbarbutton id="btn-new" command="cmd.new"
       label="&new.label;" tooltiptext="&new.tip;" accesskey="&new.akey;"/>
   <toolbarbutton id="btn-pause" command="cmd.pause"
       label="&pause.label;" tooltiptext="&pause.tip;" accesskey="&pause.akey;"/>
-  <toolbarbutton id="btn-settings" oncommand="showSettingsDialogue();"
+  <toolbarbutton id="btn-settings" command="cmd.settings"
       label="&settings.label;" accesskey="&settings.akey;"/>
 </toolbar>
 
@@ -81,6 +82,7 @@
     <hbox id="hex-playing-field" class="hex-grid"/>
     <hbox id="tri-playing-field" class="tri-grid"/>
     <vbox id="msg-paused"><label class="message" value="&msg.paused;"/></vbox>
+    <vbox id="msg-gameover"><label class="message" value="&msg.gameover;"/></vbox>
   </stack>
 </box>
 
