@@ -14,12 +14,43 @@
 
 <script type="application/x-javascript">
 <![CDATA[
+var ui = {
+  showGridLines: "showgridlines",
+  showNextBlock: "shownextblock",
+  shapes: "shapes-list"
+}
+
+var sizesUi = {
+  sqr: ["sizes-sqr-0","sizes-sqr-1","sizes-sqr-2"],
+  hex: ["sizes-hex-0","sizes-hex-1","sizes-hex-2"],
+  tri: ["sizes-tri-0","sizes-tri-1","sizes-tri-2","sizes-tri-3"]
+}
+
+
 function onLoad() {
+  // init ui vars
+  for(var i in ui) ui[i] = document.getElementById(ui[i]);
+  for(i in sizesUi) {
+    var size = sizesUi[i];
+    for(var j in size) size[j] = document.getElementById(size[j]);
+  }
+
+  // process args
   const args = window.arguments;
   var shape = args[0];
+  var sizes = args[1];
+  var showgridlines = args[2];
 
-  document.getElementById("shapes-list").value = shape;
+  ui.shapes.value = shape;
   changeShape(shape);
+
+  ui.showGridLines.checked = showgridlines;
+
+  for(i in sizes) {
+    var ss = sizes[i];
+    var ticks = sizesUi[i];
+    for(j in ss) ticks[ss[j]].checked = true;
+  }
 }
 
 function changeShape(shape) {
@@ -29,14 +60,18 @@ function changeShape(shape) {
 }
 
 function onAccept() {
-  var shape = document.getElementById("shapes-list").value;
+  var shape = ui.shapes.value;
 
-  var sizes = [];
-  var tickboxes = document.getElementById("sizes-"+shape)
-  for(var tick = tickboxes.firstChild; tick; tick = tick.nextSibling)
-    if(tick.checked) sizes.push(tick.getAttribute("value"));
+  var sizes = {};
+  for(var i in sizesUi) {
+    var ss = sizes[i] = [];
+    var ticks = sizesUi[i];
+    for(var j in ticks) if(ticks[j].checked) ss.push(j);
+  }
 
-  opener.onSettingsAccept(shape, sizes);
+  var showgridlines = ui.showGridLines.checked;
+
+  opener.onSettingsAccept(shape, sizes, showgridlines);
 }
 ]]>
 </script>
@@ -54,28 +89,29 @@ function onAccept() {
 
   <deck id="sizes-deck">
     <vbox id="sizes-sqr">
-      <checkbox persist="checked" id="sizes-sqr-3" label="&small3tiles;" value="0"/>
-      <checkbox persist="checked" id="sizes-sqr-4" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox persist="checked" id="sizes-sqr-5" label="&large5tiles;" value="2"/>
+      <checkbox id="sizes-sqr-0" label="&small3tiles;" value="0"/>
+      <checkbox id="sizes-sqr-1" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox id="sizes-sqr-2" label="&large5tiles;" value="2"/>
     </vbox>
     <vbox id="sizes-hex">
-      <checkbox persist="checked" id="sizes-hex-3" label="&small3tiles;" value="0"/>
-      <checkbox persist="checked" id="sizes-hex-4" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox persist="checked" id="sizes-hex-5" label="&large5tiles;" value="2"/>
+      <checkbox id="sizes-hex-0" label="&small3tiles;" value="0"/>
+      <checkbox id="sizes-hex-1" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox id="sizes-hex-2" label="&large5tiles;" value="2"/>
     </vbox>
     <vbox id="sizes-tri">
-      <checkbox persist="checked" id="sizes-tri-3" label="&tiny23tiles;" value="0"/>
-      <checkbox persist="checked" id="sizes-tri-4" label="&small4tiles;" value="1" checked="true"/>
-      <checkbox persist="checked" id="sizes-tri-5" label="&medium5tiles;" value="2" checked="true"/>
-      <checkbox persist="checked" id="sizes-tri-6" label="&large6tiles;" value="3"/>
+      <checkbox id="sizes-tri-0" label="&tiny23tiles;" value="0"/>
+      <checkbox id="sizes-tri-1" label="&small4tiles;" value="1"/>
+      <checkbox id="sizes-tri-2" label="&medium5tiles;" value="2"/>
+      <checkbox id="sizes-tri-3" label="&large6tiles;" value="3"/>
     </vbox>
   </deck>
 </groupbox>
 
-<checkbox label="&shownextblock;" disabled="true"/>
+<checkbox label="&shownextblock;" id="shownextblock" disabled="true"/>
+<checkbox label="&showgridlines;" id="showgridlines"/>
 
 <hbox align="center">
-  <label value="&startinglevel;"/>
+  <label value="&startinglevel;" disabled="true"/>
   <!-- a textbox with spinbuttons would be nicer, but doesn't work -->
   <menulist id="startinglevel-menu" disabled="true">
     <menupopup>

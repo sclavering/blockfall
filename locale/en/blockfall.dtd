@@ -40,5 +40,6 @@
 <!ENTITY large6tiles "Large blocks (6 tiles)">
 
 <!ENTITY shownextblock "Show the next block that will fall">
+<!ENTITY showgridlines "Show grid-lines">
 
 <!ENTITY startinglevel "Starting level:">

@@ -16,7 +16,7 @@ var Blocks = {
   getRandom: function() {
     var set = this.currentSet, num, n;
     if(!set) {
-      sets = this.currentSets;
+      const sets = this.currentSets;
       num = sets.length;
       do { n = Math.random(); } while(n == 1.0);
       n = Math.floor(n * num);
@@ -342,7 +342,7 @@ const tNE = 0, tE = 1, tSE = 2, tSW = 3, tW = 4, tNW = 5;
 
 var triLastBlockNumber = 0;
 // update to match number of available triangular tile images
-var triMaxBlockNumber = 14;
+var triMaxBlockNumber = 6;
 
 
 /*

@@ -1,17 +1,21 @@
+const shapes = ["sqr", "hex", "tri"];
+
 // ui bits
 
+var gGrids = "stack-grids";
 var gMsgPaused = "msg-paused";
 var gScoreDisplay = "score-display";
 var gLinesDisplay = "lines-display";
 var gLevelDisplay = "level-display";
 
-const gUiBits = ["gMsgPaused", "gScoreDisplay", "gLinesDisplay", "gLevelDisplay"];
+const gUiBits = ["gGrids", "gMsgPaused", "gScoreDisplay", "gLinesDisplay", "gLevelDisplay"];
 
 // globals
 
 var gPaused = false;
 var gTileShape = null; // sqr/hex/tri usually
-var gBlockSizes = []; // int array
+var gBlockSizes = {}; // shape -> int array
+var gShowGridLines = false;
 
 // shape -> obj maps
 var FallingBlocks = {};
@@ -59,18 +63,32 @@ function showSettingsDialogue() {
   const flags = "dialog,dependent,modal,chrome";//,resizable";
 
   pause();
-  openDialog(url, "flibble", flags, gTileShape);
+  openDialog(url, "flibble", flags, gTileShape, gBlockSizes, gShowGridLines);
 }
 
 function onSettingsCancel() {
   unpause();
 }
 
-function onSettingsAccept(shape, sizes) {
-  var old = gTileShape;
-  useBlocks(shape, sizes);
-  unpause();
+function onSettingsAccept(shape, sizes, showgridlines) {
+  // save prefs (using attribute persistence)
+  const root = document.documentElement;
+  root.setAttribute("pref-tileshape", shape);
+  for(var i in sizes)
+    root.setAttribute("pref-"+i+"-sizes", sizes[i]); // array->string
+  root.setAttribute("pref-gridlines", showgridlines);
 
+  // apply pref changes
+  var old = gTileShape;
+  gBlockSizes = sizes;
+  Blocks.use(shape, sizes[shape]);
+
+  if(gShowGridLines != showgridlines)
+    gGrids.className = showgridlines ? "gridlines" : "";
+  gShowGridLines = showgridlines;
+
+  // continue, or not
+  unpause();
   if(old != shape) {
     Game.end();
     NextBlockDisplay.hide();
@@ -81,27 +99,27 @@ function onSettingsAccept(shape, sizes) {
 
 
 
-function useBlocks(shape, sizes) {
-  gTileShape = shape;
-  gBlockSizes = sizes;
-  const docelt = document.documentElement;
-  docelt.setAttribute("pref-tileshape", shape);
-  docelt.setAttribute("pref-blocksizes", sizes);
-  Blocks.use(shape, sizes);
-}
-
 function tileShapeChanged(shape) {
+  gTileShape = shape;
   NextBlockDisplay = NextBlockDisplays[shape];
   GridDisplay = GridDisplays[shape];
   FallingBlock = FallingBlocks[shape];
   Grid = Grids[shape];
   NextBlockDisplay.show();
   GridDisplay.show();
-  // hex and tri games make assumptions about their sizes.
+  // xxx hex and tri games make assumptions about their sizes.
   Game.start(10, {sqr: 25, hex: 50, tri: 51}[shape]);
 }
 
 window.onload = function onLoad() {
+  // ui init
+  for(var i = 0; i != gUiBits.length; ++i) {
+    var bit = gUiBits[i];
+    window[bit] = document.getElementById(window[bit]);
+  }
+  gMsgPaused.hidden = true;
+
+  // random init fun
   GridDisplays.sqr = new GridDisplayObj("sqr");
   GridDisplays.hex = new GridDisplayObj("hex");
   GridDisplays.tri = new GridDisplayObj("tri");
@@ -109,18 +127,22 @@ window.onload = function onLoad() {
   NextBlockDisplays.hex = new NextBlockDisplayObj("hex", 7, 13);
   NextBlockDisplays.tri = new NextBlockDisplayObj("tri", 6, 10);
 
-  const docelt = document.documentElement;
-  var shape = docelt.getAttribute("pref-tileshape");
-  var sizes = docelt.getAttribute("pref-blocksizes").split(",");
-  for(i = 0; i != sizes.length; ++i) sizes[i] = parseInt(sizes[i]);
-
-  for(i = 0; i != gUiBits.length; ++i) {
-    var bit = gUiBits[i];
-    window[bit] = document.getElementById(window[bit]);
+  // read prefs (from attributes)
+  const root = document.documentElement;
+  var shape = root.getAttribute("pref-tileshape");
+  for(i = 0; i != 3; ++i) {
+    var sh = shapes[i];
+    var sizes = gBlockSizes[sh] = root.getAttribute("pref-"+sh+"-sizes").split(",");
+    for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
-  gMsgPaused.hidden = true;
+  gShowGridLines = root.getAttribute("pref-gridlines")=="true";
+  if(gShowGridLines) gGrids.className = "gridlines";
+/*
+  shape = "sqr";
+  gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
+  */
 
-  useBlocks(shape, sizes);
+  Blocks.use(shape, gBlockSizes[shape]);
   tileShapeChanged(shape);
 };
 

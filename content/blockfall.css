@@ -130,44 +130,25 @@
 
 .tri-grid {
   list-style-image: url(triangles.png);
-  padding-top: 9px;
-  /*background: black;*/
+  padding-top: 12px;
 }
 
 .tri { margin-top: -10px; }
 
-.tri-left-0,
-.tri-right-0 {
-  list-style-image: none;
-  width: 22px;
-  height: 21px;
-}
+.gridlines .tri-left-0  { -moz-image-region: rect(126px 21px 147px 0); }
+.gridlines .tri-right-0 { -moz-image-region: rect(126px 42px 147px 21px); }
+.tri-left-0  { -moz-image-region: rect(147px 21px 168px 0); }
+.tri-right-0 { -moz-image-region: rect(147px 42px 168px 21px); }
 
-.tri-left-1  { -moz-image-region: rect(0 22px 21px 0); }
-.tri-right-1 { -moz-image-region: rect(0 44px 21px 22px); }
-.tri-left-2  { -moz-image-region: rect(21px 22px 42px 0); }
-.tri-right-2 { -moz-image-region: rect(21px 44px 42px 22px); }
-.tri-left-3  { -moz-image-region: rect(42px 22px 63px 0); }
-.tri-right-3 { -moz-image-region: rect(42px 44px 63px 22px); }
-.tri-left-4  { -moz-image-region: rect(63px 22px 84px 0); }
-.tri-right-4 { -moz-image-region: rect(63px 44px 84px 22px); }
-.tri-left-5  { -moz-image-region: rect(84px 22px 105px 0); }
-.tri-right-5 { -moz-image-region: rect(84px 44px 105px 22px); }
-.tri-left-6  { -moz-image-region: rect(105px 22px 126px 0); }
-.tri-right-6 { -moz-image-region: rect(105px 44px 126px 22px); }
-.tri-left-7  { -moz-image-region: rect(126px 22px 147px 0); }
-.tri-right-7 { -moz-image-region: rect(126px 44px 147px 22px); }
-.tri-left-8  { -moz-image-region: rect(147px 22px 168px 0); }
-.tri-right-8 { -moz-image-region: rect(147px 44px 168px 22px); }
-.tri-left-9  { -moz-image-region: rect(168px 22px 189px 0); }
-.tri-right-9 { -moz-image-region: rect(168px 44px 189px 22px); }
-.tri-left-10  { -moz-image-region: rect(189px 22px 210px 0); }
-.tri-right-10 { -moz-image-region: rect(189px 44px 210px 22px); }
-.tri-left-11  { -moz-image-region: rect(210px 22px 231px 0); }
-.tri-right-11 { -moz-image-region: rect(210px 44px 231px 22px); }
-.tri-left-12  { -moz-image-region: rect(231px 22px 252px 0); }
-.tri-right-12 { -moz-image-region: rect(231px 44px 252px 22px); }
-.tri-left-13  { -moz-image-region: rect(252px 22px 273px 0); }
-.tri-right-13 { -moz-image-region: rect(252px 44px 273px 22px); }
-.tri-left-14  { -moz-image-region: rect(273px 22px 294px 0); }
-.tri-right-14 { -moz-image-region: rect(273px 44px 294px 22px); }
+.tri-left-1  { -moz-image-region: rect(0 21px 21px 0); }
+.tri-right-1 { -moz-image-region: rect(0 42px 21px 21px); }
+.tri-left-2  { -moz-image-region: rect(21px 21px 42px 0); }
+.tri-right-2 { -moz-image-region: rect(21px 42px 42px 21px); }
+.tri-left-3  { -moz-image-region: rect(42px 21px 63px 0); }
+.tri-right-3 { -moz-image-region: rect(42px 42px 63px 21px); }
+.tri-left-4  { -moz-image-region: rect(63px 21px 84px 0); }
+.tri-right-4 { -moz-image-region: rect(63px 42px 84px 21px); }
+.tri-left-5  { -moz-image-region: rect(84px 21px 105px 0); }
+.tri-right-5 { -moz-image-region: rect(84px 42px 105px 21px); }
+.tri-left-6  { -moz-image-region: rect(105px 21px 126px 0); }
+.tri-right-6 { -moz-image-region: rect(105px 42px 126px 21px); }
