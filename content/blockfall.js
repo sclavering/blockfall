@@ -1,6 +1,3 @@
-const E = 1, W = 2, N = 3, S = 4, NE = 5, NW = 6, SE = 7, SW = 8;
-
-
 function setLevel(level) {
   Game.start(null, null, level);
 }
@@ -32,16 +29,17 @@ function keyPressed(e) {
 }
 
 
-function changeBlocks(menu) {
-  // iterate across each menuitem and add appropriate blocks if checked
-  var types = [];
-  var items = menu.childNodes;
-  for(var i = 0; i < items.length; i++)
-    if(items[i].hasAttribute("checked"))
-      types.push(items[i].value);
-  // get block shape
-  var newshape = menu.getAttribute("shape");
-  Blocks.change(newshape,types);
+
+function changeBlocks(shape, event) {
+  var shapeChanged = (shape!=Blocks.currentShape);
+  // don't rebuild the blocks if user has clicked button for current game type
+  if(event && event.originalTarget.localName=='toolbarbutton' && !shapeChanged) {
+    Game.start();
+    return;
+  }
+  //
+  Blocks.change(shape);
+  if(shapeChanged) changeMode(shape);
 }
 
 function changeMode(newshape) {
@@ -77,8 +75,7 @@ window.addEventListener("load", function() {
   NextBlockDisplays["hex"].setSize(5,10);
   NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
-  Blocks.init();
-  Blocks.change("sqr");
+  changeBlocks("sqr");
 }, false);
 
 
@@ -211,13 +208,6 @@ var blocks = [];
 var Blocks = {
   currentSet: [],
   currentShape: null,
-  shapeSets: [],
-
-  init: function() {
-    this.shapeSets["sqr"] = blocks["sqr"]["current"];
-    this.shapeSets["hex"] = blocks["hex"]["current"];
-    this.shapeSets["tri"] = blocks["tri"]["current"];
-  },
 
   _next: null,
 
@@ -235,22 +225,19 @@ var Blocks = {
     this._next = this.currentSet[blockNumber];
   },
 
-  change: function(shape, types) {
-    var shapeChanged = (shape!=this.currentShape);
-    if(shapeChanged) {
-      this.shapeSets[this.currentShape] = this.currentSet;
-      this.currentSet = this.shapeSets[shape];
-      this.currentShape = shape;
+  // first elt of array is shape, remaining elts are types (e.g. standard, pentris,...)
+  change: function(shape, refreshTypes) {
+    this.currentShape = shape;
+
+    var menu = document.getElementById("blocks-"+shape+"-types");
+    // iterate across each menuitem and add appropriate blocks if checked
+    var set = [];
+    var items = menu.childNodes;
+    for(var i = 0; i < items.length; i++) {
+      if(items[i].getAttribute("checked")!="true") continue;
+      set = set.concat(blocks[shape][items[i].value]);
     }
-    if(types) {
-      var set = [];
-      for(var i = 0; i < types.length; i++)
-        set = set.concat(blocks[shape][types[i]]);
-      this.currentSet = set;
-    }
-    if(shapeChanged) {
-      changeMode(shape);
-    }
+    this.currentSet = set;
   }
 }
 

@@ -155,5 +155,3 @@ blocks["hex"]["pentris"] = [
   createHexBlock(5, [hSE], [hN,hSW,hSW,hSW]),
   createHexBlock(5, [hSW], [hN,hSE,hSE,hSE]),
 ];
-
-blocks["hex"]["current"] = blocks["hex"]["standard"];

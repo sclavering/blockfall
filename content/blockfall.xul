@@ -18,8 +18,8 @@
     <toolbarbutton id="new-button" tooltiptext="New Game" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" tooltiptext="Pause/Unpause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-sqr" type="menu-button"
-        oncommand="Blocks.change('sqr');" tooltiptext="Play with Square blocks">
-      <menupopup id="blocks-sqr-types" oncommand="changeBlocks(this);" shape="sqr">
+        oncommand="changeBlocks('sqr',event);" tooltiptext="Play with Square blocks">
+      <menupopup id="blocks-sqr-types">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Strange Triples" value="triples-strange"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
@@ -27,16 +27,16 @@
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="blocks-hex" type="menu-button"
-        oncommand="Blocks.change('hex');" tooltiptext="Play with Hexagonal blocks">
-      <menupopup id="blocks-hex-types" oncommand="changeBlocks(this);" shape="hex">
+        oncommand="changeBlocks('hex',event);" tooltiptext="Play with Hexagonal blocks">
+      <menupopup id="blocks-hex-types">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="blocks-tri" type="menu-button"
-        oncommand="Blocks.change('tri');" tooltiptext="Play with Triangular blocks">
-      <menupopup id="blocks-tri-types" oncommand="changeBlocks(this);" shape="tri">
+        oncommand="changeBlocks('tri',event);" tooltiptext="Play with Triangular blocks">
+      <menupopup id="blocks-tri-types">
         <menuitem type="checkbox" label="Tiny (2-3 tiles)" value="tiny"/>
         <menuitem type="checkbox" label="Small (4 tiles)"  value="4" checked="true"/>
         <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>

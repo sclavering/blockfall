@@ -191,5 +191,3 @@ blocks["sqr"]["pentris"] = [
   createSqrBlock(5, [sS], [sN,sE,sW,sW,sN]),
   createSqrBlock(5, [sS], [sN,sW,sE,sE,sN]),
 ];
-
-blocks["sqr"]["current"] = blocks["sqr"]["standard"];
