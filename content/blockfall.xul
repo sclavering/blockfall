@@ -14,12 +14,12 @@
   <script src="blocks-triangular.js" type="application/x-javascript"/>
   <script src="blockfall.js" type="application/x-javascript"/>
 
-  <toolbar>
+  <toolbar id="main-toolbar">
     <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" label="Pause" oncommand="Game.pause();"/>
-    <toolbarbutton id="blocks-square" type="menu-button"
+    <toolbarbutton id="blocks-sqr" type="menu-button"
         oncommand="Blocks.change('sqr');" label="Sqr">
-      <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="sqr">
+      <menupopup id="blocks-sqr-types" oncommand="changeBlocks(this);" shape="sqr">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Strange Triples" value="triples2"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
@@ -40,7 +40,6 @@
         oncommand="Blocks.change('tri');" label="Tri">
       <menupopup id="blocks-tri-types" oncommand="changeBlocks(this);" shape="tri">
         <menuitem type="checkbox" label="Tiny (2-3 tiles)"  value="tiny"/>
-        <menuitem type="checkbox" label="Strange Tiny (2-3 tiles)"  value="tiny-strange"/>
         <menuitem type="checkbox" label="Small (4 tiles)" value="4" checked="true"/>
         <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>
 <!--

@@ -2,6 +2,16 @@ const blocks_tri_tiny = [
   [[
   [0,0],
   [0,0],
+  [0,1]
+  ],[
+  [0,0],
+  [0,0],
+  [1,0]
+  ]],
+  
+  [[
+  [0,0],
+  [0,0],
   [1,1],
   [0,0],
   [0,0]
@@ -73,10 +83,8 @@ const blocks_tri_tiny = [
   [1,0],
   [1,0],
   [1,0]
-  ]]
-];
+  ]],
 
-const blocks_tri_tiny_strange = [
   [[
   [0,0],
   [0,0],
@@ -134,8 +142,6 @@ const blocks_tri_tiny_strange = [
   [0,0],
   [1,0]
   ]]
-  
-  // xxx: add remaining 3-tile weird pieces
 ];
   
 

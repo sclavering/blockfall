@@ -250,7 +250,7 @@ var Blocks = {
   },
 
   getType: function(shape, type) {
-    if(shape=="square") {
+    if(shape=="sqr") {
       switch(type) {
       case "standard":
         return blocks_square_standard;
@@ -274,8 +274,6 @@ var Blocks = {
       switch(type) {
       case "tiny":
         return blocks_tri_tiny;
-      case "tiny-strange":
-        return blocks_tri_tiny_strange;
       case "4":
         return blocks_tri_4;
       case "5":
