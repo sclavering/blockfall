@@ -83,7 +83,6 @@ blocks["hex"]["triples"] = [
 ];
 
 
-
 blocks["hex"]["standard"] = [
   // o
   createHexBlock(3, [], [hSW,hSE,hNE]),
@@ -103,8 +102,6 @@ blocks["hex"]["standard"] = [
   createHexBlock(5, [hSW], [hNE,hNE,hSE]),
   createHexBlock(5, [hSE], [hNW,hNW,hSW]),
 ];
-
-
 
 
 blocks["hex"]["pentris"] = [

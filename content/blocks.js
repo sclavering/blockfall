@@ -48,7 +48,6 @@ function createSqrBlockState(width, height, x, y, prepath, path, blockNum) {
   for(var k = 0; k < path.length; k++) {
     x += xs[path[k]];
     y += ys[path[k]];
-//    alert("("+x+","+y+")");
     state[y][x] = blockNum;
   }
 
