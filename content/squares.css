@@ -1,4 +1,4 @@
-.block-grid { list-style-image: url(squares.png); }
+.square-grid { list-style-image: url(squares.png); }
 .square-0 { -moz-image-region: rect(0px 20px 20px 0px); }
 .square-1 { -moz-image-region: rect(0px 40px 20px 20px); }
 .square-2 { -moz-image-region: rect(0px 60px 20px 40px); }

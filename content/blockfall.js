@@ -48,13 +48,13 @@ function changeBlocks(menu) {
 
 
 
-window.onload = function() {
+window.addEventListener("load",function() {
   changeBlocks();
   GridDisplay.init();
   NextBlockDisplay.create();
   newGame();
   Game.start();
-}
+}, false);
 
 
 
@@ -316,7 +316,7 @@ var FallingBlock = {
   },
   
   drop: function() {
-    while(FallingBlock.moveDown());
+    while(this.moveDown());
     // XXX: should score more points for a drop
     Game.blockReachedBottom();
   },
@@ -395,15 +395,15 @@ var Grid = {
 
 
 
-var GridDisplay = {
-  container: null,
-
+var BaseGridDisplay = {
   width: 0,
   height: 0,
   grid: [],
-
+  
+  container: null,
+  
   init: function() {
-    this.container = document.getElementById("playing-field");
+    this.container = document.getElementById(this.containerId);
   },
 
   setSize: function(width, height) {
@@ -423,27 +423,41 @@ var GridDisplay = {
       this.grid[x] = new Array(height);
       var col = document.createElement("vbox");
       for(var y = 0; y < height; y++) {
-        var el = document.createElement("image");
-        el.className = "square-0";
+        var el = this.createTile();
         this.grid[x][y] = el;
         col.appendChild(el);
       }
       this.container.appendChild(col);
     }
   },
-
+  
+  createTile: function() {
+    var tile = document.createElement("image");
+    tile.setState = function(state) {
+      this.className = "square-" + state;
+    };
+    tile.setState(0);
+    return tile;
+  },
+  
   clear: function() {
     for(var x = 0; x < this.width; x++)
       for(var y = 0; y < this.height; y++)
-        this.grid[x][y].className = "square-0";
-  },
+        this.grid[x][y].setState(0);
+  }
+}
 
+
+
+var GridDisplay = {
+  containerId: "sqr-playing-field",
+  
   updateArea: function(top, right, bottom, left) {
     for(var x = left; x < right; x++) {
       for(var y = top; y < bottom; y++) {
         var val = FallingBlock.safeGetElement(x,y);
         if(!val) val = Grid.getElement(x,y);
-        this.grid[x][y].className = "square-" + val;
+        this.grid[x][y].setState(val);
       }
     }
   },
@@ -460,72 +474,39 @@ var GridDisplay = {
   // this is called after lines have been removed from the grid.  we *want* it to ignore
   // FallingBlock, which has now been incorporated into the grid, but also still exists
   updateAll: function() {
-    for(var x = 0; x < this.width; x++) {
-      for(var y = 0; y < this.height; y++) {
-        this.grid[x][y].className = "square-" + Grid.getElement(x,y);
-      }
-    }
+    for(var x = 0; x < this.width; x++)
+      for(var y = 0; y < this.height; y++)
+        this.grid[x][y].setState(Grid.getElement(x,y));
   }
 }
-
-
+GridDisplay.__proto__ = BaseGridDisplay;
 
 
 
 var NextBlockDisplay = {
+  containerId: "next-sqr-block-display",
+  
   enabled: true,
 
-  grid: [],
-  container: null,
-  width: 0,
-  height: 0,
-
   create: function() {
-    this.container = document.getElementById("next-block-display");
+    this.init();
     this.setSize(5,5);
-  },
-
-  setSize: function(width, height) {
-//    while(container.hasChildNodes()) container.removeChild(container.lastChild);
-    this.width = width;
-    this.height = height;
-
-    this.grid = new Array(width);
-    for(var x = 0; x < width; x++) {
-      this.grid[x] = new Array(height);
-      var col = document.createElement("vbox");
-      for(var y = 0; y < height; y++) {
-        var el = document.createElement("image");
-        el.className = "square-0";
-        this.grid[x][y] = el;
-        col.appendChild(el);
-      }
-      this.container.appendChild(col);
-    }
   },
 
   update: function(block) {
     if(!this.enabled) return;
-    for(var x = 0; x < this.width; x++) {
-      for(var y = 0; y < this.height; y++) {
-        var num = ((y<block.length)&&(x<block[0].length)) ? block[y][x] : 0;
-        this.grid[x][y].className = "square-"+num;
-      }
-    }
-  },
-
-  clear: function() {
-    for(var x = 0; x < this.width; x++)
-      for(var y = 0; y < this.height; y++)
-        this.grid[x][y].className = "square-0";
+    this.clear();
+    for(var y = 0; y < block.length && y < this.height; y++)
+      for(var x = 0; x < block[0].length && x < this.width; x++)
+        this.grid[x][y].setState(block[y][x]);
   },
 
   // enable or disable
   toggle: function() {
-    if(this.enabled)
-      this.clear();
-//    else
-//      this.update([]);
-    this.enabled = !this.enabled
+    if(this.enabled) this.clear();
+    this.enabled = !this.enabled;
   }
 }
+NextBlockDisplay.__proto__ = BaseGridDisplay;
+
+
