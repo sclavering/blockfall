@@ -7,7 +7,7 @@
     <id>blockfall</id>
 
     <name>BlockFall</name>
-    <version>0.5</version>
+    <version>0.6</version>
     <description>A falling blocks game, with hexagonal and triangular variants</description>
 
     <creator>Stephen Clavering</creator>

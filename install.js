@@ -1,7 +1,7 @@
 const kDisplayName = "BlockFall";
 const kName = "blockfall";
 const kPackage = "/clav.mozdev.org/blockfall";
-const kVersion = "0.5";
+const kVersion = "0.6";
 
 const kJarFile = "blockfall.jar";
 const kContentFolder = "content/";
@@ -32,8 +32,7 @@ if(err == SUCCESS) {
   var jar = getFolder(folder, kJarFile);
 
   registerChrome(CONTENT | flag, jar, kContentFolder);
-  for(var i = 0; i < kLocaleFolders.length; i++)
-    registerChrome(LOCALE | flag, jar, kLocaleFolders[i]);
+  for(var i in kLocaleFolders) registerChrome(LOCALE | flag, jar, kLocaleFolders[i]);
   if(kSkinFolder) registerChrome(SKIN | flag, jar, kSkinFolder);
 
   err = performInstall();
