@@ -46,41 +46,33 @@ function changeMode(newshape) {
   if(NextBlockDisplay) NextBlockDisplay.hide();
   if(GridDisplay) GridDisplay.hide();
   var height;
-  if(newshape=="square") {
-    NextBlockDisplay = SquareNextBlockDisplay;
-    GridDisplay = SquarePlayingField;
-    FallingBlock = SquareFallingBlock;
-    Grid = SquareGrid;
+  if(newshape=="sqr") {
     height = 25;
   } else if(newshape=="hex") {
-    NextBlockDisplay = HexNextBlockDisplay;
-    GridDisplay = HexPlayingField;
-    FallingBlock = HexFallingBlock;
-    Grid = HexGrid;
     height = 50;
   } else {
-    NextBlockDisplay = TriNextBlockDisplay;
-    GridDisplay = TriPlayingField;
-    FallingBlock = TriFallingBlock;
-    Grid = TriGrid;
     height = 51;
   }
+  NextBlockDisplay = NextBlockDisplays[newshape];
+  GridDisplay = GridDisplays[newshape];
+  FallingBlock = FallingBlocks[newshape];
+  Grid = Grids[newshape];
   NextBlockDisplay.show();
   GridDisplay.show();
   Game.start(10,height);
 }
 
 
-window.addEventListener("load",function() {
-  SquarePlayingField.init();
-  SquareNextBlockDisplay.init();
-  SquareNextBlockDisplay.setSize(5,5);
-  HexPlayingField.init();
-  HexNextBlockDisplay.init();
-  HexNextBlockDisplay.setSize(5,10);
-  TriPlayingField.init();
-  TriNextBlockDisplay.init();
-  TriNextBlockDisplay.setSize(4,10);
+window.addEventListener("load", function() {
+  var shapes = ["sqr","hex","tri"];
+  for(var i = 0; i < shapes.length; i++) {
+    shape = shapes[i];
+    GridDisplays[shape] = new GridDisplayObj(shape);
+    NextBlockDisplays[shape] = new NextBlockDisplayObj(shape);
+  }
+  NextBlockDisplays["sqr"].setSize(5,5);
+  NextBlockDisplays["hex"].setSize(5,10);
+  NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
   Blocks.init();
   Blocks.change("hex");
@@ -218,7 +210,7 @@ var Blocks = {
   shapeSets: [],
   
   init: function() {
-    this.shapeSets["square"] = blocks_square_standard;
+    this.shapeSets["sqr"] = blocks_square_standard;
     this.shapeSets["hex"] = blocks_hexagonal_standard;
     this.shapeSets["tri"] = blocks_tri_4;
   },
@@ -499,6 +491,10 @@ HexFallingBlock.__proto__ = BaseFallingBlock;
 // duplicating code
 var TriFallingBlock = HexFallingBlock;
 
+var FallingBlocks = [];
+FallingBlocks["sqr"] = SquareFallingBlock;
+FallingBlocks["hex"] = HexFallingBlock;
+FallingBlocks["tri"] = TriFallingBlock;
 var FallingBlock;
 
 
@@ -670,6 +666,10 @@ var TriGrid = {
 TriGrid.__proto__ = BaseGrid;
 
 
+var Grids = [];
+Grids["sqr"] = SquareGrid;
+Grids["hex"] = HexGrid;
+Grids["tri"] = TriGrid;
 var Grid;
 
 
@@ -682,11 +682,6 @@ var BaseGridDisplay = {
   grid: [],
 
   container: null,
-
-  init: function() {
-    this.container = document.getElementById(this.containerId);
-    this.container.hidden = true;
-  },
 
   setSize: function(width, height) {
     if(width==this.width && height==this.height) {
@@ -793,20 +788,22 @@ var BasePlayingField = {
 }
 BasePlayingField.__proto__ = BaseGridDisplay;
 
-var SquarePlayingField = { containerId: "sqr-playing-field" };
-SquarePlayingField.__proto__ = BasePlayingField;
-SquarePlayingField.createTile = SquarePlayingField.createSquareTile;
 
-var HexPlayingField = { containerId: "hex-playing-field" };
-HexPlayingField.__proto__ = BasePlayingField;
-HexPlayingField.createTile = HexPlayingField.createHexTile;
+function GridDisplayObj(shape) {
+  var id = shape + "-playing-field";
+  this.container = document.getElementById(id);
+  this.container.hidden = true;
+  
+  this.createTile =
+    (shape=="sqr") ? this.createSquareTile :
+    (shape=="hex") ? this.createHexTile :
+    this.createTriTile;
+}
+GridDisplayObj.prototype = BasePlayingField;
 
-var TriPlayingField = { containerId: "tri-playing-field" };
-TriPlayingField.__proto__ = BasePlayingField;
-TriPlayingField.createTile = TriPlayingField.createTriTile;
 
+var GridDisplays = [];
 var GridDisplay = null;
-
 
 
 
@@ -835,16 +832,19 @@ var BaseNextBlockDisplay = {
 }
 BaseNextBlockDisplay.__proto__ = BaseGridDisplay;
 
-var SquareNextBlockDisplay = { containerId: "next-sqr-block-display" };
-SquareNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
-SquareNextBlockDisplay.createTile = SquareNextBlockDisplay.createSquareTile;
 
-var HexNextBlockDisplay = { containerId: "next-hex-block-display" };
-HexNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
-HexNextBlockDisplay.createTile = HexNextBlockDisplay.createHexTile;
+function NextBlockDisplayObj(shape) {
+  var id = "next-" + shape + "-block-display";
+  this.container = document.getElementById(id);
+  this.container.hidden = true;
+  
+  this.createTile =
+    (shape=="sqr") ? this.createSquareTile :
+    (shape=="hex") ? this.createHexTile :
+    this.createTriTile;
+}
+NextBlockDisplayObj.prototype = BaseNextBlockDisplay;
 
-var TriNextBlockDisplay = { containerId: "next-tri-block-display" };
-TriNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
-TriNextBlockDisplay.createTile = TriNextBlockDisplay.createTriTile;
 
+var NextBlockDisplays = [];
 var NextBlockDisplay = null;

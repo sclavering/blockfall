@@ -18,8 +18,8 @@
     <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
     <toolbarbutton id="pause-button" label="Pause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-square" type="menu-button"
-        oncommand="Blocks.change('square');" label="Sqr">
-      <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="square">
+        oncommand="Blocks.change('sqr');" label="Sqr">
+      <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="sqr">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
         <menuitem type="checkbox" label="Strange Triples" value="triples2"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
