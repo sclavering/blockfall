@@ -7,14 +7,22 @@
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     id="blockfall-settings"
     title="&settings;"
+    onload="onLoad();"
     ondialogaccept="onAccept();"
     ondialogcancel="opener.onSettingsCancel();"
     >
 
 <script type="application/x-javascript">
 <![CDATA[
-function changeShape(e) {
-  var shape = e.target.value;
+function onLoad() {
+  const args = window.arguments;
+  var shape = args[0];
+
+  document.getElementById("shapes-list").value = shape;
+  changeShape(shape);
+}
+
+function changeShape(shape) {
   var panel = document.getElementById("sizes-"+shape);
   var deck = document.getElementById("sizes-deck");
   deck.selectedPanel = panel;
@@ -36,7 +44,7 @@ function onAccept() {
 <groupbox>
   <caption label="&blocks;"/>
 
-  <menulist id="shapes-list" oncommand="changeShape(event);">
+  <menulist id="shapes-list" oncommand="changeShape(this.value);">
     <menupopup>
       <menuitem value="sqr" label="&sqr;"/>
       <menuitem value="hex" label="&hex;"/>

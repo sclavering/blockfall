@@ -8,8 +8,10 @@
     id="blockfall-window"
     windowtype="blockfall-main"
     title="&blockfall;"
-    persist="screenX screenY pref-shape"
-    pref-shape="sqr"
+    persist="screenX screenY pref-tileshape pref-blocksizes"
+
+    pref-tileshape="sqr"
+    pref-blocksizes="1"
     >
 
 <script src="blockfall.js" type="application/x-javascript"/>
