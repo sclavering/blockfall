@@ -30,6 +30,10 @@ function createHexState(width, height, x, y, path) {
 }
 
 
+// make blocks a different colour
+var hexLastBlockNumber = 0;
+// update to match number of available hex tile images
+var hexMaxBlockNumber = 14;
 
 
 // direction constants for use with function below.
@@ -52,19 +56,23 @@ function createHexBlock(size, prepath, path) {
   var width = size;
   var height = size * 2 + 1;
 
+  hexLastBlockNumber++;
+  var blockNum = hexLastBlockNumber;
+  hexLastBlockNumber = hexLastBlockNumber % hexMaxBlockNumber;
+
   var block = new Array(6);
-  block[0] = createHexBlockState(width, height, x, y, prepath, path);
+  block[0] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
   for(var i = 1; i < 6; i++) {
     // rotate the paths
     for(var j = 0; j < prepath.length; j++) prepath[j] = (prepath[j]+1)%6;
     for(var k = 0; k < path.length; k++) path[k] = (path[k]+1)%6;
-    block[i] = createHexBlockState(width, height, x, y, prepath, path);
+    block[i] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
   }
 
   return block;
 }
 
-function createHexBlockState(width, height, x, y, prepath, path) {
+function createHexBlockState(width, height, x, y, prepath, path, blockNum) {
   var state = new Array(height);
   for(var i = 0; i < height; i++) {
     state[i] = new Array(width);
@@ -80,13 +88,13 @@ function createHexBlockState(width, height, x, y, prepath, path) {
     y += ys[prepath[n]];
   }
 
-  state[y][x] = 1;
-  state[y+1][x] = 1;
+  state[y][x] = blockNum;
+  state[y+1][x] = blockNum;
   for(var k = 0; k < path.length; k++) {
     x += xs[path[k]];
     y += ys[path[k]];
-    state[y][x] = 1;
-    state[y+1][x] = 1;
+    state[y][x] = blockNum;
+    state[y+1][x] = blockNum;
   }
 
   return state;
