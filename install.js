@@ -1,7 +1,7 @@
 const kDisplayName = "BlockFall";
 const kName = "blockfall";
 const kPackage = "/clav.mozdev.org/blockfall";
-const kVersion = "0.6";
+const kVersion = "0.7";
 
 const kJarFile = "blockfall.jar";
 const kContentFolder = "content/";
