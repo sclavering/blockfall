@@ -3,9 +3,16 @@
 <overlay id="BlockFallOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+<!-- Firebird -->
 <menupopup id="menu_ToolsPopup">
   <menuitem id="blockfall" label="Play BlockFall" insertbefore="prefSep"
-      oncommand="window.open('chrome://blockfall/content/', null,'chrome,resizable');"/>
+      oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
+</menupopup>
+
+<!-- Seamonkey -->
+<menupopup id="taskPopup">
+  <menuitem id="blockfall" label="Play BlockFall"
+      oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
 </menupopup>
 
 </overlay>
