@@ -6,7 +6,9 @@
   windowtype="blockfall-main"
   title="BlockFall"
   orient="vertical"
-  persist="screenX screenY"
+  persist="screenX screenY pref-shape"
+  
+  pref-shape="sqr"
   >
 
   <script src="blockfall.js" type="application/x-javascript"/>

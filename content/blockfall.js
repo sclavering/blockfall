@@ -8,24 +8,28 @@ function setSize(width, height) {
 function keyPressed(e) {
   var key = e.keyCode;
   if(Game.paused) {
-    if((key == 80)||(key == 19)) //p or pause
-      Game.pause();
+    //p or pause
+    if((key == 80)||(key == 19)) Game.pause();
     return;
   }
-  if(key == 40) // down
-    FallingBlock.moveDown();
-  else if(key == 37) // left
-    FallingBlock.moveLeft();
-  else if(key == 39) // right
-    FallingBlock.moveRight();
-  else if((key == 38)||(key == 75)) // up or k
-    FallingBlock.rotateClockwise();
-  else if(key == 74) // j
-    FallingBlock.rotateAnticlockwise();
-  else if(key == e.DOM_VK_SPACE)
-    FallingBlock.drop();
-  else if((key == 80)||(key == 19)) //p or pause
-    Game.pause();
+  switch(key) {
+    case 40: // down
+      FallingBlock.moveDown(); break;
+    case 37: // left
+      FallingBlock.moveLeft(); break;
+    case 39: // right
+      FallingBlock.moveRight(); break;
+    case 38: // up
+    case 75: // k
+      FallingBlock.rotateClockwise(); break;
+    case 74: // j
+      FallingBlock.rotateAnticlockwise(); break;
+    case e.DOM_VK_SPACE:
+      FallingBlock.drop(); break;
+    case 80: // p
+    case 19: // pause
+      Game.pause(); break;
+  }
 }
 
 
@@ -38,6 +42,7 @@ function changeBlocks(shape, event) {
     return;
   }
   //
+  document.documentElement.setAttribute("pref-shape",shape);
   Blocks.change(shape);
   if(shapeChanged) changeMode(shape);
 }
@@ -75,7 +80,7 @@ window.addEventListener("load", function() {
   NextBlockDisplays["hex"].setSize(7,13);
   NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
-  changeBlocks("sqr");
+  changeBlocks(document.documentElement.getAttribute("pref-shape"));
 }, false);
 
 
@@ -445,12 +450,23 @@ var HexFallingBlock = {
 }
 
 
-// as for hex games, move left or right also goes down a line (makes
-// more sense than the alternative of left 2 lines).  move down goes
-// down 2 lines (also the same as hex games, though for different
-// reasons).  since requirements are the same we don't bother
-// duplicating code
-var TriFallingBlock = HexFallingBlock;
+var TriFallingBlock = {
+  // as for hex games, move left or right also goes down a line, so share code
+  __proto__: HexFallingBlock,
+  
+  moveDown: function() {
+    // testing both lines ensures a triangle can't drop through a bunch facing
+    // the other direction.
+    var can = this.canMoveTo(0,+1) && this.canMoveTo(0,+2);
+    if(can) {
+      this.top += 2;
+      this.bottom += 2;
+      GridDisplay.safeUpdateArea(this.top-2, this.right, this.bottom, this.left);
+    }
+    return can;
+  }
+}
+
 
 var FallingBlocks = [];
 FallingBlocks["sqr"] = SquareFallingBlock;
@@ -473,14 +489,17 @@ var BaseGrid = {
     this.width = width;
     this.height = height;
     this.grid = new Array(height);
-    for(var y = 0; y < height; y++)
-      this.grid[y] = this.newEmptyRow();
+    for(var y = 0; y < height; y++) {
+      var line = new Array(width);
+      for(var x = 0; x != width; x++) line[x] = 0;
+      this.grid[y] = line;
+    }
   },
 
   newEmptyRow: function() {
     var line = new Array(this.width);
-    for(var x = 0; x < this.width; x++) line[x] = 0;
-    return line;
+    for(var x = 0; x != this.width; x++) line[x] = 0;
+    this.grid.unshift(line);
   },
 
   inBounds: function(x, y) {
@@ -496,13 +515,14 @@ var BaseGrid = {
     return (this.inBounds(x,y) && this.grid[y][x]===0);
   },
 
-  // true if in bounds and not 0.  used by hex removeCompleteLines()
-  elementOccupied: function(x, y) {
-    return (this.inBounds(x,y) && this.grid[y][x]);
-  },
-
   setElement: function(x, y, val) {
     this.grid[y][x] = val;
+  },
+  
+  lineIsFull: function(y) {
+    var line = this.grid[y];
+    for(var x = 0; x != this.width; x++) if(!line[x]) return false;
+    return true;
   }
 }
 
@@ -514,21 +534,15 @@ var SquareGrid = {
     // work out which lines need removing
     var linesToRemove = [];
     for(var y = FallingBlock.top; y < this.height; y++)
-      if(this.isLineComplete(y))
+      if(this.lineIsFull(y))
         linesToRemove.push(y);
     // remove each line and insert a blank one at top of array
     for(var i = 0; i < linesToRemove.length; i++) {
       this.grid.splice(linesToRemove[i],1);
-      this.grid.unshift(this.newEmptyRow());
+      this.newEmptyRow();
     }
     // update score and lines
     Game.scoreRemovingLines(linesToRemove.length);
-  },
-  isLineComplete: function(y) {
-    var line = this.grid[y];
-    for(var x = 0; x < this.width; x++)
-      if(!line[x]) return false;
-    return true;
   }
 }
 
@@ -536,67 +550,45 @@ var SquareGrid = {
 var HexGrid = {
   __proto__: BaseGrid,
   
-  /* We have to check both the row specified and the row below it
-     (because each hex is represented as two halves).  Also hex
-     lines are not truly horizontal.
-
-     In practice we don't really need to check if the bottom half of
-     each hex is full, but we do so anyway.
-     */
   removeCompleteLines: function() {
-    // we count down in 2s because each hex is composed of two halves.
-    var y = this.height - 2;
-    var numLinesRemoved = 0;
-    while(y >= 0) {
-      // try a line that goes down for the 2nd hex
-      if(this.canRemoveLine(y, y+1)) {
-        this.removeLine(y, 1);
+    var numLinesRemoved = 0;  
+    var y = this.height - 2, odd = false;
+    while(y != 0) {
+      // The "line" that is checked consists of the bottom halves of some hexes
+      // and the top halves of others.  Half-hexes should never be created, so
+      // it's sufficient to check this.
+      if(this.lineIsFull(y)) {
+        // on an odd numbered row the line wiggles down initially
+        this.removeLine(y, odd);
         numLinesRemoved++;
-      // try a line that goes up for the 2nd hex
-      } else if(this.canRemoveLine(y, y-1)) {
-        this.removeLine(y, 0);
-        numLinesRemoved++;
-      // try next row
+        // the stuff that drop down might allow for a new upward-wiggling line
+        // xxx is this correct?
+        if(odd) { y++; odd = !odd; }
       } else {
-        y -= 2;
+        y--;
+        odd = !odd;
       }
     }
     // update score and lines
     Game.scoreRemovingLines(numLinesRemoved);
   },
 
-  // row2 is the row for odd numbered columns
-  canRemoveLine: function(row, row2) {
-    for(var x = 0, even = true; x < this.width; x++, even = !even) {
-      var y = even ? row : row2;
-      if(!this.elementOccupied(x,y) || !this.elementOccupied(x,y+1)) return false;
-      // XXX simpler+quicker, but not absolutely correct
-//      if(!this.elementOccupied(x,y)) return false;
-    }
-    return true;
-  },
-
   /* Here we're trying to remove something like this:
      .#.#.#.#.#.        #.#.#.#.#.
-     ###########   or   ##########
+     ###########   or   ##########    <--- y
      #.#.#.#.#.#        .#.#.#.#.#
-     from a y-x indexed array.  (
-     We remove the middle line, copy alternate elements of the bottom line
-     into the top one, and then remove the bottom line.
-     Then we insert two blank rows at the start of the y array.
+     from a y-x indexed array.
+     We copy alternate elements of the bottom line into the top one, remove the
+     bottom two lines, then insert two blank rows at y = 0.
      */
-  removeLine: function(row, downForSecondTile) {
-    // row is y coord of top # in first col, we want y coord of middle row
-    if(downForSecondTile) row++;
+  removeLine: function(row, wigglesUp) {
     var top = row - 1;
-    var mid = this.grid[row];
     var btm = row + 1;
-    var x = downForSecondTile ? 0 : 1;
-    for(; x < this.width; x += 2)
+    for(var x = wigglesUp ? 0 : 1; x < this.width; x += 2)
       this.grid[top][x] = this.grid[btm][x];
     this.grid.splice(row,2);
-    this.grid.unshift(this.newEmptyRow());
-    this.grid.unshift(this.newEmptyRow());
+    this.newEmptyRow();
+    this.newEmptyRow();
   }
 }
 
@@ -623,8 +615,8 @@ var TriGrid = {
       if(!line[x] || !line2[x]) return false;
     // remove
     this.grid.splice(y, 2);
-    this.grid.unshift(this.newEmptyRow());
-    this.grid.unshift(this.newEmptyRow());
+    this.newEmptyRow();
+    this.newEmptyRow();
     return true;
   }
 }
