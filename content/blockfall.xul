@@ -42,8 +42,8 @@
         <menuitem type="checkbox" label="Tiny (2-3 tiles)"  value="tiny"/>
         <menuitem type="checkbox" label="Strange Tiny (2-3 tiles)"  value="tiny-strange"/>
         <menuitem type="checkbox" label="Small (4 tiles)" value="4" checked="true"/>
-<!--
         <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>
+<!--
         <menuitem type="checkbox" label="Large (6 tiles)"  value="6"/>
 -->
       </menupopup>

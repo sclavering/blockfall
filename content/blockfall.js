@@ -278,6 +278,8 @@ var Blocks = {
         return blocks_tri_tiny_strange;
       case "4":
         return blocks_tri_4;
+      case "5":
+        return blocks_tri_5;
       }
     }
     return [];
