@@ -27,3 +27,10 @@
 .hex-btm-9 { -moz-image-region: rect(8px 200px 16px 180px); }
 .hex-top-10 { -moz-image-region: rect(0px 220px  8px 200px); }
 .hex-btm-10 { -moz-image-region: rect(8px 220px 16px 200px); }
+
+.hex-top-11 { -moz-image-region: rect(0px 40px  8px 20px); }
+.hex-btm-11 { -moz-image-region: rect(8px 40px 16px 20px); }
+.hex-top-12 { -moz-image-region: rect(0px 60px  8px 40px); }
+.hex-btm-12 { -moz-image-region: rect(8px 60px 16px 40px); }
+.hex-top-13 { -moz-image-region: rect(0px 80px  8px 60px); }
+.hex-btm-13 { -moz-image-region: rect(8px 80px 16px 60px); }

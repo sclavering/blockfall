@@ -32,53 +32,44 @@ function keyPressed(e) {
 }
 
 
-var gBlockTypes = [];
-var gTileShape = [];
-
 function changeBlocks(menu) {
-  if(!menu) menu = document.getElementById("menu-blocktypes-popup");
-  gBlockTypes = [];
   // iterate across each menuitem and add appropriate blocks if checked
+  var types = [];
   var items = menu.childNodes;
   for(var i = 0; i < items.length; i++)
     if(items[i].hasAttribute("checked"))
-      gBlockTypes.push(items[i].value);
-  Blocks.useTypes(gBlockTypes, gTileShape);
+      types.push(items[i].value);
+  // get block shape
+  var newshape = menu.getAttribute("shape");;
+  Blocks.change(newshape,types);
+}
+
+function changeMode(newshape) {
+  Game.end();
+  if(NextBlockDisplay) NextBlockDisplay.hide();
+  if(GridDisplay) GridDisplay.hide();
+  var height;
+  if(newshape=="square") {
+    NextBlockDisplay = SquareNextBlockDisplay;
+    GridDisplay = SquarePlayingField;
+    FallingBlock = SquareFallingBlock;
+    Grid = SquareGrid;
+    height = 25;
+  } else {
+    NextBlockDisplay = HexNextBlockDisplay;
+    GridDisplay = HexPlayingField;
+    FallingBlock = HexFallingBlock;
+    Grid = HexGrid;
+    height = 50;
+  }
+//  Blocks.next();
+  NextBlockDisplay.show();
+  GridDisplay.show();
+  Game.start(10,height);
 }
 
 
-function changeTiles(type) {
-  Game.end();
-  if(type=="square") {
-    NextBlockDisplay = SquareNextBlockDisplay;
-    HexNextBlockDisplay.hide();
-    GridDisplay = SquarePlayingField;
-    HexPlayingField.hide();
-    FallingBlock = SquareFallingBlock;
-    Grid = SquareGrid;
-    NextBlockDisplay.show();
-    gTileShape = "square";
-    Blocks.useTypes(gBlockTypes, gTileShape);
-    GridDisplay.show();
-    Game.start(10,20);
-  } else {  
-    NextBlockDisplay = HexNextBlockDisplay;
-    SquareNextBlockDisplay.hide();
-    GridDisplay = HexPlayingField;
-    SquarePlayingField.hide();
-    FallingBlock = HexFallingBlock;
-    Grid = HexGrid;
-    NextBlockDisplay.show();
-    gTileShape = "hex";
-    Blocks.useTypes(gBlockTypes, gTileShape);
-    GridDisplay.show();
-    Game.start(10,40);
-  }
-}    
-
-
 window.addEventListener("load",function() {
-  changeBlocks();
   SquarePlayingField.init();
   SquareNextBlockDisplay.init();
   SquareNextBlockDisplay.setSize(5,5);
@@ -86,7 +77,8 @@ window.addEventListener("load",function() {
   HexNextBlockDisplay.init();
   HexNextBlockDisplay.setSize(5,10);
   Game.init();
-  changeTiles("square");
+  Blocks.init();
+  Blocks.change("hex");
 //  Game.start();
 }, false);
 
@@ -98,11 +90,11 @@ var Game = {
   startingLevel: 0,
   levelsCompleted: 0,
   paused: false,
-  
+
   scoreDisplay: null,
   linesDisplay: null,
   levelDisplay: null,
-  
+
   init: function() {
     this.scoreDisplay = document.getElementById("score-display");
     this.linesDisplay = document.getElementById("lines-display");
@@ -135,6 +127,7 @@ var Game = {
     GridDisplay.updateAll();
     document.onkeydown = keyPressed;
     // add a block to top of grid
+    Blocks.setNext();
     Blocks.next();
   },
 
@@ -217,11 +210,18 @@ var Game = {
 
 var Blocks = {
   currentSet: [],
-
+  currentShape: null,
+  shapeSets: [],
+  
+  init: function() {
+    this.shapeSets["square"] = blocks_square_standard;
+    this.shapeSets["hex"] = blocks_hexagonal_standard;
+  },
+  
   _next: null,
 
   next: function() {
-    if(!this._next) this.setNext(); // for when a game is first started
+//    if(!this._next) this.setNext(); // for when a game is first started
     FallingBlock.setBlock(this._next);
     this.setNext();
     NextBlockDisplay.update(this._next[0]);
@@ -234,22 +234,34 @@ var Blocks = {
     this._next = this.currentSet[blockNumber];
   },
 
-  useTypes: function(types, shape) {
-    var newset = [];
-    for(var i = 0; i < types.length; i++)
-      newset = newset.concat(this.getType(types[i], shape));
-    this.currentSet = newset;
+  change: function(shape, types) {
+//    alert(shape+"|"+types.join("|"));
+    var shapeChanged = (shape!=this.currentShape);
+    if(shapeChanged) {
+      this.shapeSets[this.currentShape] = this.currentSet;
+      this.currentSet = this.shapeSets[shape];
+      this.currentShape = shape;
+    }
+    if(types) {
+      var set = [];
+      for(var i = 0; i < types.length; i++)
+        set = set.concat(this.getType(shape,types[i]));
+      this.currentSet = set;
+    }
+    if(shapeChanged) {
+      changeMode(shape);
+    }
   },
 
-  getType: function(type, shape) {
+  getType: function(shape, type) {
     if(shape=="square") {
       switch(type) {
       case "standard":
         return blocks_square_standard;
       case "pentris":
         return blocks_square_pentris;
-      default:
-        return [];
+      case "triples":
+        return blocks_square_triples;
       }
     } else {
       switch(type) {
@@ -257,10 +269,11 @@ var Blocks = {
         return blocks_hexagonal_standard;
       case "pentris":
         return blocks_hexagonal_pentris;
-      default:
-        return [];
+      case "triples":
+        return blocks_hexagonal_triples;
       }
-    } 
+    }
+    return [];
   }
 }
 
@@ -415,7 +428,7 @@ var SquareFallingBlock = {
     this.right++;
     GridDisplay.safeUpdateArea(this.top, this.right, this.bottom, this.left-1);
   },
-  
+
   // must return a boolean for the timed drop function
   moveDown: function() {
     var can = this.canMoveTo(0,+1);
@@ -442,7 +455,7 @@ var HexFallingBlock = {
 //    GridDisplay.safeUpdateArea(this.top-1, this.right+1, this.bottom, this.left);
     GridDisplay.safeUpdateArea(this.top-2, this.right+2, this.bottom+1, this.left-1);
   },
-  
+
   moveRight: function() {
     if(!this.canMoveTo(+1,+1)) return;
     this.left++;
@@ -452,7 +465,7 @@ var HexFallingBlock = {
     GridDisplay.safeUpdateArea(this.top-1, this.right, this.bottom, this.left-1);
     GridDisplay.safeUpdateArea(this.top-2, this.right+1, this.bottom+1, this.left-2);
   },
-  
+
   // must return a boolean for the timed drop function
   moveDown: function() {
     var can = this.canMoveTo(0,+2);
@@ -557,11 +570,11 @@ var HexGrid = {
     while(y >= 0) {
       // try a line that goes down for the 2nd hex
       if(this.canRemoveLine(y, y+1)) {
-        this.removeLine(y, y+1);
+        this.removeLine(y, 1);
         numLinesRemoved++;
       // try a line that goes up for the 2nd hex
       } else if(this.canRemoveLine(y, y-1)) {
-        this.removeLine(y, y-1);
+        this.removeLine(y, 0);
         numLinesRemoved++;
       // try next row
       } else {
@@ -595,15 +608,15 @@ var HexGrid = {
   removeLine: function(row, downForSecondTile) {
     // row is y coord of top # in first col, we want y coord of middle row
     if(downForSecondTile) row++;
-    this.grid.splice(row,1);
-    var x = downForSecondTile ? 1 : 0;
-    var top = this.grid[row - 1];
-    var btm = this.grid[row + 1];
-    for(; x < this.width; x += 2) {
-      top[x] = btm[x];
+    var top = row - 1;
+    var mid = this.grid[row];
+    var btm = row + 1;
+    for(var i = 0, up = downForSecondTile; i < this.width; i++, up = !up) {
+      if(up) this.grid[top][i] = this.grid[btm][i];
     }
-    this.grid.splice(row+1,1);
-
+//    for(var x = downForSecondTile; x < this.width; x += 2)
+//      top[x] = btm[x];
+    this.grid.splice(row,2);
     this.grid.unshift(this.newEmptyRow());
     this.grid.unshift(this.newEmptyRow());
   }
@@ -625,7 +638,6 @@ var BaseGridDisplay = {
 
   init: function() {
     this.container = document.getElementById(this.containerId);
-    alert(this.containerId + " " + this.container);
   },
 
   setSize: function(width, height) {
@@ -658,7 +670,7 @@ var BaseGridDisplay = {
       for(var y = 0; y < this.height; y++)
         this.grid[x][y].setState(0);
   },
-  
+
   // for when we switch between square and hex games.
   hide: function() {
     this.container.hidden = true;
@@ -666,7 +678,7 @@ var BaseGridDisplay = {
   show: function() {
     this.container.hidden = false;
   },
-  
+
   // no multiple inheritance, so to avoid having to duplicate these, we
   // just include both and assign one to createTile in the subclasses
   createSquareTile: function(x, y) {
@@ -731,7 +743,7 @@ var HexPlayingField = { containerId: "hex-playing-field" };
 HexPlayingField.__proto__ = BasePlayingField;
 HexPlayingField.createTile = HexPlayingField.createHexTile;
 
-var GridDisplay;
+var GridDisplay = null;
 
 
 
@@ -764,4 +776,4 @@ var HexNextBlockDisplay = { containerId: "next-hex-block-display" };
 HexNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
 HexNextBlockDisplay.createTile = HexNextBlockDisplay.createHexTile;
 
-var NextBlockDisplay;
+var NextBlockDisplay = null;

@@ -16,10 +16,6 @@
   <menubar id="menubar-main">
     <menu id="menu-game" label="Game">
       <menupopup id="menupopup-game">
-        <menuitem label="New" oncommand="newGame();"/>
-        <menuseparator/>
-        <menuitem label="Pause" oncommand="Game.pause();"/>
-        <menuseparator/>
         <menu id="menu-size" label="Size">
           <menupopup id="menupopup-size">
             <menuitem type="radio" label="Small (8x20)" oncommand="setSize(8,20);"/>
@@ -42,20 +38,33 @@
             <menuitem type="radio" label="Level 9" value="9"/>
           </menupopup>
         </menu>
-        <menu id="menu-blocktypes" label="Blocks">
-          <menupopup id="menu-blocktypes-popup" oncommand="changeBlocks(this);">
-            <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
-            <menuitem type="checkbox" label="Pentris"  value="pentris"/>
-          </menupopup>
-        </menu>
         <menuseparator/>
         <menuitem type="checkbox" checked="true" label="Show next block" oncommand="NextBlockDisplay.toggle();"/>
-        <menuseparator/>
-        <menuitem type="radio" label="Square Tiles" oncommand="changeTiles('square');" checked="true"/>
-        <menuitem type="radio" label="Hexagonal Tiles" oncommand="changeTiles('hex');"/>
       </menupopup>
     </menu>
   </menubar>
+  <toolbar>
+    <toolbarbutton label="New" oncommand="newGame();"/>
+    <toolbarbutton label="Pause" oncommand="Game.pause();"/>
+    <toolbarbutton id="blocks-square" type="menu-button"
+        oncommand="Blocks.change('square');" label="Sqr">
+      <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="square">
+        <menuitem type="checkbox" label="Triples"  value="triples"/>
+        <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
+        <menuitem type="checkbox" label="Pentris"  value="pentris"/>
+      </menupopup>
+    </toolbarbutton>
+    <toolbarbutton id="blocks-hex" type="menu-button"
+        oncommand="Blocks.change('hex');" label="Hex">
+      <menupopup id="blocks-hex-types" oncommand="changeBlocks(this);" shape="hex">
+        <menuitem type="checkbox" label="Triples"  value="triples"/>
+        <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
+        <!--
+        <menuitem type="checkbox" label="Pentris"  value="pentris"/>
+        -->
+      </menupopup>
+    </toolbarbutton>
+  </toolbar>
 
   <hbox>
     <vbox id="sidepanel">
