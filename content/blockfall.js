@@ -424,7 +424,7 @@ var GridDisplay = {
       var col = document.createElement("vbox");
       for(var y = 0; y < height; y++) {
         var el = document.createElement("image");
-        el.className = "block-0";
+        el.className = "square-0";
         this.grid[x][y] = el;
         col.appendChild(el);
       }
@@ -435,7 +435,7 @@ var GridDisplay = {
   clear: function() {
     for(var x = 0; x < this.width; x++)
       for(var y = 0; y < this.height; y++)
-        this.grid[x][y].className = "block-0";
+        this.grid[x][y].className = "square-0";
   },
 
   updateArea: function(top, right, bottom, left) {
@@ -443,7 +443,7 @@ var GridDisplay = {
       for(var y = top; y < bottom; y++) {
         var val = FallingBlock.safeGetElement(x,y);
         if(!val) val = Grid.getElement(x,y);
-        this.grid[x][y].className = "block-" + val;
+        this.grid[x][y].className = "square-" + val;
       }
     }
   },
@@ -462,7 +462,7 @@ var GridDisplay = {
   updateAll: function() {
     for(var x = 0; x < this.width; x++) {
       for(var y = 0; y < this.height; y++) {
-        this.grid[x][y].className = "block-" + Grid.getElement(x,y);
+        this.grid[x][y].className = "square-" + Grid.getElement(x,y);
       }
     }
   }
@@ -496,7 +496,7 @@ var NextBlockDisplay = {
       var col = document.createElement("vbox");
       for(var y = 0; y < height; y++) {
         var el = document.createElement("image");
-        el.className = "block-0";
+        el.className = "square-0";
         this.grid[x][y] = el;
         col.appendChild(el);
       }
@@ -509,7 +509,7 @@ var NextBlockDisplay = {
     for(var x = 0; x < this.width; x++) {
       for(var y = 0; y < this.height; y++) {
         var num = ((y<block.length)&&(x<block[0].length)) ? block[y][x] : 0;
-        this.grid[x][y].className = "block-"+num;
+        this.grid[x][y].className = "square-"+num;
       }
     }
   },
@@ -517,7 +517,7 @@ var NextBlockDisplay = {
   clear: function() {
     for(var x = 0; x < this.width; x++)
       for(var y = 0; y < this.height; y++)
-        this.grid[x][y].className = "block-clear";
+        this.grid[x][y].className = "square-0";
   },
 
   // enable or disable

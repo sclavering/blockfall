@@ -1,4 +1,5 @@
 @import url(chrome://global/skin/);
+@import url(squares.css);
 
 #sidepanel {
 	background: black;
@@ -11,36 +12,3 @@
 #next-block-display {
 	margin: 10px;
 }
-
-/* styles for board square images, and next-block square images */
-.block-grid { list-style-image: url(images/squares.png); }
-.block-0 { -moz-image-region: rect(0 15px 15px 0); }
-.block-1 { -moz-image-region: rect(0 30px 15px 15px); }
-.block-2 { -moz-image-region: rect(0 45px 15px 30px); }
-.block-3 { -moz-image-region: rect(0 60px 15px 45px); }
-.block-4 { -moz-image-region: rect(0 75px 15px 60px); }
-.block-5 { -moz-image-region: rect(0 90px 15px 75px); }
-.block-6 { -moz-image-region: rect(0 105px 15px 90px); }
-.block-7 { -moz-image-region: rect(0 120px 15px 105px); }
-
-/* don't have enough tiles yet, so these jsut repeat the earlier ones */
-.block-8 { -moz-image-region: rect(0 30px 15px 15px); }
-.block-9 { -moz-image-region: rect(0 45px 15px 30px); }
-.block-10 { -moz-image-region: rect(0 60px 15px 45px); }
-.block-11 { -moz-image-region: rect(0 75px 15px 60px); }
-.block-12 { -moz-image-region: rect(0 90px 15px 75px); }
-.block-13 { -moz-image-region: rect(0 105px 15px 90px); }
-.block-14 { -moz-image-region: rect(0 120px 15px 105px); }
-.block-15 { -moz-image-region: rect(0 30px 15px 15px); }
-.block-16 { -moz-image-region: rect(0 45px 15px 30px); }
-.block-17 { -moz-image-region: rect(0 60px 15px 45px); }
-.block-18 { -moz-image-region: rect(0 75px 15px 60px); }
-.block-19 { -moz-image-region: rect(0 90px 15px 75px); }
-.block-20 { -moz-image-region: rect(0 105px 15px 90px); }
-.block-21 { -moz-image-region: rect(0 120px 15px 105px); }
-.block-22 { -moz-image-region: rect(0 30px 15px 15px); }
-.block-23 { -moz-image-region: rect(0 45px 15px 30px); }
-.block-24 { -moz-image-region: rect(0 60px 15px 45px); }
-.block-25 { -moz-image-region: rect(0 75px 15px 60px); }
-.block-26 { -moz-image-region: rect(0 90px 15px 75px); }
-

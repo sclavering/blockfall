@@ -1,0 +1,27 @@
+.block-grid { list-style-image: url(squares.png); }
+.square-0 { -moz-image-region: rect(0px 20px 20px 0px); }
+.square-1 { -moz-image-region: rect(0px 40px 20px 20px); }
+.square-2 { -moz-image-region: rect(0px 60px 20px 40px); }
+.square-3 { -moz-image-region: rect(0px 80px 20px 60px); }
+.square-4 { -moz-image-region: rect(0px 100px 20px 80px); }
+.square-5 { -moz-image-region: rect(0px 120px 20px 100px); }
+.square-6 { -moz-image-region: rect(0px 140px 20px 120px); }
+.square-7 { -moz-image-region: rect(0px 160px 20px 140px); }
+.square-8 { -moz-image-region: rect(0px 180px 20px 160px); }
+.square-9 { -moz-image-region: rect(0px 200px 20px 180px); }
+.square-10 { -moz-image-region: rect(0px 220px 20px 200px); }
+.square-11 { -moz-image-region: rect(0px 240px 20px 220px); }
+.square-12 { -moz-image-region: rect(0px 260px 20px 240px); }
+.square-13 { -moz-image-region: rect(0px 280px 20px 260px); }
+.square-14 { -moz-image-region: rect(0px 300px 20px 280px); }
+.square-15 { -moz-image-region: rect(0px 320px 20px 300px); }
+.square-16 { -moz-image-region: rect(0px 340px 20px 320px); }
+.square-17 { -moz-image-region: rect(0px 360px 20px 340px); }
+.square-18 { -moz-image-region: rect(0px 380px 20px 360px); }
+.square-19 { -moz-image-region: rect(0px 400px 20px 380px); }
+.square-20 { -moz-image-region: rect(0px 420px 20px 400px); }
+.square-21 { -moz-image-region: rect(0px 440px 20px 420px); }
+.square-22 { -moz-image-region: rect(0px 460px 20px 440px); }
+.square-23 { -moz-image-region: rect(0px 480px 20px 460px); }
+.square-24 { -moz-image-region: rect(0px 500px 20px 480px); }
+.square-25 { -moz-image-region: rect(0px 520px 20px 500px); }
