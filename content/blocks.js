@@ -60,34 +60,10 @@ function createSqrBlockState(width, height, x, y, prepath, path, blockNum) {
 blocks["sqr"] = [];
 
 blocks["sqr"]["triples"] = [
-  [[
-  [ 0, 0, 0],
-  [26,26,26],
-  [ 0, 0, 0]
-  ],[
-  [ 0,26, 0],
-  [ 0,26, 0],
-  [ 0,26, 0]
-  ]],
-
-  [[
-  [ 0, 0, 0],
-  [ 0,27,27],
-  [ 0,27, 0]
-  ],[
-  [ 0, 0, 0],
-  [27,27, 0],
-  [ 0,27, 0]
-  ],[
-  [ 0,27, 0],
-  [27,27, 0],
-  [ 0, 0, 0]
-  ],[
-  [ 0,27, 0],
-  [ 0,27,27],
-  [ 0, 0, 0]
-  ]]
+  createSqrBlock(3, [sW], [sE,sE], 2),
+  createSqrBlock(3, [sS], [sN,sE]),
 ];
+
 
 // 4 triples where diagonal joins are allowed
 blocks["sqr"]["triples-strange"] = [
