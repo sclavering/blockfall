@@ -4,9 +4,6 @@ function setLevel(level) {
 function setSize(width, height) {
   Game.start(width, height, null);
 }
-function newGame() {
-  Game.start();
-}
 
 function keyPressed(e) {
   var key = e.keyCode;
@@ -40,7 +37,7 @@ function changeBlocks(menu) {
     if(items[i].hasAttribute("checked"))
       types.push(items[i].value);
   // get block shape
-  var newshape = menu.getAttribute("shape");;
+  var newshape = menu.getAttribute("shape");
   Blocks.change(newshape,types);
 }
 
@@ -78,7 +75,6 @@ window.addEventListener("load",function() {
   Game.init();
   Blocks.init();
   Blocks.change("hex");
-//  Game.start();
 }, false);
 
 
