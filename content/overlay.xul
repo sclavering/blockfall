@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
 
-<overlay id="BlockFallOverlay"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="blockfall" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-<!-- Firebird -->
+<!-- Firefox -->
 <menupopup id="menu_ToolsPopup">
-  <menuitem id="blockfall" label="Play BlockFall" insertbefore="prefSep"
+  <menuitem id="blockfall" label="BlockFall" insertbefore="prefSep"
       oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
     <!--  oncommand="toOpenWindowByType('blockfall-main','chrome://blockfall/content/');"/ -->
 </menupopup>
 
 <!-- Seamonkey -->
 <menupopup id="windowPopup">
-  <menuitem id="blockfall" label="Play BlockFall" insertbefore="sep-window-list"
+  <menuitem id="blockfall" label="BlockFall" insertbefore="sep-window-list"
       oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
 </menupopup>
 
