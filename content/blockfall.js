@@ -52,12 +52,18 @@ function changeMode(newshape) {
     FallingBlock = SquareFallingBlock;
     Grid = SquareGrid;
     height = 25;
-  } else {
+  } else if(newshape=="hex") {
     NextBlockDisplay = HexNextBlockDisplay;
     GridDisplay = HexPlayingField;
     FallingBlock = HexFallingBlock;
     Grid = HexGrid;
     height = 50;
+  } else {
+    NextBlockDisplay = TriNextBlockDisplay;
+    GridDisplay = TriPlayingField;
+    FallingBlock = TriFallingBlock;
+    Grid = HexGrid;
+    height = 51;
   }
   NextBlockDisplay.show();
   GridDisplay.show();
@@ -72,6 +78,9 @@ window.addEventListener("load",function() {
   HexPlayingField.init();
   HexNextBlockDisplay.init();
   HexNextBlockDisplay.setSize(5,10);
+  TriPlayingField.init();
+  TriNextBlockDisplay.init();
+  TriNextBlockDisplay.setSize(4,10);
   Game.init();
   Blocks.init();
   Blocks.change("hex");
@@ -211,6 +220,7 @@ var Blocks = {
   init: function() {
     this.shapeSets["square"] = blocks_square_standard;
     this.shapeSets["hex"] = blocks_hexagonal_standard;
+    this.shapeSets["tri"] = blocks_tri_4;
   },
   
   _next: null,
@@ -259,7 +269,7 @@ var Blocks = {
       case "triples2":
         return blocks_square_triples_strange;
       }
-    } else {
+    } else if(shape=="hex") {
       switch(type) {
       case "standard":
         return blocks_hexagonal_standard;
@@ -267,6 +277,13 @@ var Blocks = {
         return blocks_hexagonal_pentris;
       case "triples":
         return blocks_hexagonal_triples;
+      }
+    } else {
+      switch(type) {
+      case "3":
+        return blocks_tri_3;
+      case "4":
+        return blocks_tri_4;
       }
     }
     return [];
@@ -474,6 +491,14 @@ var HexFallingBlock = {
 }
 HexFallingBlock.__proto__ = BaseFallingBlock;
 
+
+// as for hex games, move left or right also goes down a line (makes
+// more sense than the alternative of left 2 lines).  move down goes
+// down 2 lines (also the same as hex games, though for different
+// reasons).  since requirements are the same we don't bother
+// duplicating code
+var TriFallingBlock = HexFallingBlock;
+
 var FallingBlock;
 
 
@@ -616,6 +641,50 @@ var HexGrid = {
 }
 HexGrid.__proto__ = BaseGrid;
 
+
+var TriGrid = {
+  /* "Lines" start from the left at a tile pointing right, and then go either
+     up or down for the next tile, and then procede across and always form a
+     solid block filling the two lines
+
+     We count down in 2s only alternate triangles point into the grid. Grids
+     have an odd numbered height though, starting and finishing with outward
+     pointing tiles (looks nicer that way)
+     */
+  removeCompleteLines: function() {
+    var y = this.height - 1;
+    var numLinesRemoved = 0;
+    while(y >= 0) {
+      if(this.canRemoveLine(y, y+1)) {
+        this.grid.splice(y,2);
+        this.grid.unshift(this.newEmptyRow());
+        this.grid.unshift(this.newEmptyRow());
+        numLinesRemoved++;
+      } else if(this.canRemoveLine(y, y-1)) {
+        this.grid.splice(y-1,2);
+        this.grid.unshift(this.newEmptyRow());
+        this.grid.unshift(this.newEmptyRow());
+        numLinesRemoved++;
+      // try next row
+      } else {
+        y -= 2;
+      }
+    }
+    // update score and lines
+    Game.scoreRemovingLines(numLinesRemoved);
+  },
+  
+  canRemoveLine: function(row, row2) {
+    var line = this.grid[row];
+    var line2 = this.grid[row2];
+    for(var x = 0; x < this.width; x++)
+      if(!line[x] || !line2[x]) return false;
+    return true;
+  }
+}
+TriGrid.__proto__ = BaseGrid;
+
+
 var Grid;
 
 
@@ -631,6 +700,7 @@ var BaseGridDisplay = {
 
   init: function() {
     this.container = document.getElementById(this.containerId);
+    this.container.hidden = true;
   },
 
   setSize: function(width, height) {
@@ -691,6 +761,16 @@ var BaseGridDisplay = {
     };
     tile.setState(0);
     return tile;
+  },
+  createTriTile: function(x, y) {
+    var left = (x%2==y%2);
+    var prefix = "tri-tile tri-" + (left ? "left-" : "right-");
+    var tile = document.createElement("image");
+    tile.setState = function(state) {
+      this.className = prefix + state;
+    };
+    tile.setState(0);
+    return tile;
   }
 }
 
@@ -736,6 +816,10 @@ var HexPlayingField = { containerId: "hex-playing-field" };
 HexPlayingField.__proto__ = BasePlayingField;
 HexPlayingField.createTile = HexPlayingField.createHexTile;
 
+var TriPlayingField = { containerId: "tri-playing-field" };
+TriPlayingField.__proto__ = BasePlayingField;
+TriPlayingField.createTile = TriPlayingField.createTriTile;
+
 var GridDisplay = null;
 
 
@@ -773,5 +857,9 @@ SquareNextBlockDisplay.createTile = SquareNextBlockDisplay.createSquareTile;
 var HexNextBlockDisplay = { containerId: "next-hex-block-display" };
 HexNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
 HexNextBlockDisplay.createTile = HexNextBlockDisplay.createHexTile;
+
+var TriNextBlockDisplay = { containerId: "next-tri-block-display" };
+TriNextBlockDisplay.__proto__ = BaseNextBlockDisplay;
+TriNextBlockDisplay.createTile = TriNextBlockDisplay.createTriTile;
 
 var NextBlockDisplay = null;

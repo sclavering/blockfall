@@ -1,0 +1,21 @@
+.tri-grid {
+  list-style-image: url(triangles.png);
+  padding-top: 9px;
+}
+
+.tri-tile { margin-top: -9px; }
+
+.tri-left-0  { -moz-image-region: rect(0 15px 18px 0); }
+.tri-right-0 { -moz-image-region: rect(0 30px 18px 15px); }
+.tri-left-1  { -moz-image-region: rect(18px 15px 36px 0); }
+.tri-right-1 { -moz-image-region: rect(18px 30px 36px 15px); }
+.tri-left-2  { -moz-image-region: rect(36px 15px 54px 0); }
+.tri-right-2 { -moz-image-region: rect(36px 30px 54px 15px); }
+.tri-left-3  { -moz-image-region: rect(54px 15px 72px 0); }
+.tri-right-3 { -moz-image-region: rect(54px 30px 72px 15px); }
+.tri-left-4  { -moz-image-region: rect(72px 15px 90px 0); }
+.tri-right-4 { -moz-image-region: rect(72px 30px 90px 15px); }
+.tri-left-5  { -moz-image-region: rect(90px 15px 108px 0); }
+.tri-right-5 { -moz-image-region: rect(90px 30px 108px 15px); }
+.tri-left-6  { -moz-image-region: rect(108px 15px 126px 0); }
+.tri-right-6 { -moz-image-region: rect(108px 30px 126px 15px); }

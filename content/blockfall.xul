@@ -11,6 +11,7 @@
 
   <script src="blocks.js" type="application/x-javascript"/>
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
+  <script src="blocks-triangular.js" type="application/x-javascript"/>
   <script src="blockfall.js" type="application/x-javascript"/>
 
   <toolbar>
@@ -33,6 +34,17 @@
         <!--
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
         -->
+      </menupopup>
+    </toolbarbutton>
+    <toolbarbutton id="blocks-tri" type="menu-button"
+        oncommand="Blocks.change('tri');" label="Tri">
+      <menupopup id="blocks-tri-types" oncommand="changeBlocks(this);" shape="tri">
+        <menuitem type="checkbox" label="Tiny (3 tiles)"  value="3"/>
+        <menuitem type="checkbox" label="Small (4 tiles)" value="4" checked="true"/>
+<!--
+        <menuitem type="checkbox" label="Medium (5 tiles)" value="5"/>
+        <menuitem type="checkbox" label="Large (6 tiles)"  value="6"/>
+-->
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="size-button" type="menu" label="Size">
@@ -68,14 +80,18 @@
       <label value="Level:"/>
       <description value="0" id="level-display"/>
       <label value="Next Block:"/>
+<!--
       <checkbox checked="true" label="Show" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
+-->
       <hbox id="next-sqr-block-display" class="square-grid"/>
       <hbox id="next-hex-block-display" class="hex-grid"/>
+      <hbox id="next-tri-block-display" class="tri-grid"/>
     </vbox>
 
     <spacer flex="1"/>
     <hbox id="sqr-playing-field" class="square-grid"/>
     <hbox id="hex-playing-field" class="hex-grid"/>
+    <hbox id="tri-playing-field" class="tri-grid"/>
     <spacer flex="1"/>
   </hbox>
 
