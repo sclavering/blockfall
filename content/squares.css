@@ -25,10 +25,9 @@
 .square-23 { -moz-image-region: rect(0px 480px 20px 460px); }
 .square-24 { -moz-image-region: rect(0px 500px 20px 480px); }
 .square-25 { -moz-image-region: rect(0px 520px 20px 500px); }
-
-.square-26 { -moz-image-region: rect(0px 40px 20px 20px); }
-.square-27 { -moz-image-region: rect(0px 60px 20px 40px); }
-.square-28 { -moz-image-region: rect(0px 80px 20px 60px); }
-.square-29 { -moz-image-region: rect(0px 100px 20px 80px); }
-.square-30 { -moz-image-region: rect(0px 120px 20px 100px); }
-.square-31 { -moz-image-region: rect(0px 140px 20px 120px); }
+.square-26 { -moz-image-region: rect(0px 540px 20px 520px); }
+.square-27 { -moz-image-region: rect(0px 560px 20px 540px); }
+.square-28 { -moz-image-region: rect(0px 580px 20px 560px); }
+.square-29 { -moz-image-region: rect(0px 600px 20px 580px); }
+.square-30 { -moz-image-region: rect(0px 620px 20px 600px); }
+.square-31 { -moz-image-region: rect(0px 640px 20px 620px); }
