@@ -5,40 +5,6 @@ function setSize(width, height) {
   Game.start(width, height, null);
 }
 
-function keyPressed(e) {
-  var key = e.keyCode;
-  if(Game.paused) {
-    //p or pause
-    if((key == 80)||(key == 19)) Game.pause();
-    return;
-  }
-  switch(key) {
-    case 40: // down
-    case 190: // .
-      FallingBlock.moveDown(); break;
-    case 37: // left
-    case 188: // ,
-      FallingBlock.moveLeft(); break;
-    case 39: // right
-    case 191: // /
-      FallingBlock.moveRight(); break;
-    case 38: // up
-    case 75: // k
-    case 88: // x
-      FallingBlock.rotateClockwise(); break;
-    case 74: // j
-    case 90: // z
-      FallingBlock.rotateAnticlockwise(); break;
-    case 72: // h
-    case e.DOM_VK_SPACE:
-      FallingBlock.drop(); break;
-    case 80: // p
-    case 19: // pause
-      Game.pause(); break;
-  }
-}
-
-
 
 function changeBlocks(shape, event) {
   var shapeChanged = (shape!=Blocks.currentShape);
@@ -132,7 +98,6 @@ var Game = {
 
     window.sizeToContent();
     GridDisplay.updateAll();
-    document.onkeydown = keyPressed;
     // add a block to top of grid
     Blocks.setNext();
     Blocks.next();

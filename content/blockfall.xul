@@ -16,8 +16,36 @@
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
   <script src="blocks-triangular.js" type="application/x-javascript"/>
 
+<commandset id="commands.main">
+  <command id="cmd.new" oncommand="Game.start();"/>
+  <command id="cmd.pause" oncommand="Game.pause();"/>
+
+  <command id="cmd.left" oncommand="if(!Game.paused) FallingBlock.moveLeft();"/>
+  <command id="cmd.right" oncommand="if(!Game.paused) FallingBlock.moveRight();"/>
+  <command id="cmd.down" oncommand="if(!Game.paused) FallingBlock.moveDown();"/>
+  <command id="cmd.drop" oncommand="if(!Game.paused) FallingBlock.drop();"/>
+  <command id="cmd.rotate.clockwise" oncommand="if(!Game.paused) FallingBlock.rotateClockwise();"/>
+  <command id="cmd.rotate.anticlockwise" oncommand="if(!Game.paused) FallingBlock.rotateAnticlockwise();"/>
+</commandset>
+
 <keyset id="main">
   <key id="key.new" key="n" modifiers="accel" oncommand="Game.start();"/>
+  <key id="key.pause" key="p" command="cmd.pause"/>
+  <key id="key.pause2" keycode="VK_PAUSE" command="cmd.pause"/>
+
+  <key id="key.left" keycode="VK_LEFT" command="cmd.left"/>
+  <key id="key.left2" key="," command="cmd.left"/>
+  <key id="key.right" keycode="VK_RIGHT" command="cmd.right"/>
+  <key id="key.right2" key="/" command="cmd.right"/>
+  <key id="key.down" keycode="VK_DOWN" command="cmd.down"/>
+  <key id="key.down2" key="." command="cmd.down"/>
+  <key id="key.drop" key=" " command="cmd.drop"/>
+  <key id="key.drop2" key="h" command="cmd.drop"/>
+  <key id="key.rotate.clockwise" keycode="VK_UP" command="cmd.rotate.clockwise"/>
+  <key id="key.rotate.clockwise2" key="k" command="cmd.rotate.clockwise"/>
+  <key id="key.rotate.clockwise3" key="x" command="cmd.rotate.clockwise"/>
+  <key id="key.rotate.anticlockwise" key="j" command="cmd.rotate.anticlockwise"/>
+  <key id="key.rotate.anticlockwise2" key="z" command="cmd.rotate.anticlockwise"/>
 </keyset>
 
   <toolbar id="main-toolbar">
