@@ -1,5 +1,6 @@
 @import url(chrome://global/skin/);
 @import url(squares.css);
+@import url(hexagons.css);
 
 #sidepanel {
 	background: black;

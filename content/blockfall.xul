@@ -10,9 +10,7 @@
   >
 
   <script src="blocks.js" type="application/x-javascript"/>
-  <!--
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
-  -->
   <script src="blockfall.js" type="application/x-javascript"/>
 
   <menubar id="menubar-main">
@@ -52,11 +50,9 @@
         </menu>
         <menuseparator/>
         <menuitem type="checkbox" checked="true" label="Show next block" oncommand="NextBlockDisplay.toggle();"/>
-        <!--
         <menuseparator/>
         <menuitem type="radio" label="Square Tiles" oncommand="changeTiles('square');" checked="true"/>
         <menuitem type="radio" label="Hexagonal Tiles" oncommand="changeTiles('hex');"/>
-        -->
       </menupopup>
     </menu>
   </menubar>
