@@ -8,6 +8,8 @@
     id="blockfall-window"
     windowtype="blockfall-main"
     title="&blockfall;"
+    onblur="pause();"
+
     persist="screenX screenY pref-tileshape pref-sqr-sizes pref-hex-sizes pref-tri-sizes pref-gridlines"
 
     pref-tileshape="sqr"
