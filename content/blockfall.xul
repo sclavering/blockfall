@@ -13,44 +13,14 @@
   <script src="blocks-hexagonal.js" type="application/x-javascript"/>
   <script src="blockfall.js" type="application/x-javascript"/>
 
-  <menubar id="menubar-main">
-    <menu id="menu-game" label="Game">
-      <menupopup id="menupopup-game">
-        <menu id="menu-size" label="Size">
-          <menupopup id="menupopup-size">
-            <menuitem type="radio" label="Small (8x20)" oncommand="setSize(8,20);"/>
-            <menuitem type="radio" label="Medium (10x25)" oncommand="setSize(10,25);" checked="true"/>
-            <menuitem type="radio" label="Large (12x30)" oncommand="setSize(12,30);"/>
-            <menuitem type="radio" label="Huge (15x35)" oncommand="setSize(15,35);"/>
-          </menupopup>
-        </menu>
-        <menu id="menu-level" label="Starting Level">
-          <menupopup oncommand="setLevel(event.target.value);">
-            <menuitem type="radio" label="Level 0" value="0" checked="true"/>
-            <menuitem type="radio" label="Level 1" value="1"/>
-            <menuitem type="radio" label="Level 2" value="2"/>
-            <menuitem type="radio" label="Level 3" value="3"/>
-            <menuitem type="radio" label="Level 4" value="4"/>
-            <menuitem type="radio" label="Level 5" value="5"/>
-            <menuitem type="radio" label="Level 6" value="6"/>
-            <menuitem type="radio" label="Level 7" value="7"/>
-            <menuitem type="radio" label="Level 8" value="8"/>
-            <menuitem type="radio" label="Level 9" value="9"/>
-          </menupopup>
-        </menu>
-        <menuseparator/>
-        <menuitem type="checkbox" checked="true" label="Show next block" oncommand="NextBlockDisplay.toggle();"/>
-      </menupopup>
-    </menu>
-  </menubar>
   <toolbar>
-    <toolbarbutton label="New" oncommand="newGame();"/>
-    <toolbarbutton label="Pause" oncommand="Game.pause();"/>
+    <toolbarbutton id="new-button" label="New" oncommand="Game.start();"/>
+    <toolbarbutton id="pause-button" label="Pause" oncommand="Game.pause();"/>
     <toolbarbutton id="blocks-square" type="menu-button"
         oncommand="Blocks.change('square');" label="Sqr">
       <menupopup id="blocks-square-types" oncommand="changeBlocks(this);" shape="square">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
-        <menuitem type="checkbox" label="Strange Triples"  value="triples2"/>
+        <menuitem type="checkbox" label="Strange Triples" value="triples2"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
       </menupopup>
@@ -65,6 +35,29 @@
         -->
       </menupopup>
     </toolbarbutton>
+    <toolbarbutton id="size-button" type="menu" label="Size">
+      <menupopup id="size-menupopup">
+        <menuitem type="radio" label="Small (8x20)" oncommand="setSize(8,20);"/>
+        <menuitem type="radio" label="Medium (10x25)" oncommand="setSize(10,25);" checked="true"/>
+        <menuitem type="radio" label="Large (12x30)" oncommand="setSize(12,30);"/>
+        <menuitem type="radio" label="Huge (15x35)" oncommand="setSize(15,35);"/>
+      </menupopup>
+    </toolbarbutton>
+    <toolbarbutton id="menu-level" type="menu" label="Level">
+      <menupopup oncommand="setLevel(event.target.value);">
+        <menuitem type="radio" label="Level 0" value="0" checked="true"/>
+        <menuitem type="radio" label="Level 1" value="1"/>
+        <menuitem type="radio" label="Level 2" value="2"/>
+        <menuitem type="radio" label="Level 3" value="3"/>
+        <menuitem type="radio" label="Level 4" value="4"/>
+        <menuitem type="radio" label="Level 5" value="5"/>
+        <menuitem type="radio" label="Level 6" value="6"/>
+        <menuitem type="radio" label="Level 7" value="7"/>
+        <menuitem type="radio" label="Level 8" value="8"/>
+        <menuitem type="radio" label="Level 9" value="9"/>
+      </menupopup>
+    </toolbarbutton>
+    <checkbox checked="true" label="Show Next" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
   </toolbar>
 
   <hbox>
