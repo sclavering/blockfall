@@ -47,6 +47,13 @@
 
 /* Square tiles */
 .square-grid { list-style-image: url(squares.png); }
+.gridlines .square-0 {
+  list-style-image: none;
+  width: 20px; height: 20px;
+  background: black;
+  border-left: 1px solid #111;
+  border-bottom: 1px solid #111;
+}
 .square-0 { -moz-image-region: rect(0px 20px 20px 0px); }
 .square-1 { -moz-image-region: rect(0px 40px 20px 20px); }
 .square-2 { -moz-image-region: rect(0px 60px 20px 40px); }
