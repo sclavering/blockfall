@@ -7,11 +7,12 @@
 <menupopup id="menu_ToolsPopup">
   <menuitem id="blockfall" label="Play BlockFall" insertbefore="prefSep"
       oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
+    <!--  oncommand="toOpenWindowByType('blockfall-main','chrome://blockfall/content/');"/ -->
 </menupopup>
 
 <!-- Seamonkey -->
-<menupopup id="taskPopup">
-  <menuitem id="blockfall" label="Play BlockFall"
+<menupopup id="windowPopup">
+  <menuitem id="blockfall" label="Play BlockFall" insertbefore="sep-window-list"
       oncommand="window.open('chrome://blockfall/content/',null,'chrome,resizable');"/>
 </menupopup>
 
