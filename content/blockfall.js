@@ -62,7 +62,7 @@ function changeMode(newshape) {
     NextBlockDisplay = TriNextBlockDisplay;
     GridDisplay = TriPlayingField;
     FallingBlock = TriFallingBlock;
-    Grid = HexGrid;
+    Grid = TriGrid;
     height = 51;
   }
   NextBlockDisplay.show();
@@ -645,40 +645,25 @@ HexGrid.__proto__ = BaseGrid;
 var TriGrid = {
   /* "Lines" start from the left at a tile pointing right, and then go either
      up or down for the next tile, and then procede across and always form a
-     solid block filling the two lines
-
-     We count down in 2s only alternate triangles point into the grid. Grids
-     have an odd numbered height though, starting and finishing with outward
-     pointing tiles (looks nicer that way)
+     solid block filling the two lines (which is why we just count down in 1s)
      */
   removeCompleteLines: function() {
-    var y = this.height - 1;
     var numLinesRemoved = 0;
-    while(y >= 0) {
-      if(this.canRemoveLine(y, y+1)) {
-        this.grid.splice(y,2);
-        this.grid.unshift(this.newEmptyRow());
-        this.grid.unshift(this.newEmptyRow());
-        numLinesRemoved++;
-      } else if(this.canRemoveLine(y, y-1)) {
-        this.grid.splice(y-1,2);
-        this.grid.unshift(this.newEmptyRow());
-        this.grid.unshift(this.newEmptyRow());
-        numLinesRemoved++;
-      // try next row
-      } else {
-        y -= 2;
-      }
-    }
+    for(var y = this.height - 2; y >= 0; y--)
+      while(this.tryRemoveLine(y)) numLinesRemoved++;
     // update score and lines
     Game.scoreRemovingLines(numLinesRemoved);
   },
   
-  canRemoveLine: function(row, row2) {
-    var line = this.grid[row];
-    var line2 = this.grid[row2];
+  tryRemoveLine: function(y) {
+    var line = this.grid[y];
+    var line2 = this.grid[y+1];
     for(var x = 0; x < this.width; x++)
       if(!line[x] || !line2[x]) return false;
+    // remove
+    this.grid.splice(y, 2);
+    this.grid.unshift(this.newEmptyRow());
+    this.grid.unshift(this.newEmptyRow());
     return true;
   }
 }
