@@ -480,17 +480,12 @@ var Display, NextBlockDisplay;
 function createImageArray(width, height, boxToAppendTo) {
   var box = document.getElementById(boxToAppendTo);
   // create a grid and add the colums
-  var grid = document.createElement("grid");
-  var columns = document.createElement("columns");
-  for(var x = 0; x < width; x++) {
-    columns.appendChild(document.createElement("column"));
-  }
+  var vbox = document.createElement("vbox");
   // create the rows of images, adding each image to NextBlockDisplay[y][x];
-  var rows = document.createElement("rows");
   var imageArray = new Array(height);
   // add <row>s to rows, and 2nd dimension to array
   for(var y = 0; y < height; y++) {
-    var row = document.createElement("row");
+    var row = document.createElement("hbox");
     imageArray[y] = new Array(width);
     // add images to row and to array
     for(var x = 0; x < width; x++) {
@@ -498,12 +493,10 @@ function createImageArray(width, height, boxToAppendTo) {
       imageArray[y][x].className = "block-0";
       row.appendChild(imageArray[y][x]);
     }
-    rows.appendChild(row);
+    vbox.appendChild(row);
   }
   // add rows and columns to grid, append grid to box, and return imageArray
-  grid.appendChild(columns);
-  grid.appendChild(rows);
-  box.appendChild(grid);
+  box.appendChild(vbox);
   return imageArray;
 }
 
