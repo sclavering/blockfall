@@ -30,7 +30,6 @@
 </commandset>
 
 <keyset id="main">
-  <key id="key.new" key="n" modifiers="accel" oncommand="Game.start();"/>
   <key id="key.pause" key="p" command="cmd.pause"/>
   <key id="key.pause2" keycode="VK_PAUSE" command="cmd.pause"/>
 
@@ -50,9 +49,12 @@
 </keyset>
 
 <toolbar id="main-toolbar">
-  <toolbarbutton id="btn-new" label="&new.label;" tooltiptext="&new.tip;" oncommand="Game.start();"/>
-  <toolbarbutton id="btn-pause" label="&pause.label;" tooltiptext="&pause.tip;" command="cmd.pause"/>
-  <toolbarbutton id="btn-settings" label="&settings.label;" oncommand="showSettingsDialogue();"/>
+  <toolbarbutton id="btn-new" oncommand="Game.start();"
+      label="&new.label;" tooltiptext="&new.tip;" accesskey="&new.akey;"/>
+  <toolbarbutton id="btn-pause" command="cmd.pause"
+      label="&pause.label;" tooltiptext="&pause.tip;" accesskey="&pause.akey;"/>
+  <toolbarbutton id="btn-settings" oncommand="showSettingsDialogue();"
+      label="&settings.label;" accesskey="&settings.akey;"/>
 </toolbar>
 
 <box id="box-main">

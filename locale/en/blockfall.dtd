@@ -9,9 +9,14 @@
 
 <!ENTITY new.label "New">
 <!ENTITY new.tip "Start a new game">
+<!ENTITY new.akey "N">
+
 <!ENTITY pause.label "Pause">
 <!ENTITY pause.tip "Pause or unpause the current game">
+<!ENTITY pause.akey "P">
+
 <!ENTITY settings.label "Settings...">
+<!ENTITY settings.akey "S">
 
 <!ENTITY msg.paused "Paused">
 
