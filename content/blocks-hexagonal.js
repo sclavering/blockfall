@@ -167,8 +167,44 @@ blocks["hex"]["pentris"] = [
   createHexBlock(5, [hNE], [hSW,hS,hNW,hSW]),
   // b
   createHexBlock(5, [], [hSW,hN,hNE,hNE]),
-
-  // xxx: incomplete
+  createHexBlock(5, [], [hSE,hN,hNW,hNW]),
+  // I
+  createHexBlock(5, [hNE,hNE], [hSW,hSW,hSW,hSW]),
+  // l
+  createHexBlock(5, [hNE,hSE], [hNW,hSW,hSW,hSW]),
+  createHexBlock(5, [hNW,hSW], [hNE,hSE,hSE,hSE]),
+  // C
+  createHexBlock(5, [hSW,hS], [hN,hNE,hNE,hSE]),
+  // Vs
+  createHexBlock(5, [hS,hS], [hN,hN,hNE,hNE]),
+  createHexBlock(5, [hSE,hSE], [hNW,hNW,hNE,hNE]),
+  // w
+  createHexBlock(5, [hNW,hSW], [hNE,hSE,hNE,hSE]),
+  // squiggle
+  createHexBlock(5, [hSW,hSW], [hNE,hNE,hSE,hNE]),
+  createHexBlock(5, [hSE,hSE], [hNW,hNW,hSW,hNW]),
+  // f
+  createHexBlock(5, [], [hS,hNW,hNE,hNE,hSE]),
+  createHexBlock(5, [], [hS,hNE,hNW,hNW,hSW]),
+  // j
+  createHexBlock(5, [hSW], [hNE,hNE,hSE,hS]),
+  createHexBlock(5, [hSE], [hNW,hNW,hSW,hS]),
+  // r
+  createHexBlock(5, [hS], [hN,hN,hSE,hNE]),
+  createHexBlock(5, [hS], [hN,hN,hSW,hNW]),
+  // y
+  createHexBlock(5, [], [hSW,hN,hSE,hNE,hSE]),
+  createHexBlock(5, [], [hSE,hN,hSW,hNW,hSW]),
+  // c
+  createHexBlock(5, [hS], [hNW,hN,hNE,hSE]),
+  // Y
+  createHexBlock(5, [], [hS,hN,hNW,hSE,hNE,hNE]),
+  // ~
+  createHexBlock(5, [hSW,hNW], [hSE,hNE,hNE,hSE]),
+  createHexBlock(5, [hNW,hSW], [hNE,hSE,hSE,hNE]),
+  // t
+  createHexBlock(5, [hSE], [hN,hSW,hSW,hSW]),
+  createHexBlock(5, [hSW], [hN,hSE,hSE,hSE]),
 ];
 
 blocks["hex"]["current"] = blocks["hex"]["standard"];
