@@ -87,26 +87,6 @@ function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
 }
 
 
-// XXX: obsolete.  switch to createTriBlock
-function createTriState(width, height, x, y, directions) {
-  var block = new Array(height);
-  for(var i = 0; i < height; i++) {
-    block[i] = new Array(width);
-    for(var j = 0; j < width; j++) block[i][j] = 0;
-  }
-  block[y][x] = 1;
-  for(var k = 0; k < directions.length; k++) {
-    switch(directions[k]) {
-      case N: y--; break;
-      case S: y++; break;
-      case E: x++; break;
-      case W: x--;
-    }
-    block[y][x] = 1;
-  }
-  return block;
-}
-
 
 
 blocks["tri"] = [];
@@ -148,169 +128,34 @@ blocks["tri"]["5"] = [
 
 
 blocks["tri"]["6"] = [
-  [
-  createTriState(2,5,0,2,[E,S,W,S,E])
-  ],
-
-  [
-  createTriState(4,6,1,1,[E,S,W,S,E]),
-  createTriState(4,6,2,1,[S,W,E,S,E,W,S]),
-  createTriState(4,6,2,2,[S,E,W,S,S,N,W]),
-  createTriState(4,6,2,3,[W,S,E,S,W]),
-  createTriState(4,6,2,4,[W,S,N,N,W,E,N]),
-  createTriState(4,6,1,4,[N,W,E,N,E,W,N])
-  ],
-
-  [
-  createTriState(4,8,0,3,[E,N,E,N,E]),
-  createTriState(4,8,1,1,[S,E,S,E,S]),
-  createTriState(4,8,2,1,[S,S,S,S,S]),
-  createTriState(4,8,3,3,[W,S,W,S,W]),
-  createTriState(4,8,2,5,[N,W,N,W,N]),
-  createTriState(4,8,1,5,[N,N,N,N,N])
-  ],
-
-  [
-  createTriState(4,8,0,1,[E,S,E,S,E]),
-  createTriState(4,8,2,0,[S,S,S,S,S]),
-  createTriState(4,8,3,2,[S,W,S,W,S]),
-  createTriState(4,8,3,5,[W,N,W,N,W]),
-  createTriState(4,8,1,6,[N,N,N,N,N]),
-  createTriState(4,8,0,4,[N,E,N,E,N])
-  ],
-
-  [
-  createTriState(4,6,1,2,[E,S,E,W,S,W]),
-  createTriState(4,6,2,2,[S,S,S,N,W,N]),
-  createTriState(4,6,2,3,[S,W,S,N,N,N]),
-  createTriState(4,6,2,4,[W,N,W,E,N,E]),
-  createTriState(4,6,1,4,[N,N,N,S,E,S]),
-  createTriState(4,6,1,3,[N,E,N,S,S,S])
-  ],
-
-  [
-  createTriState(4,6,1,3,[S,E,N,N,N]),
-  createTriState(4,6,1,2,[S,S,E,N,E]),
-  createTriState(4,6,2,2,[W,S,S,E,S]),
-  createTriState(4,6,2,3,[N,W,S,S,S]),
-  createTriState(4,6,2,4,[N,N,W,S,W]),
-  createTriState(4,6,1,4,[E,N,N,W,N])
-  ],
-
-  [
-  createTriState(4,6,2,3,[S,W,N,N,N]),
-  createTriState(4,6,2,4,[W,N,N,E,N]),
-  createTriState(4,6,1,4,[N,N,E,S,E]),
-  createTriState(4,6,1,3,[N,E,S,S,S]),
-  createTriState(4,6,1,2,[E,S,S,W,S]),
-  createTriState(4,6,2,2,[S,S,W,N,W])
-  ],
-
-  [
-  createTriState(4,7,1,4,[E,N,N,N,E]),
-  createTriState(4,7,1,3,[S,E,N,E,S]),
-  createTriState(4,7,1,2,[S,S,E,S,S]),
-  createTriState(4,7,2,2,[W,S,S,S,W]),
-  createTriState(4,7,2,3,[N,W,S,W,N]),
-  createTriState(4,7,2,4,[N,N,W,N,N])
-  ],
-
-  [
-  createTriState(4,7,2,4,[W,N,N,N,W]),
-  createTriState(4,7,1,4,[N,N,E,N,N]),
-  createTriState(4,7,1,3,[N,E,S,E,N]),
-  createTriState(4,7,1,2,[E,S,S,S,E]),
-  createTriState(4,7,2,2,[S,S,W,S,S]),
-  createTriState(4,7,2,3,[S,W,N,W,S])
-  ],
-
-  [
-  createTriState(4,7,0,3,[E,S,E,N,E]),
-  createTriState(4,7,1,1,[S,S,S,E,S]),
-  createTriState(4,7,2,1,[S,W,S,S,S]),
-  createTriState(4,7,3,3,[W,N,W,S,W]),
-  createTriState(4,7,2,5,[N,N,N,W,N]),
-  createTriState(4,7,1,5,[N,E,N,N,N])
-  ],
-
-  [
-  createTriState(4,7,1,3,[N,E,S,N,N,E]),
-  createTriState(4,7,1,2,[E,S,S,N,E,S]),
-  createTriState(4,7,2,2,[S,S,W,E,S,S]),
-  createTriState(4,7,2,3,[S,W,N,S,S,W]),
-  createTriState(4,7,2,4,[W,N,N,S,W,N]),
-  createTriState(4,7,1,4,[N,N,E,W,N,N])
-  ],
-
-  [
-  createTriState(4,6,0,3,[E,N,E,N,S,S]),
-  createTriState(4,6,1,1,[S,E,S,E,W,S]),
-  createTriState(4,6,2,1,[S,S,S,S,N,W]),
-  createTriState(4,6,3,3,[W,S,W,S,N,N]),
-  createTriState(4,6,2,5,[N,W,N,W,E,N]),
-  createTriState(4,6,1,5,[N,N,N,N,S,E])
-  ],
-
-  [
-  createTriState(4,6,1,1,[S,E,S,E,W,S]),
-  createTriState(4,6,2,1,[S,S,S,S,N,W]),
-  createTriState(4,6,3,3,[W,S,W,S,N,N]),
-  createTriState(4,6,2,5,[N,W,N,W,E,N]),
-  createTriState(4,6,1,5,[N,N,N,N,S,E]),
-  createTriState(4,6,0,3,[E,N,E,N,S,S])
-  ],
-
-  [
-  createTriState(4,6,2,3,[N,W,S,W,E,S]),
-  createTriState(4,6,2,4,[N,N,W,N,S,S]),
-  createTriState(4,6,1,4,[E,N,N,N,S,W]),
-  createTriState(4,6,1,3,[S,E,N,E,W,N]),
-  createTriState(4,6,1,2,[S,S,E,S,N,N]),
-  createTriState(4,6,2,2,[W,S,S,S,N,E])
-  ],
-
-  [
-  createTriState(4,6,1,3,[N,E,S,E,W,S]),
-  createTriState(4,6,1,2,[E,S,S,W,E,S]),
-  createTriState(4,6,2,2,[S,S,W,S,N,N]),
-  createTriState(4,6,2,3,[S,W,N,W,E,N]),
-  createTriState(4,6,2,4,[W,N,N,N,S,E]),
-  createTriState(4,6,1,4,[N,N,E,N,S,S])
-  ],
-
-  [
-  createTriState(4,7,1,4,[N,N,E,N,E]),
-  createTriState(4,7,1,3,[N,E,S,E,S]),
-  createTriState(4,7,1,2,[E,S,S,S,S]),
-  createTriState(4,7,2,2,[S,S,W,S,W]),
-  createTriState(4,7,2,3,[S,W,N,W,N]),
-  createTriState(4,7,2,4,[W,N,N,N,N])
-  ],
-
-  [
-  createTriState(4,7,2,4,[N,N,W,N,W]),
-  createTriState(4,7,1,4,[E,N,N,N,N]),
-  createTriState(4,7,1,3,[S,E,N,E,N]),
-  createTriState(4,7,1,2,[S,S,E,S,E]),
-  createTriState(4,7,2,2,[W,S,S,S,S]),
-  createTriState(4,7,2,3,[N,W,S,W,S])
-  ],
-
-  [
-  createTriState(4,7,2,4,[N,N,W,E,N,E]),
-  createTriState(4,7,1,4,[E,N,N,S,E,S]),
-  createTriState(4,7,1,3,[S,E,N,S,S,S]),
-  createTriState(4,7,1,2,[S,S,E,W,S,W]),
-  createTriState(4,7,2,2,[W,S,S,N,W,N]),
-  createTriState(4,7,2,3,[N,W,S,N,N,N])
-  ],
-
-  [
-  createTriState(4,7,1,4,[N,N,E,W,N,W]),
-  createTriState(4,7,1,3,[N,E,S,N,N,N]),
-  createTriState(4,7,1,2,[E,S,S,N,E,N]),
-  createTriState(4,7,2,2,[S,S,W,E,S,E]),
-  createTriState(4,7,2,3,[S,W,N,S,S,S]),
-  createTriState(4,7,2,4,[W,N,N,S,W,S])
-  ]
+  // hex
+  createTriBlock(4, [], [tE,tSE,tSE,tW,tNE], 1),
+  // h/x (2 half hexes)
+  createTriBlock(4, [tNW], [tSE,tSW,tNE,tE,tSE,tNW,tNE]),
+  // beam
+  createTriBlock(6, [tSW,tW], [tE,tNE,tE,tNE,tE]),
+  createTriBlock(6, [tNW,tW], [tE,tSE,tE,tSE,tE]),
+  // V+v
+  createTriBlock(4, [], [tE,tSE,tE,tW,tSW,tW]),
+  createTriBlock(4, [tSW,tW], [tE,tSE,tE,tNE,tE]),
+  // hook
+  createTriBlock(4, [tSW], [tSE,tE,tNE,tNW,tNE]),
+  createTriBlock(4, [tE,tSE], [tSW,tW,tNW,tNE,tNW]),
+  // s
+  createTriBlock(6, [tSW,tSE], [tE,tNE,tNW,tNE,tE]),
+  createTriBlock(6, [tSW,tSE,tE], [tW,tNW,tNE,tNW,tW]),
+  // t
+  createTriBlock(6, [tSW], [tNE,tE,tSE,tNW,tNE,tE]),
+  // p/q (on their sides)
+  createTriBlock(4, [tSW,tW], [tE,tNE,tE,tNE,tSW,tSE]),
+  createTriBlock(4, [tSW], [tNE,tNW,tSE,tE,tSE,tE]),
+  // f
+  createTriBlock(6, [tSW,tW], [tE,tSE,tNW,tNE,tE,tSE]),
+  createTriBlock(6, [tSW], [tNE,tE,tSE,tSW,tNE,tE]),
+  // j
+  createTriBlock(6, [tNW,tW], [tE,tSE,tE,tSE,tSW]),
+  createTriBlock(6, [tSW,tSE], [tNW,tNE,tE,tNE,tE]),
+  // h
+  createTriBlock(6, [tE], [tW,tSW,tSE,tNW,tW,tNW]),
+  createTriBlock(6, [], [tE,tSE,tSW,tNE,tE,tNE]),
 ];
