@@ -78,7 +78,7 @@ window.addEventListener("load", function() {
   NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
   Blocks.init();
-  Blocks.change("hex");
+  Blocks.change("sqr");
 }, false);
 
 
