@@ -72,7 +72,7 @@ window.addEventListener("load", function() {
     NextBlockDisplays[shape] = new NextBlockDisplayObj(shape);
   }
   NextBlockDisplays["sqr"].setSize(5,5);
-  NextBlockDisplays["hex"].setSize(5,10);
+  NextBlockDisplays["hex"].setSize(7,13);
   NextBlockDisplays["tri"].setSize(6,10);
   Game.init();
   changeBlocks("sqr");
@@ -380,6 +380,8 @@ var BaseFallingBlock = {
 
 
 var SquareFallingBlock = {
+  __proto__: BaseFallingBlock,
+  
   moveLeft: function() {
     if(!this.canMoveTo(-1,0)) return;
     this.left--;
@@ -405,12 +407,13 @@ var SquareFallingBlock = {
     return can;
   }
 }
-SquareFallingBlock.__proto__ = BaseFallingBlock;
 
 
 // in the hexagonal grid it is impossible to just move left or right, we must move down a line too.
 // also moving down a line actually means moving down 2 lines, because the arrays are of half hexes
 var HexFallingBlock = {
+  __proto__: BaseFallingBlock,
+  
   moveLeft: function() {
     if(!this.canMoveTo(-1,+1)) return;
     this.left--;
@@ -440,7 +443,6 @@ var HexFallingBlock = {
     return can;
   }
 }
-HexFallingBlock.__proto__ = BaseFallingBlock;
 
 
 // as for hex games, move left or right also goes down a line (makes
@@ -506,6 +508,8 @@ var BaseGrid = {
 
 
 var SquareGrid = {
+  __proto__: BaseGrid,
+ 
   removeCompleteLines: function() {
     // work out which lines need removing
     var linesToRemove = [];
@@ -527,10 +531,11 @@ var SquareGrid = {
     return true;
   }
 }
-SquareGrid.__proto__ = BaseGrid;
 
 
 var HexGrid = {
+  __proto__: BaseGrid,
+  
   /* We have to check both the row specified and the row below it
      (because each hex is represented as two halves).  Also hex
      lines are not truly horizontal.
@@ -594,10 +599,11 @@ var HexGrid = {
     this.grid.unshift(this.newEmptyRow());
   }
 }
-HexGrid.__proto__ = BaseGrid;
 
 
 var TriGrid = {
+  __proto__: BaseGrid,
+  
   /* "Lines" start from the left at a tile pointing right, and then go either
      up or down for the next tile, and then procede across and always form a
      solid block filling the two lines (which is why we just count down in 1s)
@@ -622,7 +628,6 @@ var TriGrid = {
     return true;
   }
 }
-TriGrid.__proto__ = BaseGrid;
 
 
 var Grids = [];
@@ -692,7 +697,7 @@ var BaseGridDisplay = {
     return tile;
   },
   createHexTile: function(x, y) {
-    var up = (x%2==y%2);
+    var up = (x % 2 == y % 2);
     var prefix = "hex-" + (up ? "top-" : "btm-");
     var tile = document.createElement("image");
     tile.setState = function(state) {
@@ -702,7 +707,7 @@ var BaseGridDisplay = {
     return tile;
   },
   createTriTile: function(x, y) {
-    var left = (x%2==y%2);
+    var left = (x % 2 == y % 2);
     var prefix = "tri-tile tri-" + (left ? "left-" : "right-");
     var tile = document.createElement("image");
     tile.setState = function(state) {
@@ -718,6 +723,8 @@ var BaseGridDisplay = {
 
 
 var BasePlayingField = {
+  __proto__: BaseGridDisplay,
+  
   updateArea: function(top, right, bottom, left) {
     for(var x = left; x < right; x++) {
       for(var y = top; y < bottom; y++) {
@@ -745,7 +752,6 @@ var BasePlayingField = {
         this.grid[x][y].setState(Grid.getElement(x,y));
   }
 }
-BasePlayingField.__proto__ = BaseGridDisplay;
 
 
 function GridDisplayObj(shape) {
@@ -768,6 +774,8 @@ var GridDisplay = null;
 
 
 var BaseNextBlockDisplay = {
+  __proto__: BaseGridDisplay,
+  
   enabled: true,
 
   update: function(block) {
@@ -789,7 +797,6 @@ var BaseNextBlockDisplay = {
     this.enabled = !this.enabled;
   }
 }
-BaseNextBlockDisplay.__proto__ = BaseGridDisplay;
 
 
 function NextBlockDisplayObj(shape) {
