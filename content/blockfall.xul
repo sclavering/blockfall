@@ -7,7 +7,7 @@
   title="BlockFall"
   orient="vertical"
   persist="screenX screenY pref-shape"
-  
+
   pref-shape="sqr"
   >
 
@@ -23,7 +23,6 @@
         oncommand="changeBlocks('sqr',event);" tooltiptext="Play with Square blocks">
       <menupopup id="blocks-sqr-types">
         <menuitem type="checkbox" label="Triples"  value="triples"/>
-        <menuitem type="checkbox" label="Strange Triples" value="triples-strange"/>
         <menuitem type="checkbox" label="Standard" value="standard" checked="true"/>
         <menuitem type="checkbox" label="Pentris"  value="pentris"/>
       </menupopup>

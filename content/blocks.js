@@ -1,10 +1,9 @@
 // direction consts.
-const sN = 0, sE = 1, sS = 2, sW = 3;
+const sN = 0, sNE = 1, sE = 2, sSE = 3, sS = 4, sSW = 5, sW = 6, sNW = 7;
 
 var sqrLastBlockNumber = 0;
-// update to match number of available hex tile images
+// update to match number of available sqr tile images
 var sqrMaxBlockNumber = 31;
-
 
 
 function createSqrBlock(size, prepath, path, numstates) {
@@ -18,10 +17,10 @@ function createSqrBlock(size, prepath, path, numstates) {
 
   var block = new Array(numstates);
   block[0] = createSqrBlockState(size, size, origin, origin, prepath, path, blockNum);
-  for(var i = 1; i < numstates; i++) {
+  for(var i = 1; i != numstates; i++) {
     // rotate the paths
-    for(var j = 0; j < prepath.length; j++) prepath[j] = (prepath[j]+1)%4;
-    for(var k = 0; k < path.length; k++) path[k] = (path[k]+1)%4;
+    for(var j = 0; j != prepath.length; j++) prepath[j] = (prepath[j] + 2) % 8;
+    for(var k = 0; k != path.length; k++) path[k] = (path[k] + 2) % 8;
     block[i] = createSqrBlockState(size, size, origin, origin, prepath, path, blockNum);
   }
 
@@ -35,17 +34,17 @@ function createSqrBlockState(width, height, x, y, prepath, path, blockNum) {
     for(var j = 0; j < width; j++) state[i][j] = 0;
   }
 
-  // changes in x and y directions for hN, hNE, hSE, hS, hSW, hNW (in that order).
-  var ys = [-1,0,1,0];
-  var xs = [0,1,0,-1];
+  // changes in x and y directions
+  const ys = [-1,-1,0,1,1,1,0,-1];
+  const xs = [0,1,1,1,0,-1,-1,-1];
 
-  for(var n = 0; n < prepath.length; n++) {
+  for(var n = 0; n != prepath.length; n++) {
     x += xs[prepath[n]];
     y += ys[prepath[n]];
   }
 
   state[y][x] = blockNum;
-  for(var k = 0; k < path.length; k++) {
+  for(var k = 0; k != path.length; k++) {
     x += xs[path[k]];
     y += ys[path[k]];
     state[y][x] = blockNum;
@@ -55,89 +54,11 @@ function createSqrBlockState(width, height, x, y, prepath, path, blockNum) {
 }
 
 
-
-blocks["sqr"] = [];
-
-blocks["sqr"]["triples"] = [
-  createSqrBlock(3, [sW], [sE,sE], 2),
-  createSqrBlock(3, [sS], [sN,sE]),
-];
-
-
-// 4 triples where diagonal joins are allowed
-blocks["sqr"]["triples-strange"] = [
-  [[
-  [ 0, 0, 0],
-  [28, 0,28],
-  [ 0,28, 0]
-  ],[
-  [ 0,28, 0],
-  [28, 0, 0],
-  [ 0,28, 0]
-  ],[
-  [ 0,28, 0],
-  [28, 0,28],
-  [ 0, 0, 0]
-  ],[
-  [ 0,28, 0],
-  [ 0, 0,28],
-  [ 0,28, 0]
-  ]],
-
-  [[
-  [ 0, 0, 0],
-  [29,29, 0],
-  [ 0, 0,29]
-  ],[
-  [ 0,29, 0],
-  [ 0,29, 0],
-  [29, 0, 0]
-  ],[
-  [29, 0, 0],
-  [ 0,29,29],
-  [ 0, 0, 0]
-  ],[
-  [ 0, 0,29],
-  [ 0,29, 0],
-  [ 0,29, 0]
-  ]],
-
-  [[
-  [ 0, 0, 0],
-  [ 0,30,30],
-  [30, 0, 0]
-  ],[
-  [30, 0, 0],
-  [ 0,30, 0],
-  [ 0,30, 0]
-  ],[
-  [ 0, 0,30],
-  [30,30, 0],
-  [ 0, 0, 0]
-  ],[
-  [ 0,30, 0],
-  [ 0,30, 0],
-  [ 0, 0,30]
-  ]],
-
-  [[
-  [ 0, 0, 0],
-  [ 0, 0,31],
-  [ 0,31, 0],
-  [31, 0, 0]
-  ],[
-  [ 0, 0, 0],
-  [31, 0, 0],
-  [ 0,31, 0],
-  [ 0, 0,31]
-  ]]
-];
-
-
+blocks.sqr = [];
 
 
 // 7 standard blocks
-blocks["sqr"]["standard"] = [
+blocks.sqr.standard = [
   // l
   createSqrBlock(3, [sE], [sW,sW,sS]),
   // f
@@ -157,9 +78,8 @@ blocks["sqr"]["standard"] = [
 ];
 
 
-
 // 18 sqr pentris blocks
-blocks["sqr"]["pentris"] = [
+blocks.sqr.pentris = [
   // f
   createSqrBlock(5, [sE,sS], [sN,sW,sW,sW]),
   createSqrBlock(5, [sW,sS], [sN,sE,sE,sE]),
@@ -172,7 +92,7 @@ blocks["sqr"]["pentris"] = [
   createSqrBlock(5, [sE], [sW,sW,sS,sE]),
   createSqrBlock(5, [sW], [sE,sE,sS,sW]),
   // +
-  createSqrBlock(5, [], [sN,sS,sE,sW,sS,sN,sW], 1),
+  createSqrBlock(5, [], [sN,sSE,sSW,sNW], 1),
   // S
   createSqrBlock(3, [sW,sN], [sS,sE,sE,sS], 2),
   createSqrBlock(5, [sW,sS], [sN,sE,sE,sN], 2),
@@ -190,4 +110,16 @@ blocks["sqr"]["pentris"] = [
   // 4
   createSqrBlock(5, [sS], [sN,sE,sW,sW,sN]),
   createSqrBlock(5, [sS], [sN,sW,sE,sE,sN]),
+];
+
+
+// 6 triples; diagonal joins are allowed
+blocks.sqr.triples = [
+  createSqrBlock(3, [sW], [sE,sE], 2),
+  createSqrBlock(3, [sS], [sN,sE]),
+
+  createSqrBlock(3, [sW], [sSE,sNE]),
+  createSqrBlock(3, [sW], [sE,sSE]),
+  createSqrBlock(3, [sSW], [sNE,sE]),
+  createSqrBlock(3, [sSW], [sNE,sNE], 2)
 ];
