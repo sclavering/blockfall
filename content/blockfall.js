@@ -620,7 +620,7 @@ Grids.tri = {
 const createTiles = {
   sqr: function(x, y) {
     var tile = document.createElement("image");
-    tile.prefix = "square-";
+    tile.classPrefix = "square-";
     tile.className = "square-0";
     return tile;
   },
@@ -628,7 +628,7 @@ const createTiles = {
   hex: function(x, y) {
     var up = (x % 2 == y % 2);
     var tile = document.createElement("image");
-    var prefix = tile.prefix = "hex-" + (up ? "top-" : "btm-");
+    var prefix = tile.classPrefix = "hex-" + (up ? "top-" : "btm-");
     tile.className = prefix + "0";
     return tile;
   },
@@ -636,7 +636,7 @@ const createTiles = {
   tri: function(x, y) {
     var left = (x % 2 == y % 2);
     var tile = document.createElement("image");
-    var prefix = tile.prefix = "tri tri-" + (left ? "left-" : "right-");
+    var prefix = tile.classPrefix = "tri tri-" + (left ? "left-" : "right-");
     tile.className = prefix + "0";
     return tile;
   }
@@ -683,7 +683,7 @@ var BaseGridDisplay = {
     for(var x = 0; x != w; x++) {
       for(var y = 0; y != h; y++) {
         var tile = this.grid[x][y];
-        tile.className = tile.prefix+"0";
+        tile.className = tile.classPrefix + "0";
       }
     }
   },
@@ -711,7 +711,7 @@ var BasePlayingField = {
         var val = FallingBlock.safeGetElement(x,y);
         if(!val) val = Grid.getElement(x,y);
         var tile = this.grid[x][y];
-        tile.className = tile.prefix + val;
+        tile.className = tile.classPrefix + val;
       }
     }
   },
@@ -732,7 +732,7 @@ var BasePlayingField = {
     for(var x = 0; x != w; x++) {
       for(var y = 0; y != h; y++) {
         var tile = this.grid[x][y];
-        tile.className = tile.prefix + Grid.getElement(x,y);
+        tile.className = tile.classPrefix + Grid.getElement(x,y);
       }
     }
   }
@@ -768,7 +768,7 @@ var BaseNextBlockDisplay = {
     for(var y = 0, y2 = top; y < block.length && y2 < h; y++, y2++) {
       for(var x = 0, x2 = left; x < block[0].length && x2 < w; x++, x2++) {
         var tile = this.grid[x2][y2];
-        tile.className = tile.prefix + block[y][x];
+        tile.className = tile.classPrefix + block[y][x];
       }
     }
   },
