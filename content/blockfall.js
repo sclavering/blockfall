@@ -24,6 +24,7 @@ function keyPressed(e) {
       FallingBlock.rotateClockwise(); break;
     case 74: // j
       FallingBlock.rotateAnticlockwise(); break;
+    case 72: // h
     case e.DOM_VK_SPACE:
       FallingBlock.drop(); break;
     case 80: // p
@@ -386,7 +387,7 @@ var BaseFallingBlock = {
 
 var SquareFallingBlock = {
   __proto__: BaseFallingBlock,
-  
+
   moveLeft: function() {
     if(!this.canMoveTo(-1,0)) return;
     this.left--;
@@ -418,7 +419,7 @@ var SquareFallingBlock = {
 // also moving down a line actually means moving down 2 lines, because the arrays are of half hexes
 var HexFallingBlock = {
   __proto__: BaseFallingBlock,
-  
+
   moveLeft: function() {
     if(!this.canMoveTo(-1,+1)) return;
     this.left--;
@@ -453,7 +454,7 @@ var HexFallingBlock = {
 var TriFallingBlock = {
   // as for hex games, move left or right also goes down a line, so share code
   __proto__: HexFallingBlock,
-  
+
   moveDown: function() {
     // testing both lines ensures a triangle can't drop through a bunch facing
     // the other direction.
@@ -518,7 +519,7 @@ var BaseGrid = {
   setElement: function(x, y, val) {
     this.grid[y][x] = val;
   },
-  
+
   lineIsFull: function(y) {
     var line = this.grid[y];
     for(var x = 0; x != this.width; x++) if(!line[x]) return false;
@@ -529,7 +530,7 @@ var BaseGrid = {
 
 var SquareGrid = {
   __proto__: BaseGrid,
- 
+
   removeCompleteLines: function() {
     // work out which lines need removing
     var linesToRemove = [];
@@ -549,9 +550,9 @@ var SquareGrid = {
 
 var HexGrid = {
   __proto__: BaseGrid,
-  
+
   removeCompleteLines: function() {
-    var numLinesRemoved = 0;  
+    var numLinesRemoved = 0;
     var y = this.height - 2, odd = false;
     while(y != 0) {
       // The "line" that is checked consists of the bottom halves of some hexes
@@ -595,7 +596,7 @@ var HexGrid = {
 
 var TriGrid = {
   __proto__: BaseGrid,
-  
+
   /* "Lines" start from the left at a tile pointing right, and then go either
      up or down for the next tile, and then procede across and always form a
      solid block filling the two lines (which is why we just count down in 1s)
@@ -716,7 +717,7 @@ var BaseGridDisplay = {
 
 var BasePlayingField = {
   __proto__: BaseGridDisplay,
-  
+
   updateArea: function(top, right, bottom, left) {
     for(var x = left; x < right; x++) {
       for(var y = top; y < bottom; y++) {
@@ -767,7 +768,7 @@ var GridDisplay = null;
 
 var BaseNextBlockDisplay = {
   __proto__: BaseGridDisplay,
-  
+
   enabled: true,
 
   update: function(block) {
