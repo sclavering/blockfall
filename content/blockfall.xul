@@ -57,7 +57,6 @@
         <menuitem type="radio" label="Level 9" value="9"/>
       </menupopup>
     </toolbarbutton>
-    <checkbox checked="true" label="Show Next" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
   </toolbar>
 
   <hbox>
@@ -69,6 +68,7 @@
       <label value="Level:"/>
       <description value="0" id="level-display"/>
       <label value="Next Block:"/>
+      <checkbox checked="true" label="Show" tooltiptext="Show next block" oncommand="NextBlockDisplay.toggle();"/>
       <hbox id="next-sqr-block-display" class="square-grid"/>
       <hbox id="next-hex-block-display" class="hex-grid"/>
     </vbox>
