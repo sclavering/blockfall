@@ -35,9 +35,7 @@
 <!ENTITY small3tiles "Small blocks (3 tiles)">
 <!ENTITY normal4tiles "Normal blocks (4 tiles)">
 <!ENTITY large5tiles "Large blocks (5 tiles)">
-<!ENTITY tiny23tiles "Tiny blocks (2 or 3 tiles)">
-<!ENTITY small4tiles "Small blocks (4 tiles)">
-<!ENTITY medium5tiles "Medium blocks (5 tiles)">
+<!ENTITY normaltiles "Normal blocks (1 to 5 tiles)">
 <!ENTITY large6tiles "Large blocks (6 tiles)">
 
 <!ENTITY shownextblock "Show the next block that will fall">

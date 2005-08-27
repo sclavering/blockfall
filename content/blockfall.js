@@ -1,7 +1,19 @@
 const shapes = ["sqr", "hex", "tri"];
 
-var ui = {
-  grids: "stack-grids",
+const tilePropertiess = {
+  sqr: { width: 20, height: 20, xOffset: 20, yOffset: 20, altYOffset: 0},
+  hex: { width: 24, height: 10, xOffset: 19, yOffset: 10, altYOffset: 10},
+  tri: { width: 19, height: 20, xOffset: 19, yOffset: 10, altYOffset: 20}
+};
+var tileProperties = null;
+
+const ui = {
+  grid: "grid",
+  gridWrapper: "grid-wrapper",
+  gridBox: "grid-container",
+  fallingBlock: "falling-block",
+  fallingBlockBox: "falling-block-box",
+  nextBlock: "next-block",
   pausedMsg: "msg-paused",
   gameOverMsg: "msg-gameover",
   score: "score-display",
@@ -9,7 +21,7 @@ var ui = {
   level: "level-display"
 };
 
-var commands = {
+const commands = {
   left: "cmd.left",
   right: "cmd.right",
   down: "cmd.down",
@@ -20,50 +32,44 @@ var commands = {
 };
 
 var game = null; // a Game
+var gPaused = false;
 
 // width/height of the most-recently started game (which might now be over)
 var gWidth = 0;
 var gHeight = 0;
+var gGameType = null; // 4th arg of newGameObj
 
 var gTileShape = null; // sqr/hex/tri usually
 var gBlockSizes = {}; // shape -> int array
 var gShowGridLines = false;
 
-// shape -> obj maps
-var FallingBlocks = {};
-var Grids = {};
-var NextBlockDisplays = {};
-var GridDisplays = {};
 // objs for the current shape
-var FallingBlock = null;
-var Grid = null;
 var NextBlockDisplay = null;
-var GridDisplay = null;
 
 
 
 function pause() {
-  if(game.paused) return;
+  if(gPaused) return;
   Timer.stop();
   ui.pausedMsg.hidden = false;
-  game.paused = true;
+  gPaused = true;
   for(var i in commands)
     if(i != "pause")
       commands[i].setAttribute("disabled", "true");
 }
 
 function unpause() {
-  if(!game.paused) return;
-  Timer.start()
+  if(!gPaused) return;
+  Timer.start();
   ui.pausedMsg.hidden = true;
-  game.paused = false;
+  gPaused = false;
   for(var i in commands)
     if(i != "pause")
       commands[i].removeAttribute("disabled");
 }
 
 function togglePause() {
-  if(game.paused) unpause();
+  if(gPaused) unpause();
   else pause();
 }
 
@@ -71,7 +77,7 @@ function newGame(width, height, level) {
   if(game) game.end();
   ui.pausedMsg.hidden = true;
   ui.gameOverMsg.hidden = true;
-  game = new Game(width || gWidth, height || gHeight, level || 1);
+  game = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
   game.begin();
   for(var i in commands) commands[i].removeAttribute("disabled");
 }
@@ -94,7 +100,7 @@ function showSettingsDialogue() {
   const flags = "dialog,dependent,modal,chrome";//,resizable";
 
   if(game) {
-    wasPausedBeforeSettings = game.paused;
+    wasPausedBeforeSettings = gPaused;
     if(!wasPausedBeforeSettings) pause();
   }
   openDialog(url, "flibble", flags, gTileShape, gBlockSizes, gShowGridLines);
@@ -117,16 +123,15 @@ function onSettingsAccept(shape, sizes, showgridlines) {
   gBlockSizes = sizes;
   Blocks.use(shape, sizes[shape]);
 
-  if(gShowGridLines != showgridlines)
-    ui.grids.className = showgridlines ? "gridlines" : "";
+// xxx fixme
+//  if(gShowGridLines != showgridlines)
+//    ui.grids.className = showgridlines ? "gridlines" : "";
   gShowGridLines = showgridlines;
 
   // continue, or not
   if(game && !wasPausedBeforeSettings) unpause();
   if(old != shape) {
     endGame();
-    NextBlockDisplay.hide();
-    GridDisplay.hide();
     tileShapeChanged(shape);
   }
 }
@@ -135,15 +140,11 @@ function onSettingsAccept(shape, sizes, showgridlines) {
 
 function tileShapeChanged(shape) {
   gTileShape = shape;
-  NextBlockDisplay = NextBlockDisplays[shape];
-  GridDisplay = GridDisplays[shape];
-  FallingBlock = FallingBlocks[shape];
-  Grid = Grids[shape];
-  NextBlockDisplay.show();
-  GridDisplay.show();
   // xxx hex and tri games make assumptions about their sizes.
   gWidth = 10;
   gHeight = {sqr: 25, hex: 50, tri: 51}[shape];
+  gGameType = Games[shape];
+  tileProperties = tilePropertiess[shape];
   newGame();
 }
 
@@ -157,13 +158,18 @@ window.onload = function onLoad() {
   for(var i in ui) ui[i] = document.getElementById(ui[i]);
   for(i in commands) commands[i] = document.getElementById(commands[i]);
 
-  // random init fun
-  GridDisplays.sqr = new GridDisplayObj("sqr");
-  GridDisplays.hex = new GridDisplayObj("hex");
-  GridDisplays.tri = new GridDisplayObj("tri");
-  NextBlockDisplays.sqr = new NextBlockDisplayObj("sqr", 5, 5);
-  NextBlockDisplays.hex = new NextBlockDisplayObj("hex", 7, 13);
-  NextBlockDisplays.tri = new NextBlockDisplayObj("tri", 6, 10);
+  for(var shape in tilePropertiess) {
+    const images = tilePropertiess[shape].images = [];
+    for(var i = 0; true; ++i) {
+      var el = document.getElementById(shape + i);
+      if(!el) break;
+      images.push(el);
+      el.parentNode.removeChild(el);
+    }
+  }
+
+  GridView.init();
+  FallingBlockView.init();
 
   // read prefs (from attributes)
   const root = document.documentElement;
@@ -173,108 +179,17 @@ window.onload = function onLoad() {
     var sizes = gBlockSizes[sh] = root.getAttribute("pref-"+sh+"-sizes").split(",");
     for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
-  gShowGridLines = root.getAttribute("pref-gridlines")=="true";
-  if(gShowGridLines) ui.grids.className = "gridlines";
+
+//  gShowGridLines = root.getAttribute("pref-gridlines")=="true";
+//  if(gShowGridLines) ui.grids.className = "gridlines";
 /*
-  shape = "sqr";
+  var shape = "sqr";
   gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
-  */
+*/
 
   Blocks.use(shape, gBlockSizes[shape]);
   tileShapeChanged(shape);
 };
-
-
-
-
-// bad OOP (rest of file)
-
-function Game(width, height, startingLevel) {
-  this.width = width;
-  this.height = height;
-  this.startingLevel = startingLevel;
-}
-
-
-Game.prototype = {
-  paused: false,
-
-  width: 0,
-  height: 0,
-  startingLevel: 1,
-  levelsCompleted: 0,
-
-  score: 0,
-  lines: 0,
-  level: 1,
-
-  _nextBlock: null,
-
-  begin: function() {
-    const width = this.width, height = this.height, startingLevel = this.startingLevel;
-
-    ui.level.value = this.level = this.startingLevel;
-    this.levelsCompleted = 0;
-    ui.lines.value = this.lines = 0;
-    ui.score.value = this.score = 0;
-
-    Grid.newGrid(width, height);
-    GridDisplay.setSize(width, height);
-
-    Timer.setDelay(startingLevel);
-    window.sizeToContent();
-    GridDisplay.updateAll();
-    this._nextBlock = Blocks.getRandom();
-    this.addNextBlock();
-  },
-
-  end: function() {
-    Timer.stop();
-  },
-
-  // score 20 points for a line, 60 for 2 lines, 120 for 3 lines, 200 for 4 lines
-  scoreRemovingLines: function(numlines) {
-    ui.lines.value = this.lines += numlines;
-    for(var i = 1; i <= numlines; i++) this.score += i * 20;
-    ui.score.value = this.score;
-  },
-
-  scoreBlockDropped: function(wasDropped) {
-    var score = this.level;
-    if(wasDropped) score *= this.level / 4;
-    if(NextBlockDisplay.enabled) score /= 2;
-    ui.score.value = this.score += Math.ceil(score);
-  },
-
-  // increase level if appropriate
-  updateLevel: function() {
-    if(this.lines >= (this.levelsCompleted+1)*10) {
-      this.levelsCompleted++;
-      ui.level.value = ++this.level;
-      Timer.reduceDelay();
-    }
-  },
-
-  blockReachedBottom: function(wasDropped) {
-    Timer.stop();
-    Grid.addBlock(FallingBlock);
-    this.scoreBlockDropped(wasDropped);
-    this.updateLevel();
-    GridDisplay.updateAll();
-    this.addNextBlock();
-  },
-
-  addNextBlock: function() {
-    if(FallingBlock.setBlock(this._nextBlock)) {
-      this._nextBlock = Blocks.getRandom();
-      NextBlockDisplay.update(this._nextBlock);
-      Timer.start();
-    } else {
-      endGame();
-    }
-  }
-}
-
 
 
 
@@ -283,7 +198,7 @@ var Timer = {
   delay: 0,
 
   start: function() {
-    this.interval = setInterval(FallingBlock.timedMoveDown, this.delay);
+    this.interval = setInterval(game.timedMoveDown, this.delay);
   },
   stop: function() {
     if(!this.interval) return;
@@ -303,202 +218,117 @@ var Timer = {
 
 
 
+function FallingBlock(block) {
+  this.states = block;
+  this.state = 0;
+  var grid = this.grid = block[0];
+  var height = this. height = grid.length;
+  var width = this.width = grid[0].length;
+  // position matters a lot in hex/tri games
+  var left = this.left = Math.floor((game.width-width)/2);
+  this.top = 0;
+};
 
 
-FallingBlocks.base = {
-  // Grid.addBlock relies on these 5
-  top: 0,
-  left: 0,
+
+function newGameObj(width, height, level, basis) {
+  const game = {};
+  game.__proto__ = basis;
+  game.width = width;
+  game.height = height;
+  game.level = game.startingLevel = level;
+  const gr = game.grid = new Array(height);
+  for(var y = 0; y != height; ++y) {
+    var line = gr[y] = new Array(width);
+    for(var x = 0; x != width; x++) line[x] = 0;
+  }
+  return game;
+}
+
+
+const Games = {};
+Games.base = {
   width: 0,
   height: 0,
-  // y-x indexed
-  grid: null,
+  startingLevel: 1,
+  levelsCompleted: 0,
+  score: 0,
+  lines: 0,
+  level: 1,
+  grid: [[]], // y-x indexed
+  fallingBlock: null,
+  _nextBlock: null,
 
-  bottom: 0,
-  right: 0,
+  begin: function() {
+    ui.level.value = this.level;
+    ui.lines.value = this.lines;
+    ui.score.value = this.score;
+    GridView.setSize(this.width, this.height);
+    Timer.setDelay(this.startingLevel);
+    window.sizeToContent();
+    GridView.update();
+    this._nextBlock = Blocks.getRandom();
+    this.nextBlock();
+    Timer.start();
+  },
 
-  blockState: 0,
-  block: [[]],
+  end: function() {
+    Timer.stop();
+  },
 
-  // returns a bool for if the new block can be added
-  setBlock: function(newblock) {
-    // get the block
-    var block = newblock[0];
-    var height = block.length;
-    var width = block[0].length;
-    // determine left edge where block will be placed from
-    var left = Math.floor((game.width-width)/2);
-    var right = left + width;
+  updateScoreAndLevel: function(numLinesRemoves, blockDropped) {
+    if(numLinesRemoves) {
+      if(this.lines >= (this.levelsCompleted+1)*10) {
+        this.levelsCompleted++;
+        ui.level.value = ++this.level;
+        Timer.reduceDelay();
+      }
+      ui.lines.value = this.lines += numLinesRemoves;
+      for(var i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
+    }
+    var score = this.level;
+    if(blockDropped) score *= this.level / 4;
+//nb    if(NextBlockDisplay.enabled) score /= 2;
+    this.score += Math.ceil(score);
+    ui.score.value = this.score;
+  },
 
-    if(!Grid.canAdd(block, left, 0)) return false;
+  blockReachedBottom: function(blockDropped) {
+    Timer.stop();
 
-    this.state = 0;
-    this.block = newblock;
-    this.grid = block;
-    this.left = left;
-    this.right = right;
-    this.top = 0;
-    this.bottom = height;
-    this.width = width;
-    this.height = height;
+    const block = this.fallingBlock;
+    const bx = block.left, by = block.top, bw = block.width, bh = block.height;
+    const bgrid = block.grid, grid = this.grid;
+    for(var yi = 0, yj = by; yi != bh; ++yi, ++yj) {
+      for(var xi = 0, xj = bx; xi != bw; ++xi, ++xj) {
+        var val = bgrid[yi][xi];
+        if(val) grid[yj][xj] = val;
+      }
+    }
 
-    GridDisplay.updateArea(0, right, height, left);
+    var top = block.top ? block.top - 1 : 0;
+    var btm = block.top + block.height;
+    if(btm > this.height) btm = this.height;
+    var numLinesRemoves = this.removeCompleteLines(top, btm);
+    if(numLinesRemoves) top = 0; // everything's moved down
+    GridView.update(top, btm);
+    this.updateScoreAndLevel(numLinesRemoves, blockDropped);
+    if(this.nextBlock()) Timer.start();
+    else endGame()
+  },
+
+  nextBlock: function() {
+    const fb = new FallingBlock(this._nextBlock);
+    this.fallingBlock = fb;
+    if(!this.fallingBlockFitsAt(0,0)) return false;
+    this._nextBlock = Blocks.getRandom();
+    FallingBlockView.update();
+    //NextBlockView.update(fb);
     return true;
   },
 
-  // bounds checked.  coords in terms of the whole grid
-  safeGetElement: function(x, y) {
-    x = x - this.left;
-    y = y - this.top;
-    if(x>=0 && x<this.width && y>=0 && y<this.height)
-      return this.grid[y][x];
-    return null;
-  },
-
-  // note: block.length is the number of states this block has
-  rotateClockwise: function() {
-    var newstate = this.state + 1;
-    if(newstate==this.block.length) newstate = 0;
-    this.tryRotate(newstate);
-  },
-
-  rotateAnticlockwise: function() {
-    var newstate = this.state - 1;
-    if(newstate==-1) newstate += this.block.length;
-    this.tryRotate(newstate);
-  },
-
-  tryRotate: function(newstate) {
-    var newgrid = this.block[newstate];
-    //if(!this.canRotate(newgrid)) return;
-    if(!Grid.canAdd(newgrid, this.left, this.top)) return;
-    this.state = newstate;
-    this.grid = newgrid;
-    GridDisplay.safeUpdateArea(this.top, this.right, this.bottom, this.left);
-  },
-
-  drop: function() {
-    while(this.moveDown());
-    game.blockReachedBottom(true);
-  },
-
-  timedMoveDown: function() {
-    if(!FallingBlock.moveDown()) game.blockReachedBottom();
-  }
-}
-
-
-FallingBlocks.sqr = {
-  __proto__: FallingBlocks.base,
-
-  moveLeft: function() {
-    if(!Grid.canAdd(this.grid, this.left - 1, this.top)) return;
-    this.left--;
-    this.right--;
-    GridDisplay.safeUpdateArea(this.top, this.right+1, this.bottom, this.left);
-  },
-
-  moveRight: function() {
-    if(!Grid.canAdd(this.grid, this.left + 1, this.top)) return;
-    this.left++;
-    this.right++;
-    GridDisplay.safeUpdateArea(this.top, this.right, this.bottom, this.left-1);
-  },
-
-  // must return a boolean for the timed drop function
-  moveDown: function() {
-    var can = Grid.canAdd(this.grid, this.left, this.top + 1);
-    if(can) {
-      this.top++;
-      this.bottom++;
-      GridDisplay.safeUpdateArea(this.top-1, this.right, this.bottom, this.left);
-    }
-    return can;
-  }
-}
-
-
-// in the hexagonal grid it is impossible to just move left or right, we must move down a line too.
-// also moving down a line actually means moving down 2 lines, because the arrays are of half hexes
-FallingBlocks.hex = {
-  __proto__: FallingBlocks.base,
-
-  canMoveTo: function(leftchange, topchange) {
-    return Grid.canAdd(this.grid, this.left+leftchange, this.top+topchange);
-  },
-
-  moveLeft: function() {
-    if(!this.canMoveTo(-1,+1)) return;
-    this.left--;
-    this.right--;
-    this.top++;
-    this.bottom++;
-    GridDisplay.safeUpdateArea(this.top-1, this.right+1, this.bottom, this.left);
-  },
-
-  moveRight: function() {
-    if(!this.canMoveTo(+1,+1)) return;
-    this.left++;
-    this.right++;
-    this.top++;
-    this.bottom++;
-    GridDisplay.safeUpdateArea(this.top-1, this.right, this.bottom, this.left-1);
-  },
-
-  // must return a boolean for the timed drop function
-  moveDown: function() {
-    var can = this.canMoveTo(0,+2);
-    if(can) {
-      this.top += 2;
-      this.bottom += 2;
-      GridDisplay.safeUpdateArea(this.top-2, this.right, this.bottom, this.left);
-    }
-    return can;
-  }
-}
-
-
-FallingBlocks.tri = {
-  // as for hex games, move left or right also goes down a line, so share code
-  __proto__: FallingBlocks.hex,
-
-  moveDown: function() {
-    // testing both lines ensures a triangle can't drop through a bunch facing
-    // the other direction.
-    var can = this.canMoveTo(0,+1) && this.canMoveTo(0,+2);
-    if(can) {
-      this.top += 2;
-      this.bottom += 2;
-      GridDisplay.safeUpdateArea(this.top-2, this.right, this.bottom, this.left);
-    }
-    return can;
-  }
-}
-
-
-
-
-
-Grids.base = {
-  width: 0,
-  height: 0,
-
-  // y,x indexed, because we often want to remove rows
-  grid: [],
-
-  newGrid: function(width, height) {
-    this.width = width;
-    this.height = height;
-    this.grid = new Array(height);
-    for(var y = 0; y < height; y++) {
-      var line = new Array(width);
-      for(var x = 0; x != width; x++) line[x] = 0;
-      this.grid[y] = line;
-    }
-  },
-
   // takes abitrary num of row indices (sorted in increasing order) as args
-  removeRows: function() {
+  _removeRows: function() {
     const a = arguments, n = a.length, g = this.grid, w = this.width;
     for(var i = 0; i != n; ++i) {
       var r = g.splice(a[i], 1);
@@ -507,17 +337,9 @@ Grids.base = {
     }
   },
 
-  inBounds: function(x, y) {
-    return x>=0 && x<this.width && y>=0 && y<this.height;
-  },
-
-  getElement: function(x, y) {
-    return this.grid[y][x];
-  },
-
-  lineIsFull: function(y) {
+  _lineIsFull: function(y) {
     const w = this.width;
-    var line = this.grid[y];
+    const line = this.grid[y];
     for(var x = 0; x != w; ++x) if(!line[x]) return false;
     return true;
   },
@@ -528,7 +350,7 @@ Grids.base = {
     const height = block.length, width = block[0].length;
     var yi, yj, xi, xj;
     for(yi = 0, yj = y; yi != height; ++yi, ++yj) {
-      if(yj < 0 || yj >= gheight) {
+      if(yi < 0 || yj >= gheight) {
         // beyond bottom/top of grid, so all tiles of block must be empty
         for(xi = 0; xi != width; ++xi)
           if(block[yi][xi]) return false;
@@ -542,107 +364,150 @@ Grids.base = {
     return true;
   },
 
-  // block is a FallingBlock
-  addBlock: function(block) {
-    const bx = block.left, by = block.top, bw = block.width, bh = block.height;
-    const bgrid = block.grid, grid = this.grid;
-    for(var yi = 0, yj = by; yi != bh; ++yi, ++yj) {
-      for(var xi = 0, xj = bx; xi != bw; ++xi, ++xj) {
-        var val = bgrid[yi][xi];
-        if(val) grid[yj][xj] = val;
-      }
-    }
-
-    this.removeCompleteLines();
-  }
-}
-
-
-Grids.sqr = {
-  __proto__: Grids.base,
-
-  removeCompleteLines: function() {
-    const y0 = FallingBlock.top;
-    var y1 = FallingBlock.bottom;
-    if(y1 > this.height) y1 = this.height;
-    var num = 0;
-    for(var y = y0; y != y1; ++y) {
-      if(!this.lineIsFull(y)) continue;
-      this.removeRows(y);
-      ++num;
-    }
-    game.scoreRemovingLines(num);
-  }
-}
-
-
-Grids.hex = {
-  __proto__: Grids.base,
-
-  removeCompleteLines: function() {
-    var numLinesRemoved = 0;
-    var y = this.height - 2, odd = false;
-    while(y != 0) {
-      // The "line" that is checked consists of the bottom halves of some hexes
-      // and the top halves of others.  Half-hexes should never be created, so
-      // it's sufficient to check this.
-      if(this.lineIsFull(y)) {
-        // on an odd numbered row the line wiggles down initially
-        this.removeLine(y, odd);
-        numLinesRemoved++;
-        // the stuff that drop down might allow for a new upward-wiggling line
-        // xxx is this correct?
-        if(odd) { y++; odd = !odd; }
-      } else {
-        y--;
-        odd = !odd;
-      }
-    }
-    // update score and lines
-    game.scoreRemovingLines(numLinesRemoved);
+  // fallingBlock fits into gird at given offset from current position
+  fallingBlockFitsAt: function(dx, dy) {
+    const f = this.fallingBlock;
+    return this.canAdd(f.grid, f.left + dx, f.top + dy)
   },
 
-  /*
-  Here we're trying to remove something like this:
-  .#.#.#.#.#.        #.#.#.#.#.
-  ###########   or   ##########    <--- y
-  #.#.#.#.#.#        .#.#.#.#.#
-  from a y-x indexed array.
-  We copy alternate elements of the bottom line into the top one, remove the
-  bottom two lines, then insert two blank rows at y = 0.
-  */
-  removeLine: function(row, wigglesUp) {
-    var top = row - 1;
-    var btm = row + 1;
-    for(var x = wigglesUp ? 0 : 1; x < this.width; x += 2)
-      this.grid[top][x] = this.grid[btm][x];
-    this.removeRows(row, row+1);
+  // note: block.length is the number of states this block has
+  rotateFallingBlockClockwise: function() {
+    const f = this.fallingBlock;
+    var s = f.state;
+    if(++s == f.states.length) s = 0;
+    this._maybeRotateFallingBlock(s);
+  },
+
+  rotateFallingBlockAnticlockwise: function() {
+    const f = this.fallingBlock;
+    var s = f.state;
+    if(s-- == 0) s += f.states.length;
+    this._maybeRotateFallingBlock(s);
+  },
+
+  _maybeRotateFallingBlock: function(newstate) {
+    const f = this.fallingBlock;
+    var newgrid = f.states[newstate];
+    if(!this.canAdd(newgrid, f.left, f.top)) return;
+    f.state = newstate;
+    f.grid = newgrid;
+    FallingBlockView.update()
+  },
+
+  dropFallingBlock: function() {
+    while(this._moveFallingBlockDown());
+    this.blockReachedBottom(true);
+  },
+
+  timedMoveDown: function() {
+    // |this|==window because function is called via setInterval
+    if(!game.moveFallingBlockDown()) game.blockReachedBottom();
+  },
+
+  moveFallingBlockDown: function() {
+    if(!this._moveFallingBlockDown()) return false;
+    FallingBlockView.move();
+    return true;
+  },
+
+  _moveFallingBlock: function(dx, dy) {
+    const f = this.fallingBlock;
+    if(!this.fallingBlockFitsAt(dx, dy)) return;
+    f.left += dx;
+    f.top += dy;
+    FallingBlockView.move();
   }
 }
 
 
-Grids.tri = {
-  __proto__: Grids.base,
+Games.sqr = {
+  __proto__: Games.base,
+
+  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 0); },
+  moveFallingBlockRight: function() { this._moveFallingBlock(1, 0); },
+
+  // must return a boolean for the timed drop function
+  _moveFallingBlockDown: function() {
+    if(!this.fallingBlockFitsAt(0, 1)) return false;
+    this.fallingBlock.top += 1;
+    return true;
+  },
+
+  removeCompleteLines: function(top, bottom) {
+    for(var y = top, num = 0; y != bottom; ++y) {
+      if(!this._lineIsFull(y)) continue;
+      this._removeRows(y);
+      ++num;
+    }
+    return num;
+  }
+}
+
+
+Games.hex = {
+  __proto__: Games.base,
+
+  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 1); },
+  moveFallingBlockRight: function() { this._moveFallingBlock(1, 1); },
+
+  _moveFallingBlockDown: function() {
+    if(!this.fallingBlockFitsAt(0, 2)) return false;
+    this.fallingBlock.top += 2;
+    return true;
+  },
+
+  removeCompleteLines: function(top, bottom) {
+    const g = this.grid, w = this.width;
+    var num = 0;
+    if(bottom == this.height) --bottom;
+    for(var y = top, odd = top % 2; y != bottom; ++y) {
+      // row of half-hexes is full <==> appropriate half-hexes in row above+below are full
+      if(!this._lineIsFull(y)) continue;
+      /*
+      Here we're trying to remove something like:
+      .#.#.#.#.#.        #.#.#.#.#.    <-- y1
+      ###########   or   ##########    <-- y
+      #.#.#.#.#.#        .#.#.#.#.#    <-- y2
+      So copy alternate values from y2 to y1, then remove y and y2
+      */
+      var y1 = y - 1;
+      var y2 = y + 1;
+      for(var x = odd ? 0 : 1; x < w; x += 2) g[y1][x] = g[y2][x];
+      this._removeRows(y, y2);
+      ++num;
+    }
+    return num;
+  }
+}
+
+
+Games.tri = {
+  __proto__: Games.base,
+
+  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 1); },
+  moveFallingBlockRight: function() { this._moveFallingBlock(1, 1); },
 
   /*
   "Lines" start from the left at a tile pointing right, and then go either
-  up or down for the next tile, and then procede across and always form a
-  solid block filling the two lines (which is why we just count down in 1s)
+  up or down for the next tile, and then proceed across and always form a
+  solid block filling the two lines (which is why we just count in ones)
   */
-  removeCompleteLines: function() {
-    var numLinesRemoved = 0;
-    for(var y = this.height - 2; y >= 0; y--)
-      while(this.tryRemoveLine(y)) numLinesRemoved++;
-    // update score and lines
-    game.scoreRemovingLines(numLinesRemoved);
+  removeCompleteLines: function(top, bottom) {
+    const h = this.height, w = this.width, g = this.grid;
+    if(bottom >= h - 2) bottom = h - 2;
+    var num = 0;
+    for(var y = bottom; y != top; --y) {
+      if(!this._lineIsFull(y) || !this._lineIsFull(y+1)) continue;
+      this._removeRows(y, y+1);
+      ++num;
+    }
+    return num;
   },
 
-  tryRemoveLine: function(y) {
-    var line = this.grid[y];
-    var line2 = this.grid[y+1];
-    for(var x = 0; x < this.width; x++)
-      if(!line[x] || !line2[x]) return false;
-    this.removeRows(y, y+1);
+  _moveFallingBlockDown: function() {
+    // don't allow tiles to drop through ones facing the other way
+    if(!this.fallingBlockFitsAt(0, 1) || !this.fallingBlockFitsAt(0, 2)) return false;
+    this.fallingBlock.top += 2;
     return true;
   }
 }
@@ -650,141 +515,101 @@ Grids.tri = {
 
 
 
-
-// various forms of createTile for different shapes
-const createTiles = {
-  sqr: function(x, y) {
-    var tile = document.createElement("image");
-    tile.classPrefix = "square-";
-    tile.className = "square-0";
-    return tile;
-  },
-
-  hex: function(x, y) {
-    var up = (x % 2 == y % 2);
-    var tile = document.createElement("image");
-    var prefix = tile.classPrefix = "hex-" + (up ? "top-" : "btm-");
-    tile.className = prefix + "0";
-    return tile;
-  },
-
-  tri: function(x, y) {
-    var left = (x % 2 == y % 2);
-    var tile = document.createElement("image");
-    var prefix = tile.classPrefix = "tri tri-" + (left ? "left-" : "right-");
-    tile.className = prefix + "0";
-    return tile;
-  }
-}
-
-
-
-
-var BaseGridDisplay = {
-  width: 0,
+const GridView = {
+  width: 0, // in tiles
   height: 0,
-  grid: [],
+  canvas: null, // an nsIDOMCanvasRenderingContext2D
+  canvasElt: null,
+  box: null, // <box> round <canvas>
+  stack: null, // <stack>
 
-  container: null,
+  init: function() {
+    const c = this.canvasElt = ui.grid;
+    this.canvas = c.getContext("2d");
+    const b = this.box = ui.gridWrapper;
+    this.stack = ui.gridBox;
+    // the <box> is absolutely positioned in the <stack> so that the <canvas>
+    // isn't stretched when the falling block makes the <stack> expand
+    b.top = 0;
+    b.left = 0;
+  },
 
+  // set size to a given number of *tiles*
   setSize: function(width, height) {
-    if(width==this.width && height==this.height) {
-      this.clear();
-      return;
-    }
-
-    const cont = this.container;
-    // remove old grid
-    while(cont.hasChildNodes()) cont.removeChild(cont.firstChild);
-
+    const t = this, c = t.canvas, ce = t.canvasElt, b = t.box, s = t.stack, tp = tileProperties;
+    const tw = tp.width, th = tp.height, tx = tp.xOffset, ty = tp.yOffset;
+    c.clearRect(0, 0, Infinity, Infinity);
     this.width = width;
     this.height = height;
-
-    this.grid = new Array(width);
-    for(var x = 0; x != width; x++) {
-      this.grid[x] = new Array(height);
-      var col = document.createElement("vbox");
-      for(var y = 0; y != height; y++) {
-        var el = this.createTile(x, y);
-        this.grid[x][y] = el;
-        col.appendChild(el);
-      }
-      this.container.appendChild(col);
-    }
+    s.width = b.width = ce.width = width * tx - tx + tw;
+    s.height = b.height = ce.height = height * ty - ty + th;
   },
 
-  clear: function() {
-    const w = this.width, h = this.height;
-    for(var x = 0; x != w; x++) {
-      for(var y = 0; y != h; y++) {
-        var tile = this.grid[x][y];
-        tile.className = tile.classPrefix + "0";
-      }
-    }
-  },
-
-  // for when we switch between square and hex games.
-  hide: function() {
-    this.container.hidden = true;
-  },
-
-  show: function() {
-    this.container.hidden = false;
-  }
-}
-
-
-
-
-
-var BasePlayingField = {
-  __proto__: BaseGridDisplay,
-
-  updateArea: function(top, right, bottom, left) {
-    for(var x = left; x < right; x++) {
-      for(var y = top; y < bottom; y++) {
-        var val = FallingBlock.safeGetElement(x,y);
-        if(!val) val = Grid.getElement(x,y);
-        var tile = this.grid[x][y];
-        tile.className = tile.classPrefix + val;
-      }
-    }
-  },
-
-  // restricts the area to be in bounds
-  safeUpdateArea: function(top, right, bottom, left) {
-    if(top < 0) top = 0;
-    if(left < 0) left = 0;
-    if(right > GridDisplay.width) right = GridDisplay.width;
-    if(bottom > GridDisplay.height) bottom = GridDisplay.height;
-    this.updateArea(top, right, bottom, left);
-  },
-
-  // this is called after lines have been removed from the grid.  we *want* it to ignore
-  // FallingBlock, which has now been incorporated into the grid, but also still exists
-  updateAll: function() {
-    const w = this.width, h = this.height;
-    for(var x = 0; x != w; x++) {
-      for(var y = 0; y != h; y++) {
-        var tile = this.grid[x][y];
-        tile.className = tile.classPrefix + Grid.getElement(x,y);
+  update: function(top, bottom) {
+    if(!top) top = 0;
+    const tp = tileProperties, imgs = tp.images, tw = tp.width, th = tp.height,
+          tx = tp.xOffset, ty = tp.yOffset, tay = tp.altYOffset;
+    const c = this.canvas, w = this.width, h = this.height, grid = game.grid;
+    const drawOddTiles = gTileShape != "hex";
+    if(!bottom) bottom = h;
+    for(var y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd) {
+      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
+        var val = grid[y][x];
+        if(drawOddTiles || !tileOdd) c.drawImage(imgs[val], x*tx, y*ty);
       }
     }
   }
-}
-
-
-function GridDisplayObj(shape) {
-  var id = shape + "-playing-field";
-  this.container = document.getElementById(id);
-  this.container.hidden = true;
-  this.createTile = createTiles[shape];
-}
-GridDisplayObj.prototype = BasePlayingField;
+};
 
 
 
+var FallingBlockView = {
+  // in tiles
+  width: 0,
+  height: 0,
+  canvas: null, // an nsIDOMCanvasRenderingContext2D
+  canvasElt: null,
+  // a <box> holding the <html:canvas> because we need to set xul:top/left attrs to position it
+  box: null,
 
+  init: function() {
+    const c = this.canvasElt = ui.fallingBlock;
+    this.canvas = c.getContext("2d");
+    this.box = ui.fallingBlockBox;
+  },
+
+  update: function() {
+    const c = this.canvas, ce = this.canvasElt, box = this.box, fb = game.fallingBlock;
+    const w = fb.width, h = fb.height, t = fb.top, l = fb.left, grid = fb.grid;
+    const tp = tileProperties, imgs = tp.images, tw = tp.width, th = tp.height,
+          tx = tp.xOffset, ty = tp.yOffset, tay = tp.altYOffset;
+    const drawOddTiles = gTileShape != "hex";
+    // position canvas
+    box.top = t * ty;
+    box.left = l * tx;
+    box.width = ce.width = w * tx - tx + tw;
+    box.height = ce.height = h * ty - ty + th;
+    // draw the block
+    c.clearRect(0, 0, Infinity, Infinity);
+    var firstTileOdd = (l % 2) ^ (t % 2);
+    for(var y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
+      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
+        var val = grid[y][x];
+        if(val && (drawOddTiles || !tileOdd)) c.drawImage(imgs[val], x*tx, y*ty);
+      }
+    }
+  },
+
+  move: function() {
+    const fb = game.fallingBlock, box = this.box, tp = tileProperties;
+    box.top = fb.top * tp.yOffset;
+    box.left = fb.left * tp.xOffset;
+  }
+};
+
+
+
+/*
 var BaseNextBlockDisplay = {
   __proto__: BaseGridDisplay,
 
@@ -796,8 +621,8 @@ var BaseNextBlockDisplay = {
     const h = this.height, w = this.width;
     this.clear();
     // Position the block in the centre of the space.
-    // This is *essential* for hexagonal games because otherwise the display
-    // ends up half a hex out, and it looks nice on square ones.
+    // This is *essential* for hexagonal tiles because otherwise the display
+    // ends up half a hex out (and it looks nice on square ones).
     var top = Math.floor((h - block.length) / 2);
     var left = Math.floor((w - block[0].length) / 2);
     for(var y = 0, y2 = top; y < block.length && y2 < h; y++, y2++) {
@@ -824,3 +649,4 @@ function NextBlockDisplayObj(shape, width, height) {
   this.setSize(width, height);
 }
 NextBlockDisplayObj.prototype = BaseNextBlockDisplay;
+*/

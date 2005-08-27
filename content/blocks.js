@@ -64,7 +64,7 @@ function createSqrBlock(size, prepath, path, numstates) {
   if(!numstates) numstates = 4;
 
   var blockNum = sqrLastBlockNumber++;
-  if(sqrLastBlockNumber==sqrMaxBlockNumber) sqrLastBlockNumber = 1;
+  if(sqrLastBlockNumber==sqrMaxBlockNumber) sqrLastBlockNumber = 2;
 
   var block = new Array(numstates);
 
@@ -178,7 +178,7 @@ blocks.sqr = [
 // Hexagonal blocks =======================================
 
 // make blocks a different colour
-var hexLastBlockNumber = 0;
+var hexLastBlockNumber = 2;
 // update to match number of available hex tile images
 var hexMaxBlockNumber = 15;
 
@@ -204,9 +204,8 @@ function createHexBlock(size, prepath, path) {
   var width = size;
   var height = size * 2 + 1;
 
-  hexLastBlockNumber++;
-  var blockNum = hexLastBlockNumber;
-  hexLastBlockNumber %= hexMaxBlockNumber;
+  var blockNum = hexLastBlockNumber++;
+  if(hexLastBlockNumber==hexMaxBlockNumber) hexLastBlockNumber = 2;
 
   var block = new Array(6);
   block[0] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
@@ -340,7 +339,7 @@ blocks.hex = [
 
 const tNE = 0, tE = 1, tSE = 2, tSW = 3, tW = 4, tNW = 5;
 
-var triLastBlockNumber = 0;
+var triLastBlockNumber = 2;
 // update to match number of available triangular tile images
 var triMaxBlockNumber = 6;
 
@@ -370,9 +369,8 @@ function createTriBlock(size, prepath, path, numstates) {
   var width = size;
   var height = size*1.5;
 
-  triLastBlockNumber++;
-  var blockNum = triLastBlockNumber;
-  triLastBlockNumber %= triMaxBlockNumber;
+  var blockNum = triLastBlockNumber++;
+  if(triLastBlockNumber==triMaxBlockNumber) triLastBlockNumber = 2;
 
   // triangular blocks rotate about a vertex, not about a tile.
   // so we pass different x,y coords to each call to createTriBlockState
@@ -426,16 +424,14 @@ function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
 
 
 blocks.tri = [
-  [ // tiny blocks (3 tiles or less
-    // single triangle.  could restrict to 2 states
+  [ // 1, 2 or 3 tiles
+    // single triangle
     createTriBlock(2, [], []),
     // pair
     createTriBlock(2, [], [tE]),
     // triple
     createTriBlock(2, [tE], [tW,tSW]),
-  ],
-
-  [ // 4-tile blocks
+    // 4-tile blocks
     // large triangle
     createTriBlock(4, [tE], [tSE,tE,tW,tSW], 2),
     // <
@@ -443,9 +439,7 @@ blocks.tri = [
     // beam
     createTriBlock(4, [tNW], [tSE,tE,tSE]),
     createTriBlock(4, [tSW], [tNE,tE,tNE]),
-  ],
-
-  [ // 5-tile blocks
+    // 5-tile blocks
     // c
     createTriBlock(4, [tE], [tW,tSW,tSE,tE]),
     // beam

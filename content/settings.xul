@@ -23,7 +23,7 @@ var ui = {
 var sizesUi = {
   sqr: ["sizes-sqr-0","sizes-sqr-1","sizes-sqr-2"],
   hex: ["sizes-hex-0","sizes-hex-1","sizes-hex-2"],
-  tri: ["sizes-tri-0","sizes-tri-1","sizes-tri-2","sizes-tri-3"]
+  tri: ["sizes-tri-0","sizes-tri-1"]
 }
 
 
@@ -42,7 +42,6 @@ function onLoad() {
   var showgridlines = args[2];
 
   ui.shapes.value = shape;
-  changeShape(shape);
 
   ui.showGridLines.checked = showgridlines;
 
@@ -51,12 +50,6 @@ function onLoad() {
     var ticks = sizesUi[i];
     for(j in ss) ticks[ss[j]].checked = true;
   }
-}
-
-function changeShape(shape) {
-  var panel = document.getElementById("sizes-"+shape);
-  var deck = document.getElementById("sizes-deck");
-  deck.selectedPanel = panel;
 }
 
 function onAccept() {
@@ -78,33 +71,19 @@ function onAccept() {
 
 <groupbox>
   <caption label="&blocks;"/>
-
-  <menulist id="shapes-list" oncommand="changeShape(this.value);">
-    <menupopup>
-      <menuitem value="sqr" label="&sqr;"/>
-      <menuitem value="hex" label="&hex;"/>
-      <menuitem value="tri" label="&tri;"/>
-    </menupopup>
-  </menulist>
-
-  <deck id="sizes-deck">
-    <vbox id="sizes-sqr">
-      <checkbox id="sizes-sqr-0" label="&small3tiles;" value="0"/>
-      <checkbox id="sizes-sqr-1" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox id="sizes-sqr-2" label="&large5tiles;" value="2"/>
-    </vbox>
-    <vbox id="sizes-hex">
-      <checkbox id="sizes-hex-0" label="&small3tiles;" value="0"/>
-      <checkbox id="sizes-hex-1" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox id="sizes-hex-2" label="&large5tiles;" value="2"/>
-    </vbox>
-    <vbox id="sizes-tri">
-      <checkbox id="sizes-tri-0" label="&tiny23tiles;" value="0"/>
-      <checkbox id="sizes-tri-1" label="&small4tiles;" value="1"/>
-      <checkbox id="sizes-tri-2" label="&medium5tiles;" value="2"/>
-      <checkbox id="sizes-tri-3" label="&large6tiles;" value="3"/>
-    </vbox>
-  </deck>
+  <radiogroup id="shapes-list">
+    <radio value="sqr" label="&sqr;"/>
+      <checkbox class="indent" id="sizes-sqr-0" label="&small3tiles;" value="0"/>
+      <checkbox class="indent" id="sizes-sqr-1" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox class="indent" id="sizes-sqr-2" label="&large5tiles;" value="2"/>
+    <radio value="hex" label="&hex;"/>
+      <checkbox class="indent" id="sizes-hex-0" label="&small3tiles;" value="0"/>
+      <checkbox class="indent" id="sizes-hex-1" label="&normal4tiles;" value="1" checked="true"/>
+      <checkbox class="indent" id="sizes-hex-2" label="&large5tiles;" value="2"/>
+    <radio value="tri" label="&tri;"/>
+      <checkbox class="indent" id="sizes-tri-0" label="&normaltiles;" value="0"/>
+      <checkbox class="indent" id="sizes-tri-1" label="&large6tiles;" value="1"/>
+  </radiogroup>
 </groupbox>
 
 <checkbox label="&shownextblock;" id="shownextblock" disabled="true"/>

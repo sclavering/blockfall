@@ -5,6 +5,7 @@
 <!DOCTYPE window SYSTEM "chrome://blockfall/locale/blockfall.dtd">
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
     id="blockfall-window"
     windowtype="blockfall-main"
     title="&blockfall;"
@@ -15,7 +16,7 @@
     pref-tileshape="sqr"
     pref-sqr-sizes="1"
     pref-hex-sizes="1"
-    pref-tri-sizes="1,2"
+    pref-tri-sizes="0"
     pref-gridlines="true"
     >
 
@@ -27,12 +28,12 @@
   <command id="cmd.pause" oncommand="togglePause();"/>
   <command id="cmd.settings" oncommand="showSettingsDialogue();"/>
 
-  <command id="cmd.left" oncommand="FallingBlock.moveLeft();"/>
-  <command id="cmd.right" oncommand="FallingBlock.moveRight();"/>
-  <command id="cmd.down" oncommand="FallingBlock.moveDown();"/>
-  <command id="cmd.drop" oncommand="FallingBlock.drop();"/>
-  <command id="cmd.rotate.clockwise" oncommand="FallingBlock.rotateClockwise();"/>
-  <command id="cmd.rotate.anticlockwise" oncommand="FallingBlock.rotateAnticlockwise();"/>
+  <command id="cmd.left" oncommand="game.moveFallingBlockLeft();"/>
+  <command id="cmd.right" oncommand="game.moveFallingBlockRight();"/>
+  <command id="cmd.down" oncommand="game.moveFallingBlockDown();"/>
+  <command id="cmd.drop" oncommand="game.dropFallingBlock();"/>
+  <command id="cmd.rotate.clockwise" oncommand="game.rotateFallingBlockClockwise();"/>
+  <command id="cmd.rotate.anticlockwise" oncommand="game.rotateFallingBlockAnticlockwise();"/>
 </commandset>
 
 <keyset id="main">
@@ -63,6 +64,59 @@
       label="&settings.label;" accesskey="&settings.akey;"/>
 </toolbar>
 
+<!-- palettes for tiles -->
+<html:img id="sqr-1" src="square0g.png"/>
+<html:img id="sqr0" src="square0.png"/>
+<html:img id="sqr1" src="square1.png"/>
+<html:img id="sqr2" src="square2.png"/>
+<html:img id="sqr3" src="square3.png"/>
+<html:img id="sqr4" src="square4.png"/>
+<html:img id="sqr5" src="square5.png"/>
+<html:img id="sqr6" src="square6.png"/>
+<html:img id="sqr7" src="square7.png"/>
+<html:img id="sqr8" src="square8.png"/>
+<html:img id="sqr9" src="square9.png"/>
+<html:img id="sqr10" src="square10.png"/>
+<html:img id="sqr11" src="square11.png"/>
+<html:img id="sqr12" src="square12.png"/>
+<html:img id="sqr13" src="square13.png"/>
+<html:img id="sqr14" src="square14.png"/>
+<html:img id="sqr15" src="square15.png"/>
+<html:img id="sqr16" src="square16.png"/>
+<html:img id="sqr17" src="square17.png"/>
+<html:img id="sqr18" src="square18.png"/>
+<html:img id="sqr19" src="square19.png"/>
+<html:img id="sqr20" src="square20.png"/>
+<html:img id="sqr21" src="square21.png"/>
+<html:img id="sqr22" src="square22.png"/>
+<html:img id="sqr23" src="square23.png"/>
+<html:img id="sqr24" src="square24.png"/>
+<html:img id="sqr25" src="square25.png"/>
+<html:img id="sqr26" src="square26.png"/>
+<html:img id="sqr27" src="square27.png"/>
+<html:img id="sqr28" src="square28.png"/>
+<html:img id="sqr29" src="square29.png"/>
+<html:img id="sqr30" src="square30.png"/>
+<html:img id="sqr31" src="square31.png"/>
+
+<html:img id="hex-1" src="hex-1.png"/>
+<html:img id="hex0" src="hex0.png"/>
+<html:img id="hex1" src="hex1.png"/>
+<html:img id="hex2" src="hex2.png"/>
+<html:img id="hex3" src="hex3.png"/>
+<html:img id="hex4" src="hex4.png"/>
+<html:img id="hex5" src="hex5.png"/>
+<html:img id="hex6" src="hex6.png"/>
+<html:img id="hex7" src="hex7.png"/>
+<html:img id="hex8" src="hex8.png"/>
+<html:img id="hex9" src="hex9.png"/>
+<html:img id="hex10" src="hex10.png"/>
+<html:img id="hex11" src="hex11.png"/>
+<html:img id="hex12" src="hex12.png"/>
+<html:img id="hex13" src="hex13.png"/>
+<html:img id="hex14" src="hex14.png"/>
+<html:img id="hex15" src="hex15.png"/>
+
 <box id="box-main">
   <box id="box-info">
     <label value="Score:"/>
@@ -72,15 +126,14 @@
     <label value="Level:"/>
     <description value="0" id="level-display"/>
     <label value="Next Block:"/>
-    <hbox id="next-sqr-block-display" class="square-grid"/>
-    <hbox id="next-hex-block-display" class="hex-grid"/>
-    <hbox id="next-tri-block-display" class="tri-grid"/>
+
+<!--    <html:canvas id="next-block"/> -->
+
   </box>
 
-  <stack id="stack-grids">
-    <hbox id="sqr-playing-field" class="square-grid"/>
-    <hbox id="hex-playing-field" class="hex-grid"/>
-    <hbox id="tri-playing-field" class="tri-grid"/>
+  <stack id="grid-container">
+    <box id="grid-wrapper"><html:canvas id="grid"/></box>
+    <box id="falling-block-box"><html:canvas id="falling-block"/></box>
     <vbox id="msg-paused"><label class="message" value="&msg.paused;"/></vbox>
     <vbox id="msg-gameover"><label class="message" value="&msg.gameover;"/></vbox>
   </stack>
