@@ -1,3 +1,5 @@
+const XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";const HTML = "http://www.w3.org/1999/xhtml";
+
 const shapes = ["sqr", "hex", "tri"];
 
 const tilePropertiess = {
@@ -9,10 +11,9 @@ var tileProperties = null;
 
 const ui = {
   grid: "grid",
-  gridWrapper: "grid-wrapper",
   gridBox: "grid-container",
   fallingBlock: "falling-block",
-  fallingBlockBox: "falling-block-box",
+  fallingBlockBox: "falling-block-wrapper",
   nextBlock: "next-block",
   pausedMsg: "msg-paused",
   gameOverMsg: "msg-gameover",
@@ -526,12 +527,7 @@ const GridView = {
   init: function() {
     const c = this.canvasElt = ui.grid;
     this.canvas = c.getContext("2d");
-    const b = this.box = ui.gridWrapper;
     this.stack = ui.gridBox;
-    // the <box> is absolutely positioned in the <stack> so that the <canvas>
-    // isn't stretched when the falling block makes the <stack> expand
-    b.top = 0;
-    b.left = 0;
   },
 
   // set size to a given number of *tiles*
@@ -541,8 +537,8 @@ const GridView = {
     c.clearRect(0, 0, Infinity, Infinity);
     this.width = width;
     this.height = height;
-    s.width = b.width = ce.width = width * tx - tx + tw;
-    s.height = b.height = ce.height = height * ty - ty + th;
+    s.width = ce.width = width * tx - tx + tw;
+    s.height = ce.height = height * ty - ty + th;
   },
 
   update: function(top, bottom) {

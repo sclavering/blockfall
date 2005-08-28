@@ -132,8 +132,9 @@
   </box>
 
   <stack id="grid-container">
-    <box id="grid-wrapper"><html:canvas id="grid"/></box>
-    <box id="falling-block-box"><html:canvas id="falling-block"/></box>
+    <html:canvas id="grid" top="0" left="0"/>
+    <!-- positioning via top/left attrs on the canvas doesn't work well -->
+    <box id="falling-block-wrapper"><html:canvas id="falling-block"/></box>
     <vbox id="msg-paused"><label class="message" value="&msg.paused;"/></vbox>
     <vbox id="msg-gameover"><label class="message" value="&msg.gameover;"/></vbox>
   </stack>
