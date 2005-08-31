@@ -123,11 +123,7 @@ function onSettingsAccept(shape, sizes, showgridlines) {
   var old = gTileShape;
   gBlockSizes = sizes;
   Blocks.use(shape, sizes[shape]);
-
-// xxx fixme
-//  if(gShowGridLines != showgridlines)
-//    ui.grids.className = showgridlines ? "gridlines" : "";
-  gShowGridLines = showgridlines;
+  toggleGridLines(showgridlines);
 
   // continue, or not
   if(game && !wasPausedBeforeSettings) unpause();
@@ -137,6 +133,15 @@ function onSettingsAccept(shape, sizes, showgridlines) {
   }
 }
 
+function toggleGridLines(on) {
+  gShowGridLines = on;
+  for each(var tp in tilePropertiess) {
+    var o = tp.oddImages, e = tp.evenImages;
+    if(on) o[0] = o.emptyWithGridlines, e[0] = e.emptyWithGridlines;
+    else o[0] = o.emptyWithoutGridlines, e[0] = e.emptyWithoutGridlines;
+  }
+  if(game) GridView.update();
+}
 
 function tileShapeChanged(shape) {
   gTileShape = shape;
@@ -158,10 +163,12 @@ window.onload = function onLoad() {
   for(var i in ui) ui[i] = document.getElementById(ui[i]);
   for(i in commands) commands[i] = document.getElementById(commands[i]);
 
-  const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex;
+  const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex, triTp = tilePropertiess.tri;
   sqrTp.oddImages = sqrTp.evenImages = _initTileSet("sqr");
   hexTp.oddImages = _initTileSet("hexb");
   hexTp.evenImages = _initTileSet("hex");
+  triTp.oddImages = [];
+  triTp.evenImages = [];
 
   GridView.init();
   FallingBlockView.init();
@@ -175,8 +182,9 @@ window.onload = function onLoad() {
     for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
 
-//  gShowGridLines = root.getAttribute("pref-gridlines")=="true";
-//  if(gShowGridLines) ui.grids.className = "gridlines";
+  var showGridLines = root.getAttribute("pref-gridlines")=="true";
+  toggleGridLines(showGridLines);
+
 /*
   var shape = "sqr";
   gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
