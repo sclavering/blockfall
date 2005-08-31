@@ -65,7 +65,7 @@
 </toolbar>
 
 <!-- palettes for tiles -->
-<html:img id="sqr-1" src="square0g.png"/>
+<html:img id="sqr0g" src="square0g.png"/>
 <html:img id="sqr0" src="square0.png"/>
 <html:img id="sqr1" src="square1.png"/>
 <html:img id="sqr2" src="square2.png"/>
@@ -99,7 +99,7 @@
 <html:img id="sqr30" src="square30.png"/>
 <html:img id="sqr31" src="square31.png"/>
 
-<html:img id="hex-1" src="hex-1.png"/>
+<html:img id="hex0g" src="hex0g.png"/>
 <html:img id="hex0" src="hex0.png"/>
 <html:img id="hex1" src="hex1.png"/>
 <html:img id="hex2" src="hex2.png"/>
@@ -114,8 +114,23 @@
 <html:img id="hex11" src="hex11.png"/>
 <html:img id="hex12" src="hex12.png"/>
 <html:img id="hex13" src="hex13.png"/>
-<html:img id="hex14" src="hex14.png"/>
-<html:img id="hex15" src="hex15.png"/>
+
+<html:img id="hexb0g" src="hex-1b.png"/>
+<html:img id="hexb0" src="hex0b.png"/>
+<html:img id="hexb1" src="hex1b.png"/>
+<html:img id="hexb2" src="hex2b.png"/>
+<html:img id="hexb3" src="hex3b.png"/>
+<html:img id="hexb4" src="hex4b.png"/>
+<html:img id="hexb5" src="hex5b.png"/>
+<html:img id="hexb6" src="hex6b.png"/>
+<html:img id="hexb7" src="hex7b.png"/>
+<html:img id="hexb8" src="hex8b.png"/>
+<html:img id="hexb9" src="hex9b.png"/>
+<html:img id="hexb10" src="hex10b.png"/>
+<html:img id="hexb11" src="hex11b.png"/>
+<html:img id="hexb12" src="hex12b.png"/>
+<html:img id="hexb13" src="hex13b.png"/>
+
 
 <box id="box-main">
   <box id="box-info">

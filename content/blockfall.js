@@ -3,9 +3,9 @@ const XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";con
 const shapes = ["sqr", "hex", "tri"];
 
 const tilePropertiess = {
-  sqr: { width: 20, height: 20, xOffset: 20, yOffset: 20, altYOffset: 0},
-  hex: { width: 24, height: 10, xOffset: 19, yOffset: 10, altYOffset: 10},
-  tri: { width: 19, height: 20, xOffset: 19, yOffset: 10, altYOffset: 20}
+  sqr: { width: 20, height: 20, xOffset: 20, yOffset: 20 },
+  hex: { width: 24, height: 10, xOffset: 19, yOffset: 10 },
+  tri: { width: 19, height: 20, xOffset: 19, yOffset: 10 }
 };
 var tileProperties = null;
 
@@ -138,7 +138,6 @@ function onSettingsAccept(shape, sizes, showgridlines) {
 }
 
 
-
 function tileShapeChanged(shape) {
   gTileShape = shape;
   // xxx hex and tri games make assumptions about their sizes.
@@ -159,15 +158,10 @@ window.onload = function onLoad() {
   for(var i in ui) ui[i] = document.getElementById(ui[i]);
   for(i in commands) commands[i] = document.getElementById(commands[i]);
 
-  for(var shape in tilePropertiess) {
-    const images = tilePropertiess[shape].images = [];
-    for(var i = 0; true; ++i) {
-      var el = document.getElementById(shape + i);
-      if(!el) break;
-      images.push(el);
-      el.parentNode.removeChild(el);
-    }
-  }
+  const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex;
+  sqrTp.oddImages = sqrTp.evenImages = _initTileSet("sqr");
+  hexTp.oddImages = _initTileSet("hexb");
+  hexTp.evenImages = _initTileSet("hex");
 
   GridView.init();
   FallingBlockView.init();
@@ -192,9 +186,22 @@ window.onload = function onLoad() {
   tileShapeChanged(shape);
 };
 
+function _initTileSet(idPrefix) {
+  const images = [];
+  const withImg = images.emptyWithGridlines = document.getElementById(idPrefix + "0g");
+  withImg.parentNode.removeChild(withImg);
+  for(var i = 0; true; ++i) {
+    var el = document.getElementById(idPrefix + i);
+    if(!el) break;
+    images.push(el);
+    el.parentNode.removeChild(el);
+  }
+  images.emptyWithoutGridlines = images[0];
+  return images;
+}
 
 
-var Timer = {
+const Timer = {
   interval: null,
   delay: 0,
 
@@ -461,7 +468,7 @@ Games.hex = {
     const g = this.grid, w = this.width;
     var num = 0;
     if(bottom == this.height) --bottom;
-    for(var y = top, odd = top % 2; y != bottom; ++y) {
+    for(var y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
       // row of half-hexes is full <==> appropriate half-hexes in row above+below are full
       if(!this._lineIsFull(y)) continue;
       /*
@@ -543,17 +550,12 @@ const GridView = {
 
   update: function(top, bottom) {
     if(!top) top = 0;
-    const tp = tileProperties, imgs = tp.images, tw = tp.width, th = tp.height,
-          tx = tp.xOffset, ty = tp.yOffset, tay = tp.altYOffset;
-    const c = this.canvas, w = this.width, h = this.height, grid = game.grid;
-    const drawOddTiles = gTileShape != "hex";
+    const tp = tileProperties, c = this.canvas, w = this.width, h = this.height, grid = game.grid;
+    const oImages = tp.oddImages, eImages = tp.evenImages, tx = tp.xOffset, ty = tp.yOffset;
     if(!bottom) bottom = h;
-    for(var y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd) {
-      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
-        var val = grid[y][x];
-        if(drawOddTiles || !tileOdd) c.drawImage(imgs[val], x*tx, y*ty);
-      }
-    }
+    for(var y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd)
+      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd)
+        c.drawImage((tileOdd ? oImages : eImages)[grid[y][x]], x * tx, y * ty);
   }
 };
 
@@ -577,9 +579,8 @@ var FallingBlockView = {
   update: function() {
     const c = this.canvas, ce = this.canvasElt, box = this.box, fb = game.fallingBlock;
     const w = fb.width, h = fb.height, t = fb.top, l = fb.left, grid = fb.grid;
-    const tp = tileProperties, imgs = tp.images, tw = tp.width, th = tp.height,
-          tx = tp.xOffset, ty = tp.yOffset, tay = tp.altYOffset;
-    const drawOddTiles = gTileShape != "hex";
+    const tp = tileProperties, oImages = tp.oddImages, eImages = tp.evenImages,
+          tw = tp.width, th = tp.height, tx = tp.xOffset, ty = tp.yOffset;
     // position canvas
     box.top = t * ty;
     box.left = l * tx;
@@ -591,7 +592,7 @@ var FallingBlockView = {
     for(var y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
       for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
         var val = grid[y][x];
-        if(val && (drawOddTiles || !tileOdd)) c.drawImage(imgs[val], x*tx, y*ty);
+        if(val) c.drawImage((tileOdd ? oImages : eImages)[val], x * tx, y * ty);
       }
     }
   },
