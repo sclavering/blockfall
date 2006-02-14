@@ -2,25 +2,24 @@
 
 <r:RDF xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
        xmlns="http://www.mozilla.org/2004/em-rdf#">
+<r:Description about="urn:mozilla:install-manifest">
 
-  <r:Description about="urn:mozilla:install-manifest">
-    <id>blockfall@clav.mozdev.org</id>
+<id>blockfall@clav.mozdev.org</id>
+<name>Blockfall</name>
+<version>0.9</version>
+<description>A falling-blocks game</description>
+<homepageURL>http://clav.mozdev.org/</homepageURL>
 
-    <name>Blockfall</name>
-    <version>0.9</version>
-    <description>A falling-blocks game</description>
-    <homepageURL>http://clav.mozdev.org/</homepageURL>
+<creator>Stephen Clavering</creator>
+<contributor>Viljo Viitanen (wrote most of Blockfall 0.3)</contributor>
+<contributor>Conrad Knauer (testing, suggestions)</contributor>
 
-    <creator>Stephen Clavering</creator>
-    <contributor>Viljo Viitanen (mostly wrote Blockfall 0.3)</contributor>
-    <contributor>Conrad Knauer (testing, suggestions)</contributor>
-
-    <targetApplication>
-      <r:Description>
-        <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
-        <minVersion>1.0+</minVersion>
-        <maxVersion>1.0+</maxVersion>
-      </r:Description>
-    </targetApplication>
+<targetApplication>
+  <r:Description>
+    <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
+    <minVersion>1.4.1</minVersion>
+    <maxVersion>1.5.0.*</maxVersion>
   </r:Description>
+</targetApplication>
+</r:Description>
 </r:RDF>

@@ -1,4 +1,5 @@
-const XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";const HTML = "http://www.w3.org/1999/xhtml";
+const XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const HTML = "http://www.w3.org/1999/xhtml";
 
 const shapes = ["sqr", "hex", "tri"];
 
@@ -114,10 +115,10 @@ function onSettingsCancel() {
 function onSettingsAccept(shape, sizes, showgridlines) {
   // save prefs (using attribute persistence)
   const root = document.documentElement;
-  root.setAttribute("pref-tileshape", shape);
+  root.setAttribute("pref2-tileshape", shape);
   for(var i in sizes)
-    root.setAttribute("pref-"+i+"-sizes", sizes[i]); // array->string
-  root.setAttribute("pref-gridlines", showgridlines);
+    root.setAttribute("pref2-"+i+"-sizes", sizes[i]); // array->string
+  root.setAttribute("pref2-gridlines", showgridlines);
 
   // apply pref changes
   var old = gTileShape;
@@ -175,14 +176,14 @@ window.onload = function onLoad() {
 
   // read prefs (from attributes)
   const root = document.documentElement;
-  var shape = root.getAttribute("pref-tileshape");
+  var shape = root.getAttribute("pref2-tileshape");
   for(i = 0; i != 3; ++i) {
     var sh = shapes[i];
-    var sizes = gBlockSizes[sh] = root.getAttribute("pref-"+sh+"-sizes").split(",");
+    var sizes = gBlockSizes[sh] = root.getAttribute("pref2-"+sh+"-sizes").split(",");
     for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
 
-  var showGridLines = root.getAttribute("pref-gridlines")=="true";
+  var showGridLines = root.getAttribute("pref2-gridlines")=="true";
   toggleGridLines(showGridLines);
 
 /*

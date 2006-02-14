@@ -11,13 +11,13 @@
     title="&blockfall;"
     onblur="onWindowBlur();"
 
-    persist="screenX screenY pref-tileshape pref-sqr-sizes pref-hex-sizes pref-tri-sizes pref-gridlines"
+    persist="screenX screenY pref2-tileshape pref2-sqr-sizes pref2-hex-sizes pref2-tri-sizes pref2-gridlines"
 
-    pref-tileshape="sqr"
-    pref-sqr-sizes="1"
-    pref-hex-sizes="1"
-    pref-tri-sizes="0"
-    pref-gridlines="true"
+    pref2-tileshape="sqr"
+    pref2-sqr-sizes="1"
+    pref2-hex-sizes="1"
+    pref2-tri-sizes="0"
+    pref2-gridlines="true"
     >
 
 <script src="blockfall.js" type="application/x-javascript"/>

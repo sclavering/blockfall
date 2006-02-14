@@ -392,8 +392,6 @@ function createTriBlock(size, prepath, path, numstates) {
   return block;
 }
 
-const N = 1, E = 2, S = 3, W = 4;
-
 function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
 //  alert("state, starting at ("+x+","+y+"), prepath="+prepath+", path="+path);
   var state = new Array(height);
