@@ -550,7 +550,7 @@ const GridView = {
   setSize: function(width, height) {
     const t = this, c = t.canvas, ce = t.canvasElt, b = t.box, s = t.stack, tp = tileProperties;
     const tw = tp.width, th = tp.height, tx = tp.xOffset, ty = tp.yOffset;
-    c.clearRect(0, 0, Infinity, Infinity);
+    c.clearRect(0, 0, c.canvas.width, c.canvas.height);
     this.width = width;
     this.height = height;
     s.width = ce.width = width * tx - tx + tw;
@@ -596,7 +596,7 @@ var FallingBlockView = {
     box.width = ce.width = w * tx - tx + tw;
     box.height = ce.height = h * ty - ty + th;
     // draw the block
-    c.clearRect(0, 0, Infinity, Infinity);
+    c.clearRect(0, 0, ce.width, ce.height);
     var firstTileOdd = (l % 2) ^ (t % 2);
     for(var y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
       for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
