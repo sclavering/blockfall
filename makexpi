@@ -1,0 +1,2 @@
+zip -ur0 blockfall.zip content locale -x '*CVS*' -x '*~'
+zip -ur9 blockfall.xpi blockfall.zip install.rdf chrome.manifest
