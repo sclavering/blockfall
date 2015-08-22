@@ -151,9 +151,9 @@ function tileShapeChanged(shape) {
 }
 
 
-function onWindowBlur() {
+window.onblur = function() {
   if(game) pause();
-}
+};
 
 
 window.onload = function onLoad() {

@@ -7,7 +7,6 @@
     id="blockfall-window"
     windowtype="blockfall-main"
     title="Blockfall"
-    onblur="onWindowBlur();"
 
     pref2-tileshape="sqr"
     pref2-sqr-sizes="1"
