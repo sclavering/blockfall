@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html
+    pref2-tileshape="sqr" pref2-sqr-sizes="1" pref2-hex-sizes="1" pref2-tri-sizes="0">
+
+<head>
+<title>Blockfall</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="blockfall.css">
+
+<script src="blockfall.js" type="application/javascript;version=1.7"></script>
+<script src="blocks.js" type="application/javascript;version=1.7"></script>
+</head>
+
+<body>
+
+<div style="display:none">
+  <img id="sqr0" src="img/square0g.png">
+  <img id="sqr1" src="img/square1.png">
+  <img id="sqr2" src="img/square2.png">
+  <img id="sqr3" src="img/square3.png">
+  <img id="sqr4" src="img/square4.png">
+  <img id="sqr5" src="img/square5.png">
+  <img id="sqr6" src="img/square6.png">
+  <img id="sqr7" src="img/square7.png">
+  <img id="sqr8" src="img/square8.png">
+  <img id="sqr9" src="img/square9.png">
+  <img id="sqr10" src="img/square10.png">
+  <img id="sqr11" src="img/square11.png">
+  <img id="sqr12" src="img/square12.png">
+  <img id="sqr13" src="img/square13.png">
+  <img id="sqr14" src="img/square14.png">
+  <img id="sqr15" src="img/square15.png">
+  <img id="sqr16" src="img/square16.png">
+  <img id="sqr17" src="img/square17.png">
+  <img id="sqr18" src="img/square18.png">
+  <img id="sqr19" src="img/square19.png">
+  <img id="sqr20" src="img/square20.png">
+  <img id="sqr21" src="img/square21.png">
+  <img id="sqr22" src="img/square22.png">
+  <img id="sqr23" src="img/square23.png">
+  <img id="sqr24" src="img/square24.png">
+  <img id="sqr25" src="img/square25.png">
+  <img id="sqr26" src="img/square26.png">
+  <img id="sqr27" src="img/square27.png">
+  <img id="sqr28" src="img/square28.png">
+  <img id="sqr29" src="img/square29.png">
+  <img id="sqr30" src="img/square30.png">
+  <img id="sqr31" src="img/square31.png">
+
+  <img id="hex0" src="img/hex0g.png">
+  <img id="hex1" src="img/hex1.png">
+  <img id="hex2" src="img/hex2.png">
+  <img id="hex3" src="img/hex3.png">
+  <img id="hex4" src="img/hex4.png">
+  <img id="hex5" src="img/hex5.png">
+  <img id="hex6" src="img/hex6.png">
+  <img id="hex7" src="img/hex7.png">
+  <img id="hex8" src="img/hex8.png">
+  <img id="hex9" src="img/hex9.png">
+  <img id="hex10" src="img/hex10.png">
+  <img id="hex11" src="img/hex11.png">
+  <img id="hex12" src="img/hex12.png">
+  <img id="hex13" src="img/hex13.png">
+
+  <img id="hexb0" src="img/hex0gb.png">
+  <img id="hexb1" src="img/hex1b.png">
+  <img id="hexb2" src="img/hex2b.png">
+  <img id="hexb3" src="img/hex3b.png">
+  <img id="hexb4" src="img/hex4b.png">
+  <img id="hexb5" src="img/hex5b.png">
+  <img id="hexb6" src="img/hex6b.png">
+  <img id="hexb7" src="img/hex7b.png">
+  <img id="hexb8" src="img/hex8b.png">
+  <img id="hexb9" src="img/hex9b.png">
+  <img id="hexb10" src="img/hex10b.png">
+  <img id="hexb11" src="img/hex11b.png">
+  <img id="hexb12" src="img/hex12b.png">
+  <img id="hexb13" src="img/hex13b.png">
+</div>
+
+<div id="main">
+  <div id="sidebar">
+    <button id="btn-new" onclick="newGame()">New</button>
+    <button id="btn-pause" onclick="togglePause()">Pause</button>
+
+    <h6>Score:</h6>
+    <div id="score-display"></div>
+    <h6>Lines:</h6>
+    <div id="lines-display"></div>
+    <h6>Level:</h6>
+    <div id="level-display"></div>
+  </div>
+
+  <div id="grid-container">
+    <canvas id="grid"></canvas>
+    <canvas id="falling-block"></canvas>
+    <div id="msg-paused" class="message-wrapper"><div class="message">Paused</div></div>
+    <div id="msg-gameover" class="message-wrapper"><div class="message">Game Over</div></div>
+  </div>
+</div>
+
+</body>
+</html>
