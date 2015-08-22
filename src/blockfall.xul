@@ -139,13 +139,12 @@
 
   </box>
 
-  <stack id="grid-container">
-    <html:canvas id="grid" top="0" left="0"/>
-    <!-- positioning via top/left attrs on the canvas doesn't work well -->
-    <box id="falling-block-wrapper"><html:canvas id="falling-block"/></box>
-    <vbox id="msg-paused"><label class="message" value="Paused"/></vbox>
-    <vbox id="msg-gameover"><label class="message" value="Game Over"/></vbox>
-  </stack>
+  <div id="grid-container" xmlns="http://www.w3.org/1999/xhtml">
+    <canvas id="grid" top="0" left="0"/>
+    <canvas id="falling-block"/>
+    <div id="msg-paused" class="message-wrapper"><div class="message">Paused</div></div>
+    <div id="msg-gameover" class="message-wrapper"><div class="message">Game Over</div></div>
+  </div>
 </box>
 
 </window>

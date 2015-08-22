@@ -32,6 +32,15 @@
   -moz-box-orient: horizontal;
 }
 
+#grid-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.message-wrapper {
+  position: absolute;
+}
+
 .message {
   background: #111;
   color: white;
@@ -43,6 +52,10 @@
   text-align: center;
 }
 
-#grid-container {
-  overflow: hidden;
+#falling-block {
+  position: absolute;
+}
+
+canvas {
+  display: block;
 }
