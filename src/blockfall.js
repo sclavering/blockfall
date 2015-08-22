@@ -45,7 +45,7 @@ var gBlockSizes = {}; // shape -> int array
 function pause() {
   if(gPaused) return;
   Timer.stop();
-  ui.pausedMsg.hidden = false;
+  ui.pausedMsg.style.display = "block";
   gPaused = true;
   for(var i in commands)
     if(i != "pause")
@@ -55,7 +55,7 @@ function pause() {
 function unpause() {
   if(!gPaused) return;
   Timer.start();
-  ui.pausedMsg.hidden = true;
+  ui.pausedMsg.style.display = "none";
   gPaused = false;
   for(var i in commands)
     if(i != "pause")
@@ -69,8 +69,8 @@ function togglePause() {
 
 function newGame(width, height, level) {
   if(game) game.end();
-  ui.pausedMsg.hidden = true;
-  ui.gameOverMsg.hidden = true;
+  ui.pausedMsg.style.display = "none";
+  ui.gameOverMsg.style.display = "none";
   game = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
   game.begin();
   for(var i in commands) commands[i].removeAttribute("disabled");
@@ -81,7 +81,7 @@ function endGame() {
   game.end();
   game = null;
   for(var i in commands) commands[i].setAttribute("disabled", "true");
-  ui.gameOverMsg.hidden = false;
+  ui.gameOverMsg.style.display = "block";
 }
 
 
