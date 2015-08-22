@@ -287,8 +287,7 @@ function FallingBlock(block) {
 
 
 function newGameObj(width, height, level, basis) {
-  const game = {};
-  game.__proto__ = basis;
+  const game = { __proto__: basis };
   game.width = width;
   game.height = height;
   game.level = game.startingLevel = level;
