@@ -6,7 +6,7 @@
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     id="blockfall-settings"
-    title="&settings;"
+    title="Settings"
     onload="onLoad();"
     ondialogaccept="onAccept();"
     ondialogcancel="opener.onSettingsCancel();"
@@ -70,27 +70,27 @@ function onAccept() {
 </script>
 
 <groupbox>
-  <caption label="&blocks;"/>
+  <caption label="Blocks"/>
   <radiogroup id="shapes-list">
-    <radio value="sqr" label="&sqr;"/>
-      <checkbox class="indent" id="sizes-sqr-0" label="&small3tiles;" value="0"/>
-      <checkbox class="indent" id="sizes-sqr-1" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox class="indent" id="sizes-sqr-2" label="&large5tiles;" value="2"/>
-    <radio value="hex" label="&hex;"/>
-      <checkbox class="indent" id="sizes-hex-0" label="&small3tiles;" value="0"/>
-      <checkbox class="indent" id="sizes-hex-1" label="&normal4tiles;" value="1" checked="true"/>
-      <checkbox class="indent" id="sizes-hex-2" label="&large5tiles;" value="2"/>
-    <radio value="tri" label="&tri;"/>
-      <checkbox class="indent" id="sizes-tri-0" label="&normaltiles;" value="0"/>
-      <checkbox class="indent" id="sizes-tri-1" label="&large6tiles;" value="1"/>
+    <radio value="sqr" label="Square blocks"/>
+      <checkbox class="indent" id="sizes-sqr-0" label="Small blocks (3 tiles)" value="0"/>
+      <checkbox class="indent" id="sizes-sqr-1" label="Normal blocks (4 tiles)" value="1" checked="true"/>
+      <checkbox class="indent" id="sizes-sqr-2" label="Large blocks (5 tiles)" value="2"/>
+    <radio value="hex" label="Hexagonal blocks"/>
+      <checkbox class="indent" id="sizes-hex-0" label="Small blocks (3 tiles)" value="0"/>
+      <checkbox class="indent" id="sizes-hex-1" label="Normal blocks (4 tiles)" value="1" checked="true"/>
+      <checkbox class="indent" id="sizes-hex-2" label="Large blocks (5 tiles)" value="2"/>
+    <radio value="tri" label="Triangular blocks"/>
+      <checkbox class="indent" id="sizes-tri-0" label="Normal blocks (1 to 5 tiles)" value="0"/>
+      <checkbox class="indent" id="sizes-tri-1" label="large6tiles" value="1"/>
   </radiogroup>
 </groupbox>
 
-<checkbox label="&shownextblock;" id="shownextblock" disabled="true"/>
-<checkbox label="&showgridlines;" id="showgridlines"/>
+<checkbox id="shownextblock" disabled="true" label="Show the next block that will fall"/>
+<checkbox id="showgridlines" label="Show grid-lines"/>
 
 <hbox align="center">
-  <label value="&startinglevel;" disabled="true"/>
+  <label disabled="true" value="Starting level:"/>
   <!-- a textbox with spinbuttons would be nicer, but doesn't work -->
   <menulist id="startinglevel-menu" disabled="true">
     <menupopup>

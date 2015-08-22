@@ -2,13 +2,11 @@
 
 <?xml-stylesheet href="blockfall.css" type="text/css"?>
 
-<!DOCTYPE window SYSTEM "chrome://blockfall/locale/blockfall.dtd">
-
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:html="http://www.w3.org/1999/xhtml"
     id="blockfall-window"
     windowtype="blockfall-main"
-    title="&blockfall;"
+    title="Blockfall"
     onblur="onWindowBlur();"
 
     pref2-tileshape="sqr"
@@ -54,12 +52,9 @@
 </keyset>
 
 <toolbar id="main-toolbar">
-  <toolbarbutton id="btn-new" command="cmd.new"
-      label="&new.label;" tooltiptext="&new.tip;" accesskey="&new.akey;"/>
-  <toolbarbutton id="btn-pause" command="cmd.pause"
-      label="&pause.label;" tooltiptext="&pause.tip;" accesskey="&pause.akey;"/>
-  <toolbarbutton id="btn-settings" command="cmd.settings"
-      label="&settings.label;" accesskey="&settings.akey;"/>
+  <toolbarbutton id="btn-new" command="cmd.new" label="New" tooltiptext="Start a new game" accesskey="N"/>
+  <toolbarbutton id="btn-pause" command="cmd.pause" label="Pause" accesskey="P"/>
+  <toolbarbutton id="btn-settings" command="cmd.settings" label="Settings..." accesskey="S"/>
 </toolbar>
 
 <!-- palettes for tiles -->
@@ -148,8 +143,8 @@
     <html:canvas id="grid" top="0" left="0"/>
     <!-- positioning via top/left attrs on the canvas doesn't work well -->
     <box id="falling-block-wrapper"><html:canvas id="falling-block"/></box>
-    <vbox id="msg-paused"><label class="message" value="&msg.paused;"/></vbox>
-    <vbox id="msg-gameover"><label class="message" value="&msg.gameover;"/></vbox>
+    <vbox id="msg-paused"><label class="message" value="Paused"/></vbox>
+    <vbox id="msg-gameover"><label class="message" value="Game Over"/></vbox>
   </stack>
 </box>
 
