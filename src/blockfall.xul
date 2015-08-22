@@ -46,12 +46,6 @@
   <key id="key.rotate.anticlockwise2" key="z" command="cmd.rotate.anticlockwise"/>
 </keyset>
 
-<toolbar id="main-toolbar">
-  <toolbarbutton id="btn-new" command="cmd.new" label="New" tooltiptext="Start a new game" accesskey="N"/>
-  <toolbarbutton id="btn-pause" command="cmd.pause" label="Pause" accesskey="P"/>
-  <toolbarbutton id="btn-settings" command="cmd.settings" label="Settings..." accesskey="S"/>
-</toolbar>
-
 <!-- palettes for tiles -->
 <div style="display:none" xmlns="http://www.w3.org/1999/xhtml">
   <img id="sqr0" src="img/square0g.png"/>
@@ -118,22 +112,25 @@
   <img id="hexb13" src="img/hex13b.png"/>
 </div>
 
-<box id="box-main">
-  <box id="box-info">
-    <label value="Score:"/>
-    <description value="0" id="score-display"/>
-    <label value="Lines:"/>
-    <description value="0" id="lines-display"/>
-    <label value="Level:"/>
-    <description value="0" id="level-display"/>
-  </box>
+<div id="main" xmlns="http://www.w3.org/1999/xhtml">
+  <div id="sidebar">
+    <button id="btn-new" onclick="newGame()">New</button>
+    <button id="btn-pause" onclick="togglePause()">Pause</button>
 
-  <div id="grid-container" xmlns="http://www.w3.org/1999/xhtml">
+    <h6>Score:</h6>
+    <div id="score-display"/>
+    <h6>Lines:</h6>
+    <div id="lines-display"/>
+    <h6>Level:</h6>
+    <div id="level-display"/>
+  </div>
+
+  <div id="grid-container">
     <canvas id="grid" top="0" left="0"/>
     <canvas id="falling-block"/>
     <div id="msg-paused" class="message-wrapper"><div class="message">Paused</div></div>
     <div id="msg-gameover" class="message-wrapper"><div class="message">Game Over</div></div>
   </div>
-</box>
+</div>
 
 </window>

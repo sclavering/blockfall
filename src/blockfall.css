@@ -1,23 +1,29 @@
-@import url(chrome://global/skin/);
-
-
-#box-main {
+#main {
   background: #111;
 }
-#box-info {
-  color: white;
-  font-weight: bold;
-}
-#next-block-display {
-  margin: 10px;
+
+#sidebar, #grid-container {
+  display: inline-block;
+  vertical-align: top;
 }
 
-#box-main {
-  -moz-box-orient: horizontal;
+#sidebar {
+  width: 100px;
 }
-#box-info {
-  -moz-box-orient: vertical;
+
+#sidebar h6,
+#sidebar div {
+  color: white;
+  font-size: 16px;
+  font-family: sans-serif;
+  font-weight: normal;
+  margin: 0 0 4px;
 }
+
+#sidebar div {
+  margin-bottom: 16px;
+}
+
 
 #grid-container {
   position: relative;

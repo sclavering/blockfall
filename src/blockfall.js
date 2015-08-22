@@ -251,9 +251,9 @@ Games.base = {
   _nextBlock: null,
 
   begin: function() {
-    ui.level.value = this.level;
-    ui.lines.value = this.lines;
-    ui.score.value = this.score;
+    ui.level.textContent = this.level;
+    ui.lines.textContent = this.lines;
+    ui.score.textContent = this.score;
     GridView.setSize(this.width, this.height);
     Timer.setDelay(this.startingLevel);
     window.sizeToContent();
@@ -271,16 +271,16 @@ Games.base = {
     if(numLinesRemoves) {
       if(this.lines >= (this.levelsCompleted+1)*10) {
         this.levelsCompleted++;
-        ui.level.value = ++this.level;
+        ui.level.textContent = ++this.level;
         Timer.reduceDelay();
       }
-      ui.lines.value = this.lines += numLinesRemoves;
+      ui.lines.textContent = this.lines += numLinesRemoves;
       for(var i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
     }
     var score = this.level;
     if(blockDropped) score *= this.level / 4;
     this.score += Math.ceil(score);
-    ui.score.value = this.score;
+    ui.score.textContent = this.score;
   },
 
   blockReachedBottom: function(blockDropped) {
