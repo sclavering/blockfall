@@ -24,14 +24,6 @@
   -moz-box-orient: vertical;
 }
 
-#box-main[nextblockhidden] {
-  -moz-box-orient: vertical;
-}
-
-#box-main[nextblockhidden] #box-info {
-  -moz-box-orient: horizontal;
-}
-
 #grid-container {
   position: relative;
   overflow: hidden;

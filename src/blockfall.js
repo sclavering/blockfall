@@ -40,9 +40,6 @@ var gGameType = null; // 4th arg of newGameObj
 var gTileShape = null; // sqr/hex/tri usually
 var gBlockSizes = {}; // shape -> int array
 
-// objs for the current shape
-var NextBlockDisplay = null;
-
 
 
 function pause() {
@@ -282,7 +279,6 @@ Games.base = {
     }
     var score = this.level;
     if(blockDropped) score *= this.level / 4;
-//nb    if(NextBlockDisplay.enabled) score /= 2;
     this.score += Math.ceil(score);
     ui.score.value = this.score;
   },
@@ -589,47 +585,3 @@ var FallingBlockView = {
     canvas.style.left = (game.fallingBlock.left * tileProperties.xOffset) + "px";
   },
 };
-
-
-
-/*
-var BaseNextBlockDisplay = {
-  __proto__: BaseGridDisplay,
-
-  enabled: true,
-
-  update: function(block) {
-    if(!this.enabled) return;
-    block = block[0]; // go from block to state
-    const h = this.height, w = this.width;
-    this.clear();
-    // Position the block in the centre of the space.
-    // This is *essential* for hexagonal tiles because otherwise the display
-    // ends up half a hex out (and it looks nice on square ones).
-    var top = Math.floor((h - block.length) / 2);
-    var left = Math.floor((w - block[0].length) / 2);
-    for(var y = 0, y2 = top; y < block.length && y2 < h; y++, y2++) {
-      for(var x = 0, x2 = left; x < block[0].length && x2 < w; x++, x2++) {
-        var tile = this.grid[x2][y2];
-        tile.className = tile.classPrefix + block[y][x];
-      }
-    }
-  },
-
-  // enable or disable
-  toggle: function() {
-    if(this.enabled) this.clear();
-    this.enabled = !this.enabled;
-  }
-}
-
-
-function NextBlockDisplayObj(shape, width, height) {
-  var id = "next-" + shape + "-block-display";
-  this.container = document.getElementById(id);
-  this.container.hidden = true;
-  this.createTile = createTiles[shape];
-  this.setSize(width, height);
-}
-NextBlockDisplayObj.prototype = BaseNextBlockDisplay;
-*/

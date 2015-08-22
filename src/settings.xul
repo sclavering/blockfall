@@ -80,8 +80,6 @@ function onAccept() {
   </radiogroup>
 </groupbox>
 
-<checkbox id="shownextblock" disabled="true" label="Show the next block that will fall"/>
-
 <hbox align="center">
   <label disabled="true" value="Starting level:"/>
   <!-- a textbox with spinbuttons would be nicer, but doesn't work -->

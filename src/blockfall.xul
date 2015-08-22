@@ -126,10 +126,6 @@
     <description value="0" id="lines-display"/>
     <label value="Level:"/>
     <description value="0" id="level-display"/>
-    <label value="Next Block:"/>
-
-<!--    <html:canvas id="next-block"/> -->
-
   </box>
 
   <div id="grid-container" xmlns="http://www.w3.org/1999/xhtml">
