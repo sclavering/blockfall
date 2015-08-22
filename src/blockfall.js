@@ -1,6 +1,3 @@
-const XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-const HTML = "http://www.w3.org/1999/xhtml";
-
 const shapes = ["sqr", "hex", "tri"];
 
 const tilePropertiess = {
