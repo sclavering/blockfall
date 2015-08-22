@@ -34,6 +34,7 @@ html {
   overflow: hidden;
 }
 
+#game-type-picker,
 .message-wrapper {
   position: absolute;
   display: none;
@@ -60,5 +61,18 @@ html {
 }
 
 canvas {
+  display: block;
+}
+
+#game-type-picker {
+  background: white;
+  font-size: 12px;
+}
+
+#game-type-picker div {
+  margin-left: 2em;
+}
+
+#game-type-picker label {
   display: block;
 }

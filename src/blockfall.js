@@ -16,7 +16,8 @@ const ui = {
   gameOverMsg: "msg-gameover",
   score: "score-display",
   lines: "lines-display",
-  level: "level-display"
+  level: "level-display",
+  game_type_picker: "game-type-picker",
 };
 
 var gCommandsEnabled = false;
@@ -30,8 +31,6 @@ var gHeight = 0;
 var gGameType = null; // 4th arg of newGameObj
 
 var gTileShape = null; // sqr/hex/tri usually
-var gBlockSizes = {}; // shape -> int array
-
 
 
 function pause() {
@@ -73,46 +72,35 @@ function endGame() {
 }
 
 
-// settings dialogue
-
-var wasPausedBeforeSettings = false;
-
-function showSettingsDialogue() {
-  const url = "chrome://blockfall/content/settings.xul";
-  const flags = "dialog,dependent,modal,chrome";//,resizable";
-
-  if(game) {
-    wasPausedBeforeSettings = gPaused;
-    if(!wasPausedBeforeSettings) pause();
-  }
-  openDialog(url, "flibble", flags, gTileShape, gBlockSizes);
+function doShowGameTypePicker() {
+  if(game) pause();
+  ui.game_type_picker.style.display = "block";
 }
 
-function onSettingsCancel() {
-  if(game && !wasPausedBeforeSettings) unpause();
+function doCancelGameTypePicker() {
+  ui.game_type_picker.style.display = "none";
 }
 
-function onSettingsAccept(shape, sizes) {
-  // save prefs (using attribute persistence)
-  const root = document.documentElement;
-  root.setAttribute("pref2-tileshape", shape);
-  for(var i in sizes)
-    root.setAttribute("pref2-"+i+"-sizes", sizes[i]); // array->string
+function doPickGameType(ev) {
+  ev.preventDefault();
+  endGame();
+  doCancelGameTypePicker();
 
-  // apply pref changes
-  var old = gTileShape;
-  gBlockSizes = sizes;
-  Blocks.use(shape, sizes[shape]);
+  const form = ev.target.form;
+  let shape = null;
+  for(let el of form.elements["shape"]) if(el.checked) { shape = el.value; break; }
+  let tiles = [];
+  for(let el of form.elements["tiles-" + shape]) if(el.checked) tiles.push(+el.value);
 
-  // continue, or not
-  if(game && !wasPausedBeforeSettings) unpause();
-  if(old != shape) {
-    endGame();
-    tileShapeChanged(shape);
-  }
+  // xxx use this!
+  let level = +form.elements["startinglevel"].value;
+
+  tileShapeChanged(shape, tiles);
 }
 
-function tileShapeChanged(shape) {
+function tileShapeChanged(shape, sizes) {
+  Blocks.use(shape, sizes);
+
   gTileShape = shape;
   // xxx hex and tri games make assumptions about their sizes.
   gWidth = 10;
@@ -129,7 +117,7 @@ window.onblur = function() {
 
 
 window.onload = function onLoad() {
-  for(var i in ui) ui[i] = document.getElementById(ui[i]);
+  for(let i in ui) ui[i] = document.getElementById(ui[i]);
 
   const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex, triTp = tilePropertiess.tri;
   sqrTp.oddImages = sqrTp.evenImages = _initTileSet("sqr");
@@ -141,22 +129,7 @@ window.onload = function onLoad() {
   GridView.init();
   FallingBlockView.init();
 
-  // read prefs (from attributes)
-  const root = document.documentElement;
-  var shape = root.getAttribute("pref2-tileshape");
-  for(i = 0; i != 3; ++i) {
-    var sh = shapes[i];
-    var sizes = gBlockSizes[sh] = root.getAttribute("pref2-"+sh+"-sizes").split(",");
-    for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
-  }
-
-/*
-  var shape = "sqr";
-  gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
-*/
-
-  Blocks.use(shape, gBlockSizes[shape]);
-  tileShapeChanged(shape);
+  tileShapeChanged("sqr", [1]);
 };
 
 window.onkeypress = function(ev) {
@@ -280,7 +253,7 @@ function FallingBlock(block) {
   var height = this. height = grid.length;
   var width = this.width = grid[0].length;
   // position matters a lot in hex/tri games
-  var left = this.left = Math.floor((game.width-width)/2);
+  this.left = Math.floor((game.width - width) / 2);
   this.top = 0;
 };
 
