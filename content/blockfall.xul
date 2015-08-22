@@ -11,8 +11,6 @@
     title="&blockfall;"
     onblur="onWindowBlur();"
 
-    persist="screenX screenY pref2-tileshape pref2-sqr-sizes pref2-hex-sizes pref2-tri-sizes pref2-gridlines"
-
     pref2-tileshape="sqr"
     pref2-sqr-sizes="1"
     pref2-hex-sizes="1"

@@ -1,0 +1,3 @@
+Stephen Clavering
+Viljo Viitanen (wrote most of Blockfall 0.3)
+Conrad Knauer (testing, suggestions)

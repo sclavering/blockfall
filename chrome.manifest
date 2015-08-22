@@ -1,3 +1,0 @@
-overlay chrome://browser/content/browser.xul chrome://blockfall/content/overlay.xul
-content blockfall jar:blockfall.zip!/content/
-locale  blockfall en jar:blockfall.zip!/locale/en/
