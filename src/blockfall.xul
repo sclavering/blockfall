@@ -10,7 +10,6 @@
     pref2-sqr-sizes="1"
     pref2-hex-sizes="1"
     pref2-tri-sizes="0"
-    pref2-gridlines="true"
     >
 
 <script src="blockfall.js" type="application/x-javascript"/>
@@ -55,8 +54,7 @@
 </toolbar>
 
 <!-- palettes for tiles -->
-<html:img id="sqr0g" src="img/square0g.png"/>
-<html:img id="sqr0" src="img/square0.png"/>
+<html:img id="sqr0" src="img/square0g.png"/>
 <html:img id="sqr1" src="img/square1.png"/>
 <html:img id="sqr2" src="img/square2.png"/>
 <html:img id="sqr3" src="img/square3.png"/>
@@ -89,8 +87,7 @@
 <html:img id="sqr30" src="img/square30.png"/>
 <html:img id="sqr31" src="img/square31.png"/>
 
-<html:img id="hex0g" src="img/hex0g.png"/>
-<html:img id="hex0" src="img/hex0.png"/>
+<html:img id="hex0" src="img/hex0g.png"/>
 <html:img id="hex1" src="img/hex1.png"/>
 <html:img id="hex2" src="img/hex2.png"/>
 <html:img id="hex3" src="img/hex3.png"/>
@@ -105,8 +102,7 @@
 <html:img id="hex12" src="img/hex12.png"/>
 <html:img id="hex13" src="img/hex13.png"/>
 
-<html:img id="hexb0g" src="img/hex0gb.png"/>
-<html:img id="hexb0" src="img/hex0b.png"/>
+<html:img id="hexb0" src="img/hex0gb.png"/>
 <html:img id="hexb1" src="img/hex1b.png"/>
 <html:img id="hexb2" src="img/hex2b.png"/>
 <html:img id="hexb3" src="img/hex3b.png"/>

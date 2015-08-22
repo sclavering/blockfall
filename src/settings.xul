@@ -15,7 +15,6 @@
 <script type="application/x-javascript">
 <![CDATA[
 var ui = {
-  showGridLines: "showgridlines",
   showNextBlock: "shownextblock",
   shapes: "shapes-list"
 }
@@ -39,11 +38,8 @@ function onLoad() {
   const args = window.arguments;
   var shape = args[0];
   var sizes = args[1];
-  var showgridlines = args[2];
 
   ui.shapes.value = shape;
-
-  ui.showGridLines.checked = showgridlines;
 
   for(i in sizes) {
     var ss = sizes[i];
@@ -62,9 +58,7 @@ function onAccept() {
     for(var j in ticks) if(ticks[j].checked) ss.push(j);
   }
 
-  var showgridlines = ui.showGridLines.checked;
-
-  opener.onSettingsAccept(shape, sizes, showgridlines);
+  opener.onSettingsAccept(shape, sizes);
 }
 ]]>
 </script>
@@ -87,7 +81,6 @@ function onAccept() {
 </groupbox>
 
 <checkbox id="shownextblock" disabled="true" label="Show the next block that will fall"/>
-<checkbox id="showgridlines" label="Show grid-lines"/>
 
 <hbox align="center">
   <label disabled="true" value="Starting level:"/>

@@ -39,7 +39,6 @@ var gGameType = null; // 4th arg of newGameObj
 
 var gTileShape = null; // sqr/hex/tri usually
 var gBlockSizes = {}; // shape -> int array
-var gShowGridLines = false;
 
 // objs for the current shape
 var NextBlockDisplay = null;
@@ -101,26 +100,24 @@ function showSettingsDialogue() {
     wasPausedBeforeSettings = gPaused;
     if(!wasPausedBeforeSettings) pause();
   }
-  openDialog(url, "flibble", flags, gTileShape, gBlockSizes, gShowGridLines);
+  openDialog(url, "flibble", flags, gTileShape, gBlockSizes);
 }
 
 function onSettingsCancel() {
   if(game && !wasPausedBeforeSettings) unpause();
 }
 
-function onSettingsAccept(shape, sizes, showgridlines) {
+function onSettingsAccept(shape, sizes) {
   // save prefs (using attribute persistence)
   const root = document.documentElement;
   root.setAttribute("pref2-tileshape", shape);
   for(var i in sizes)
     root.setAttribute("pref2-"+i+"-sizes", sizes[i]); // array->string
-  root.setAttribute("pref2-gridlines", showgridlines);
 
   // apply pref changes
   var old = gTileShape;
   gBlockSizes = sizes;
   Blocks.use(shape, sizes[shape]);
-  toggleGridLines(showgridlines);
 
   // continue, or not
   if(game && !wasPausedBeforeSettings) unpause();
@@ -128,16 +125,6 @@ function onSettingsAccept(shape, sizes, showgridlines) {
     endGame();
     tileShapeChanged(shape);
   }
-}
-
-function toggleGridLines(on) {
-  gShowGridLines = on;
-  for each(var tp in tilePropertiess) {
-    var o = tp.oddImages, e = tp.evenImages;
-    if(on) o[0] = o.emptyWithGridlines, e[0] = e.emptyWithGridlines;
-    else o[0] = o.emptyWithoutGridlines, e[0] = e.emptyWithoutGridlines;
-  }
-  if(game) GridView.update();
 }
 
 function tileShapeChanged(shape) {
@@ -179,9 +166,6 @@ window.onload = function onLoad() {
     for(var j = 0; j != sizes.length; ++j) sizes[j] = parseInt(sizes[j]);
   }
 
-  var showGridLines = root.getAttribute("pref2-gridlines")=="true";
-  toggleGridLines(showGridLines);
-
 /*
   var shape = "sqr";
   gBlockSizes = { sqr: [1], hex: [1], tri: [1,2]};
@@ -193,15 +177,12 @@ window.onload = function onLoad() {
 
 function _initTileSet(idPrefix) {
   const images = [];
-  const withImg = images.emptyWithGridlines = document.getElementById(idPrefix + "0g");
-  withImg.parentNode.removeChild(withImg);
   for(var i = 0; true; ++i) {
     var el = document.getElementById(idPrefix + i);
     if(!el) break;
     images.push(el);
     el.parentNode.removeChild(el);
   }
-  images.emptyWithoutGridlines = images[0];
   return images;
 }
 
