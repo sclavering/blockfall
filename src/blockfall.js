@@ -19,15 +19,7 @@ const ui = {
   level: "level-display"
 };
 
-const commands = {
-  left: "cmd.left",
-  right: "cmd.right",
-  down: "cmd.down",
-  drop: "cmd.drop",
-  rotateClockwise: "cmd.rotate.clockwise",
-  rotateAnticlockwise: "cmd.rotate.anticlockwise",
-  pause: "cmd.pause"
-};
+var gCommandsEnabled = false;
 
 var game = null; // a Game
 var gPaused = false;
@@ -47,9 +39,7 @@ function pause() {
   Timer.stop();
   ui.pausedMsg.style.display = "block";
   gPaused = true;
-  for(var i in commands)
-    if(i != "pause")
-      commands[i].setAttribute("disabled", "true");
+  gCommandsEnabled = false;
 }
 
 function unpause() {
@@ -57,9 +47,7 @@ function unpause() {
   Timer.start();
   ui.pausedMsg.style.display = "none";
   gPaused = false;
-  for(var i in commands)
-    if(i != "pause")
-      commands[i].removeAttribute("disabled");
+  gCommandsEnabled = true;
 }
 
 function togglePause() {
@@ -73,14 +61,14 @@ function newGame(width, height, level) {
   ui.gameOverMsg.style.display = "none";
   game = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
   game.begin();
-  for(var i in commands) commands[i].removeAttribute("disabled");
+  gCommandsEnabled = true;
 }
 
 function endGame() {
   if(!game) return;
   game.end();
   game = null;
-  for(var i in commands) commands[i].setAttribute("disabled", "true");
+  gCommandsEnabled = false;
   ui.gameOverMsg.style.display = "block";
 }
 
@@ -142,7 +130,6 @@ window.onblur = function() {
 
 window.onload = function onLoad() {
   for(var i in ui) ui[i] = document.getElementById(ui[i]);
-  for(i in commands) commands[i] = document.getElementById(commands[i]);
 
   const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex, triTp = tilePropertiess.tri;
   sqrTp.oddImages = sqrTp.evenImages = _initTileSet("sqr");
@@ -171,6 +158,83 @@ window.onload = function onLoad() {
   Blocks.use(shape, gBlockSizes[shape]);
   tileShapeChanged(shape);
 };
+
+window.onkeypress = function(ev) {
+  if(ev.ctrlKey || ev.metaKey) return; // don't interfere with browser shortcuts
+
+  if(!gCommandsEnabled) {
+    // p for pause
+    if(ev.charCode === 112) return doTogglePause(ev);
+    return;
+  }
+
+  switch(ev.keyCode) {
+    case 37: // left
+      return doMoveLeft(ev);
+    case 39: // right
+      return doMoveRight(ev);
+    case 40: // down
+      return doMoveDown(ev);
+    case 38: // up
+      return doRotateClockwise(ev);
+  }
+  switch(ev.charCode) {
+    case 112: // p
+      return doTogglePause(ev);
+    case 32: // spacebar
+    case 104: // h
+      return doDrop(ev);
+    case 106: // j
+    case 122: // z
+      return doRotateAntiClockwise(ev);
+    case 107: // k
+    case 120: // x
+      return doRotateClockwise(ev);
+    case 44: // ","
+      return doMoveLeft(ev);
+    case 46: // "."
+      return doMoveDown(ev);
+    case 47: // "/"
+      return doMoveRight(ev);
+  }
+};
+
+function doTogglePause(ev) {
+  ev.preventDefault();
+  togglePause();
+}
+
+function doMoveLeft(ev) {
+  ev.preventDefault();
+  game.moveFallingBlockLeft();
+};
+
+function doMoveRight(ev) {
+  ev.preventDefault();
+  game.moveFallingBlockRight();
+};
+
+function doMoveDown(ev) {
+  ev.preventDefault();
+  game.moveFallingBlockDown();
+};
+
+function doDrop(ev) {
+  ev.preventDefault();
+  game.dropFallingBlock();
+};
+
+function doRotateClockwise(ev) {
+  ev.preventDefault();
+  game.rotateFallingBlockClockwise();
+};
+
+function doRotateAntiClockwise(ev) {
+  ev.preventDefault();
+  game.rotateFallingBlockAnticlockwise();
+};
+
+
 
 function _initTileSet(idPrefix) {
   const images = [];
