@@ -70,7 +70,7 @@ function doCancelGameTypePicker() {
 
 function doPickGameType(ev) {
   ev.preventDefault();
-  endGame();
+  if(gGame) gGame.end();
   doCancelGameTypePicker();
 
   const form = ev.target.form;
