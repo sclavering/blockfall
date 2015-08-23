@@ -317,12 +317,10 @@ Games.base = {
   },
 
   nextBlock: function() {
-    const fb = new FallingBlock(this._nextBlock);
-    this.fallingBlock = fb;
+    this.fallingBlock = new FallingBlock(this._nextBlock);
     if(!this.fallingBlockFitsAt(0,0)) return false;
     this._nextBlock = this._get_new_block();
     FallingBlockView.update();
-    //NextBlockView.update(fb);
     return true;
   },
 
