@@ -200,18 +200,6 @@ function doRotateAntiClockwise(ev) {
 
 
 
-function _initTileSet(idPrefix) {
-  const images = [];
-  for(var i = 0; true; ++i) {
-    var el = document.getElementById(idPrefix + i);
-    if(!el) break;
-    images.push(el);
-    el.parentNode.removeChild(el);
-  }
-  return images;
-}
-
-
 const Timer = {
   interval: null,
   delay: 0,
