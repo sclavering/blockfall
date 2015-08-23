@@ -327,14 +327,10 @@ Games.base = {
     return true;
   },
 
-  // takes abitrary num of row indices (sorted in increasing order) as args
-  _removeRows: function() {
-    const a = arguments, n = a.length, w = this.width;
-    for(let i = 0; i != n; ++i) {
-      let r = this.grid.splice(a[i], 1);
-      for(let x = 0; x != w; ++x) r[x] = 0;
-      this.grid.unshift(r);
-    }
+  _remove_row: function(y) {
+    let row = this.grid.splice(y, 1);
+    for(let x = 0; x !== this.width; ++x) row[x] = 0;
+    this.grid.unshift(row);
   },
 
   _lineIsFull: function(y) {
@@ -434,7 +430,7 @@ Games.sqr = {
     let num = 0;
     for(let y = top; y != bottom; ++y) {
       if(!this._lineIsFull(y)) continue;
-      this._removeRows(y);
+      this._remove_row(y);
       ++num;
     }
     return num;
@@ -470,7 +466,8 @@ Games.hex = {
       let y1 = y - 1;
       let y2 = y + 1;
       for(let x = odd ? 0 : 1; x < this.width; x += 2) this.grid[y1][x] = this.grid[y2][x];
-      this._removeRows(y, y2);
+      this._remove_row(y);
+      this._remove_row(y2);
       ++num;
     }
     return num;
@@ -495,7 +492,8 @@ Games.tri = {
     let num = 0;
     for(let y = bottom; y != top; --y) {
       if(!this._lineIsFull(y) || !this._lineIsFull(y+1)) continue;
-      this._removeRows(y, y+1);
+      this._remove_row(y)
+      this._remove_row(y + 1);
       ++num;
     }
     return num;
