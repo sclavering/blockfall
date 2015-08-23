@@ -24,23 +24,9 @@ var gTileShape = null;
 var gBlockSetsForShape = null;
 
 
-function pause() {
-  if(gGame.is_paused) return;
-  Timer.stop();
-  ui.pausedMsg.style.display = "block";
-  gGame.is_paused = true;
-}
-
-function unpause() {
-  if(!gGame.is_paused) return;
-  Timer.start();
-  ui.pausedMsg.style.display = "none";
-  gGame.is_paused = false;
-}
-
 function togglePause() {
-  if(gGame.is_paused) unpause();
-  else pause();
+  if(gGame.is_paused) gGame.unpause();
+  else gGame.pause();
 }
 
 function newGame(width, height, level) {
@@ -60,7 +46,7 @@ function endGame() {
 
 
 function doShowGameTypePicker() {
-  if(gGame) pause();
+  if(gGame) gGame.pause();
   ui.game_type_picker.style.display = "block";
 }
 
@@ -97,7 +83,7 @@ function tileShapeChanged(shape, sizes) {
 
 
 window.onblur = function() {
-  if(gGame) pause();
+  if(gGame) gGame.pause();
 };
 
 
@@ -189,30 +175,6 @@ function doRotateAntiClockwise(ev) {
 };
 
 
-const Timer = {
-  interval: null,
-  delay: 0,
-
-  start: function() {
-    this.interval = setInterval(gGame.timedMoveDown, this.delay);
-  },
-  stop: function() {
-    if(!this.interval) return;
-    clearInterval(this.interval);
-    this.interval = null;
-  },
-  // these are only ever called while the timer is stopped, so we don't need to restart it
-  setDelay: function(level) {
-    let delay = 1000;
-    for(let i = 1; i != level; ++i) delay *= 0.8;
-    this.delay = delay;
-  },
-  reduceDelay: function() {
-    this.delay = Math.ceil(this.delay * 0.8);
-  }
-};
-
-
 function FallingBlock(block) {
   this.states = block;
   this.state = 0;
@@ -256,24 +218,57 @@ Games.base = {
   score: 0,
   lines: 0,
   level: 1,
-  grid: [[]], // y-x indexed
+  grid: null, // y-x indexed
   fallingBlock: null,
   _nextBlock: null,
+
+  _delay: null,
+  _interval: null,
 
   begin: function() {
     ui.level.textContent = this.level;
     ui.lines.textContent = this.lines;
     ui.score.textContent = this.score;
     GridView.setSize(this.width, this.height);
-    Timer.setDelay(this.startingLevel);
+    this._delay = 1000;
+    for(let i = 1; i < this.startingLevel; ++i) this._reduce_delay();
     GridView.update();
     this._nextBlock = this._get_new_block();
     this.nextBlock();
-    Timer.start();
+    this._bound_timedMoveDown = () => this.timedMoveDown();
+    this._start_timer();
+  },
+
+  _reduce_delay: function() {
+    this._delay = Math.ceil(this._delay * 0.8);
   },
 
   end: function() {
-    Timer.stop();
+    this._stop_timer();
+  },
+
+  pause: function() {
+    if(this.is_paused) return;
+    this.is_paused = true;
+    this._stop_timer();
+    ui.pausedMsg.style.display = "block";
+  },
+
+  unpause: function() {
+    if(!this.is_paused) return;
+    this.is_paused = false;
+    this._start_timer();
+    ui.pausedMsg.style.display = "none";
+  },
+
+  _start_timer: function() {
+    this._interval = setInterval(this._bound_timedMoveDown, this._delay);
+  },
+
+  _stop_timer: function() {
+    if(!this._interval) return;
+    clearInterval(this._interval);
+    this._interval = null;
   },
 
   _get_new_block: function() {
@@ -286,7 +281,7 @@ Games.base = {
       if(this.lines >= (this.levelsCompleted+1)*10) {
         this.levelsCompleted++;
         ui.level.textContent = ++this.level;
-        Timer.reduceDelay();
+        this._reduce_delay();
       }
       ui.lines.textContent = this.lines += numLinesRemoves;
       for(let i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
@@ -298,7 +293,7 @@ Games.base = {
   },
 
   blockReachedBottom: function(blockDropped) {
-    Timer.stop();
+    this._stop_timer();
 
     const block = this.fallingBlock;
     const bx = block.left, by = block.top, bw = block.width, bh = block.height;
@@ -317,7 +312,7 @@ Games.base = {
     if(numLinesRemoves) top = 0; // everything's moved down
     GridView.update(top, btm);
     this.updateScoreAndLevel(numLinesRemoves, blockDropped);
-    if(this.nextBlock()) Timer.start();
+    if(this.nextBlock()) this._start_timer();
     else endGame()
   },
 
@@ -397,8 +392,7 @@ Games.base = {
   },
 
   timedMoveDown: function() {
-    // |this|==window because function is called via setInterval
-    if(!gGame.moveFallingBlockDown()) gGame.blockReachedBottom();
+    if(!this.moveFallingBlockDown()) this.blockReachedBottom();
   },
 
   moveFallingBlockDown: function() {
