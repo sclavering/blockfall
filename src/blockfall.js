@@ -266,7 +266,6 @@ Games.base = {
     ui.score.textContent = this.score;
     GridView.setSize(this.width, this.height);
     Timer.setDelay(this.startingLevel);
-    window.sizeToContent();
     GridView.update();
     this._nextBlock = Blocks.getRandom();
     this.nextBlock();
