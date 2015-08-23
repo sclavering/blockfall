@@ -232,7 +232,7 @@ Games.base = {
     GridView.setSize(this.width, this.height);
     this._delay = 1000;
     for(let i = 1; i < this.startingLevel; ++i) this._reduce_delay();
-    GridView.update();
+    GridView.update(0, this.height);
     this._nextBlock = this._get_new_block();
     this.nextBlock();
     this._bound_timedMoveDown = () => this.timedMoveDown();
@@ -512,12 +512,6 @@ function random_element(xs) {
 
 
 const GridView = {
-  width: 0, // in tiles
-  height: 0,
-  _context: null, // a CanvasRenderingContext2D
-  _canvas: null,
-  _container: null,
-
   init: function() {
     this._canvas = ui.grid;
     this._context = this._canvas.getContext("2d");
@@ -527,8 +521,6 @@ const GridView = {
   // set size to a given number of *tiles*
   setSize: function(width, height) {
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-    this.width = width;
-    this.height = height;
     const w = this._canvas.width = width * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
     const h = this._canvas.height = height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
     this._container.style.width = w + "px";
@@ -536,11 +528,8 @@ const GridView = {
   },
 
   update: function(top, bottom) {
-    if(!top) top = 0;
-    if(!bottom) bottom = this.height;
-    const grid = gGame.grid;
     let firstTileOdd = top % 2;
-    draw_tiles(this._context, grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
+    draw_tiles(this._context, gGame.grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
   },
 };
 
@@ -552,17 +541,16 @@ const FallingBlockView = {
   },
 
   update: function() {
-    const fb = gGame.fallingBlock;
-    const w = fb.width, h = fb.height, t = fb.top, l = fb.left, grid = fb.grid;
+    const fallingBlock = gGame.fallingBlock;
     // position canvas
-    this._canvas.style.top = (t * g_tileset.yOffset) + "px";
-    this._canvas.style.left = (l * g_tileset.xOffset) + "px";
-    this._canvas.width = w * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
-    this._canvas.height = h * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
+    this._canvas.style.top = (fallingBlock.top * g_tileset.yOffset) + "px";
+    this._canvas.style.left = (fallingBlock.left * g_tileset.xOffset) + "px";
+    this._canvas.width = fallingBlock.width * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
+    this._canvas.height = fallingBlock.height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
     // draw the block
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-    let firstTileOdd = (l % 2) ^ (t % 2);
-    draw_tiles(this._context, grid, firstTileOdd, {});
+    let firstTileOdd = (fallingBlock.left % 2) ^ (fallingBlock.top % 2);
+    draw_tiles(this._context, fallingBlock.grid, firstTileOdd, {});
   },
 
   move: function() {
