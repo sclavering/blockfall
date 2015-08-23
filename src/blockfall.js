@@ -1,5 +1,3 @@
-const shapes = ["sqr", "hex", "tri"];
-
 const ui = {
   grid: "grid",
   gridContainer: "grid-container",
@@ -16,17 +14,16 @@ const ui = {
   tri_tiles: "tri-tiles",
 };
 
-var gCommandsEnabled = false;
 
+var gCommandsEnabled = false;
 var gGame = null;
 var gPaused = false;
 
-// width/height of the most-recently started game (which might now be over)
+// Details of the most recent game (which might now be over), stored so the next game can be the same type.
 var gWidth = 0;
 var gHeight = 0;
-var gGameType = null; // 4th arg of newGameObj
-
-var gTileShape = null; // sqr/hex/tri usually
+var gTileShape = null;
+var gGameType = null;
 
 
 function pause() {
@@ -85,7 +82,7 @@ function doPickGameType(ev) {
   const form = ev.target.form;
   let shape = null;
   for(let el of form.elements["shape"]) if(el.checked) { shape = el.value; break; }
-  let tiles = [];
+  const tiles = [];
   for(let el of form.elements["tiles-" + shape]) if(el.checked) tiles.push(+el.value);
 
   // xxx use this!
@@ -100,7 +97,7 @@ function tileShapeChanged(shape, sizes) {
   gTileShape = shape;
   // xxx hex and tri games make assumptions about their sizes.
   gWidth = 10;
-  gHeight = {sqr: 25, hex: 50, tri: 51}[shape];
+  gHeight = { sqr: 25, hex: 50, tri: 51 }[shape];
   gGameType = Games[shape];
   g_tileset = k_tilesets[shape];
   newGame();
@@ -199,7 +196,6 @@ function doRotateAntiClockwise(ev) {
 };
 
 
-
 const Timer = {
   interval: null,
   delay: 0,
@@ -214,28 +210,25 @@ const Timer = {
   },
   // these are only ever called while the timer is stopped, so we don't need to restart it
   setDelay: function(level) {
-    var delay = 1000;
-    for(var i = 1; i != level; ++i) delay *= 0.8;
+    let delay = 1000;
+    for(let i = 1; i != level; ++i) delay *= 0.8;
     this.delay = delay;
   },
   reduceDelay: function() {
     this.delay = Math.ceil(this.delay * 0.8);
   }
-}
-
+};
 
 
 function FallingBlock(block) {
   this.states = block;
   this.state = 0;
-  var grid = this.grid = block[0];
-  var height = this. height = grid.length;
-  var width = this.width = grid[0].length;
-  // position matters a lot in hex/tri games
-  this.left = Math.floor((gGame.width - width) / 2);
+  const grid = this.grid = block[0];
+  this.height = grid.length;
+  this.width = grid[0].length;
+  this.left = Math.floor((gGame.width - this.width) / 2);
   this.top = 0;
 };
-
 
 
 function newGameObj(width, height, level, basis) {
@@ -243,16 +236,18 @@ function newGameObj(width, height, level, basis) {
   game.width = width;
   game.height = height;
   game.level = game.startingLevel = level;
-  const gr = game.grid = new Array(height);
-  for(var y = 0; y != height; ++y) {
-    var line = gr[y] = new Array(width);
-    for(var x = 0; x != width; x++) line[x] = 0;
+  const grid = game.grid = new Array(height);
+  for(let y = 0; y != height; ++y) {
+    let line = grid[y] = new Array(width);
+    for(let x = 0; x != width; x++) line[x] = 0;
   }
   return game;
-}
+};
 
 
 const Games = {};
+
+
 Games.base = {
   width: 0,
   height: 0,
@@ -290,9 +285,9 @@ Games.base = {
         Timer.reduceDelay();
       }
       ui.lines.textContent = this.lines += numLinesRemoves;
-      for(var i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
+      for(let i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
     }
-    var score = this.level;
+    let score = this.level;
     if(blockDropped) score *= this.level / 4;
     this.score += Math.ceil(score);
     ui.score.textContent = this.score;
@@ -304,17 +299,17 @@ Games.base = {
     const block = this.fallingBlock;
     const bx = block.left, by = block.top, bw = block.width, bh = block.height;
     const bgrid = block.grid, grid = this.grid;
-    for(var yi = 0, yj = by; yi != bh; ++yi, ++yj) {
-      for(var xi = 0, xj = bx; xi != bw; ++xi, ++xj) {
-        var val = bgrid[yi][xi];
+    for(let yi = 0, yj = by; yi != bh; ++yi, ++yj) {
+      for(let xi = 0, xj = bx; xi != bw; ++xi, ++xj) {
+        let val = bgrid[yi][xi];
         if(val) grid[yj][xj] = val;
       }
     }
 
-    var top = block.top ? block.top - 1 : 0;
-    var btm = block.top + block.height;
+    let top = block.top ? block.top - 1 : 0;
+    let btm = block.top + block.height;
     if(btm > this.height) btm = this.height;
-    var numLinesRemoves = this.removeCompleteLines(top, btm);
+    const numLinesRemoves = this.removeCompleteLines(top, btm);
     if(numLinesRemoves) top = 0; // everything's moved down
     GridView.update(top, btm);
     this.updateScoreAndLevel(numLinesRemoves, blockDropped);
@@ -334,35 +329,32 @@ Games.base = {
 
   // takes abitrary num of row indices (sorted in increasing order) as args
   _removeRows: function() {
-    const a = arguments, n = a.length, g = this.grid, w = this.width;
-    for(var i = 0; i != n; ++i) {
-      var r = g.splice(a[i], 1);
-      for(var x = 0; x != w; ++x) r[x] = 0;
-      g.unshift(r);
+    const a = arguments, n = a.length, w = this.width;
+    for(let i = 0; i != n; ++i) {
+      let r = this.grid.splice(a[i], 1);
+      for(let x = 0; x != w; ++x) r[x] = 0;
+      this.grid.unshift(r);
     }
   },
 
   _lineIsFull: function(y) {
-    const w = this.width;
-    const line = this.grid[y];
-    for(var x = 0; x != w; ++x) if(!line[x]) return false;
+    for(let val of this.grid[y]) if(!val) return false;
     return true;
   },
 
   // block[][] (y-x indexed) is a state of some block.  x and y are offsets into this grid
   canAdd: function(block, x, y) {
-    const grid = this.grid, gwidth = this.width, gheight = this.height;
+    const grid = this.grid;
     const height = block.length, width = block[0].length;
-    var yi, yj, xi, xj;
-    for(yi = 0, yj = y; yi != height; ++yi, ++yj) {
-      if(yi < 0 || yj >= gheight) {
+    for(let yi = 0, yj = y; yi != height; ++yi, ++yj) {
+      if(yi < 0 || yj >= this.height) {
         // beyond bottom/top of grid, so all tiles of block must be empty
-        for(xi = 0; xi != width; ++xi)
+        for(let xi = 0; xi != width; ++xi)
           if(block[yi][xi]) return false;
       } else {
         // if block has a tile here must fall inside grid, and not on a tile in the grid
-        for(xi = 0, xj = x; xi != width; ++xi, ++xj) {
-          if(block[yi][xi] && (xj < 0 || xj >= gwidth || grid[yj][xj])) return false;
+        for(let xi = 0, xj = x; xi != width; ++xi, ++xj) {
+          if(block[yi][xi] && (xj < 0 || xj >= this.width || grid[yj][xj])) return false;
         }
       }
     }
@@ -378,21 +370,21 @@ Games.base = {
   // note: block.length is the number of states this block has
   rotateFallingBlockClockwise: function() {
     const f = this.fallingBlock;
-    var s = f.state;
+    let s = f.state;
     if(++s == f.states.length) s = 0;
     this._maybeRotateFallingBlock(s);
   },
 
   rotateFallingBlockAnticlockwise: function() {
     const f = this.fallingBlock;
-    var s = f.state;
+    let s = f.state;
     if(s-- == 0) s += f.states.length;
     this._maybeRotateFallingBlock(s);
   },
 
   _maybeRotateFallingBlock: function(newstate) {
     const f = this.fallingBlock;
-    var newgrid = f.states[newstate];
+    const newgrid = f.states[newstate];
     if(!this.canAdd(newgrid, f.left, f.top)) return;
     f.state = newstate;
     f.grid = newgrid;
@@ -421,8 +413,8 @@ Games.base = {
     f.left += dx;
     f.top += dy;
     FallingBlockView.move();
-  }
-}
+  },
+};
 
 
 Games.sqr = {
@@ -439,14 +431,15 @@ Games.sqr = {
   },
 
   removeCompleteLines: function(top, bottom) {
-    for(var y = top, num = 0; y != bottom; ++y) {
+    let num = 0;
+    for(let y = top; y != bottom; ++y) {
       if(!this._lineIsFull(y)) continue;
       this._removeRows(y);
       ++num;
     }
     return num;
-  }
-}
+  },
+};
 
 
 Games.hex = {
@@ -462,10 +455,9 @@ Games.hex = {
   },
 
   removeCompleteLines: function(top, bottom) {
-    const g = this.grid, w = this.width;
-    var num = 0;
+    let num = 0;
     if(bottom == this.height) --bottom;
-    for(var y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
+    for(let y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
       // row of half-hexes is full <==> appropriate half-hexes in row above+below are full
       if(!this._lineIsFull(y)) continue;
       /*
@@ -475,15 +467,15 @@ Games.hex = {
       #.#.#.#.#.#        .#.#.#.#.#    <-- y2
       So copy alternate values from y2 to y1, then remove y and y2
       */
-      var y1 = y - 1;
-      var y2 = y + 1;
-      for(var x = odd ? 0 : 1; x < w; x += 2) g[y1][x] = g[y2][x];
+      let y1 = y - 1;
+      let y2 = y + 1;
+      for(let x = odd ? 0 : 1; x < this.width; x += 2) this.grid[y1][x] = this.grid[y2][x];
       this._removeRows(y, y2);
       ++num;
     }
     return num;
-  }
-}
+  },
+};
 
 
 Games.tri = {
@@ -498,10 +490,10 @@ Games.tri = {
   solid block filling the two lines (which is why we just count in ones)
   */
   removeCompleteLines: function(top, bottom) {
-    const h = this.height, w = this.width, g = this.grid;
+    const h = this.height, w = this.width;
     if(bottom >= h - 2) bottom = h - 2;
-    var num = 0;
-    for(var y = bottom; y != top; --y) {
+    let num = 0;
+    for(let y = bottom; y != top; --y) {
       if(!this._lineIsFull(y) || !this._lineIsFull(y+1)) continue;
       this._removeRows(y, y+1);
       ++num;
@@ -514,10 +506,8 @@ Games.tri = {
     if(!this.fallingBlockFitsAt(0, 1) || !this.fallingBlockFitsAt(0, 2)) return false;
     this.fallingBlock.top += 2;
     return true;
-  }
-}
-
-
+  },
+};
 
 
 const GridView = {
@@ -557,7 +547,6 @@ const GridView = {
     }
   },
 };
-
 
 
 const FallingBlockView = {
