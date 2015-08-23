@@ -541,13 +541,8 @@ const GridView = {
     if(!top) top = 0;
     if(!bottom) bottom = this.height;
     const grid = gGame.grid;
-    for(let y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd) {
-      for(let x = 0, tileOdd = firstTileOdd; x != this.width; ++x, tileOdd = !tileOdd) {
-        let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[grid[y][x]];
-        let dx = x * g_tileset.xOffset, dy = y * g_tileset.yOffset;
-        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
-      }
-    }
+    let firstTileOdd = top % 2;
+    draw_tiles(this._context, grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
   },
 };
 
@@ -569,15 +564,7 @@ const FallingBlockView = {
     // draw the block
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     let firstTileOdd = (l % 2) ^ (t % 2);
-    for(let y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
-      for(let x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
-        let val = grid[y][x];
-        if(!val) continue;
-        let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
-        let dx = x * g_tileset.xOffset, dy = y * g_tileset.yOffset;
-        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
-      }
-    }
+    draw_tiles(this._context, grid, firstTileOdd, {});
   },
 
   move: function() {

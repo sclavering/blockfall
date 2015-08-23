@@ -64,3 +64,19 @@ function init_tilesets() {
   k_tilesets.tri.even_tile_tops = tri_even_tile_tops;
   k_tilesets.tri.image = ui.tri_tiles;
 };
+
+
+function draw_tiles(context, grid, firstTileOdd, flags) {
+  const y0 = flags.y || 0;
+  const draw_empties = flags.draw_empties || false;
+  const h = grid.length, w = grid[0].length;
+  for(let y = 0; y !== h; ++y, firstTileOdd = !firstTileOdd) {
+    for(let x = 0, tileOdd = firstTileOdd; x !== w; ++x, tileOdd = !tileOdd) {
+      let val = grid[y][x];
+      if(!val && !draw_empties) continue;
+      let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
+      let dx = x * g_tileset.xOffset, dy = (y + y0) * g_tileset.yOffset;
+      context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
+    }
+  }
+}
