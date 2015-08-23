@@ -1,12 +1,5 @@
 const shapes = ["sqr", "hex", "tri"];
 
-const tilePropertiess = {
-  sqr: { width: 20, height: 20, xOffset: 20, yOffset: 20 },
-  hex: { width: 24, height: 10, xOffset: 19, yOffset: 10 },
-  tri: { width: 19, height: 20, xOffset: 19, yOffset: 10 }
-};
-var tileProperties = null;
-
 const ui = {
   grid: "grid",
   gridContainer: "grid-container",
@@ -18,6 +11,8 @@ const ui = {
   lines: "lines-display",
   level: "level-display",
   game_type_picker: "game-type-picker",
+  sqr_tiles: "sqr-tiles",
+  hex_tiles: "hex-tiles",
 };
 
 var gCommandsEnabled = false;
@@ -106,7 +101,7 @@ function tileShapeChanged(shape, sizes) {
   gWidth = 10;
   gHeight = {sqr: 25, hex: 50, tri: 51}[shape];
   gGameType = Games[shape];
-  tileProperties = tilePropertiess[shape];
+  g_tileset = k_tilesets[shape];
   newGame();
 }
 
@@ -119,18 +114,13 @@ window.onblur = function() {
 window.onload = function onLoad() {
   for(let i in ui) ui[i] = document.getElementById(ui[i]);
 
-  const sqrTp = tilePropertiess.sqr, hexTp = tilePropertiess.hex, triTp = tilePropertiess.tri;
-  sqrTp.oddImages = sqrTp.evenImages = _initTileSet("sqr");
-  hexTp.oddImages = _initTileSet("hexb");
-  hexTp.evenImages = _initTileSet("hex");
-  triTp.oddImages = [];
-  triTp.evenImages = [];
-
+  init_tilesets();
   GridView.init();
   FallingBlockView.init();
 
   tileShapeChanged("sqr", [1]);
 };
+
 
 window.onkeypress = function(ev) {
   if(ev.ctrlKey || ev.metaKey) return; // don't interfere with browser shortcuts
@@ -417,7 +407,7 @@ Games.base = {
     if(!this.canAdd(newgrid, f.left, f.top)) return;
     f.state = newstate;
     f.grid = newgrid;
-    FallingBlockView.update()
+    FallingBlockView.update();
   },
 
   dropFallingBlock: function() {
@@ -556,68 +546,61 @@ const GridView = {
 
   // set size to a given number of *tiles*
   setSize: function(width, height) {
-    const cx = this._context, canvas = this._canvas;
-    const tp = tileProperties;
-    const tw = tp.width, th = tp.height, tx = tp.xOffset, ty = tp.yOffset;
-    cx.clearRect(0, 0, canvas.width, canvas.height);
+    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     this.width = width;
     this.height = height;
-    const w = this._canvas.width = width * tx - tx + tw;
-    const h = this._canvas.height = height * ty - ty + th;
+    const w = this._canvas.width = width * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
+    const h = this._canvas.height = height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
     this._container.style.width = w + "px";
     this._container.style.height = h + "px";
   },
 
   update: function(top, bottom) {
     if(!top) top = 0;
-    const tp = tileProperties, cx = this._context, w = this.width, h = this.height, grid = game.grid;
-    const oImages = tp.oddImages, eImages = tp.evenImages, tx = tp.xOffset, ty = tp.yOffset;
-    if(!bottom) bottom = h;
-    for(var y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd)
-      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd)
-        cx.drawImage((tileOdd ? oImages : eImages)[grid[y][x]], x * tx, y * ty);
-  }
+    if(!bottom) bottom = this.height;
+    const grid = game.grid;
+    for(let y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd) {
+      for(let x = 0, tileOdd = firstTileOdd; x != this.width; ++x, tileOdd = !tileOdd) {
+        let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[grid[y][x]];
+        let dx = x * g_tileset.xOffset, dy = y * g_tileset.yOffset;
+        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
+      }
+    }
+  },
 };
 
 
 
-var FallingBlockView = {
-  // in tiles
-  width: 0,
-  height: 0,
-  _context: null, // a CanvasRenderingContext2D
-  _canvas: null,
-
+const FallingBlockView = {
   init: function() {
     this._canvas = ui.fallingBlock;
     this._context = this._canvas.getContext("2d");
   },
 
   update: function() {
-    const cx = this._context, fb = game.fallingBlock;
+    const fb = game.fallingBlock;
     const w = fb.width, h = fb.height, t = fb.top, l = fb.left, grid = fb.grid;
-    const tp = tileProperties, oImages = tp.oddImages, eImages = tp.evenImages,
-          tw = tp.width, th = tp.height, tx = tp.xOffset, ty = tp.yOffset;
     // position canvas
-    const canvas = this._canvas;
-    canvas.style.top = (t * ty) + "px";
-    canvas.style.left = (l * tx) + "px";
-    canvas.width = w * tx - tx + tw;
-    canvas.height = h * ty - ty + th;
+    this._canvas.style.top = (t * g_tileset.yOffset) + "px";
+    this._canvas.style.left = (l * g_tileset.xOffset) + "px";
+    this._canvas.width = w * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
+    this._canvas.height = h * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
     // draw the block
-    cx.clearRect(0, 0, canvas.width, canvas.height);
-    var firstTileOdd = (l % 2) ^ (t % 2);
-    for(var y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
-      for(var x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
-        var val = grid[y][x];
-        if(val) cx.drawImage((tileOdd ? oImages : eImages)[val], x * tx, y * ty);
+    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+    let firstTileOdd = (l % 2) ^ (t % 2);
+    for(let y = 0; y != h; ++y, firstTileOdd = !firstTileOdd) {
+      for(let x = 0, tileOdd = firstTileOdd; x != w; ++x, tileOdd = !tileOdd) {
+        let val = grid[y][x];
+        if(!val) continue;
+        let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
+        let dx = x * g_tileset.xOffset, dy = y * g_tileset.yOffset;
+        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
       }
     }
   },
 
   move: function() {
-    const canvas = this._canvas;
-    canvas.style.top = (game.fallingBlock.top * tileProperties.yOffset) + "px";
-    canvas.style.left = (game.fallingBlock.left * tileProperties.xOffset) + "px";
+    this._canvas.style.top = (game.fallingBlock.top * g_tileset.yOffset) + "px";
+    this._canvas.style.left = (game.fallingBlock.left * g_tileset.xOffset) + "px";
   },
 };
