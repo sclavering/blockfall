@@ -15,9 +15,7 @@ const ui = {
 };
 
 
-var gCommandsEnabled = false;
 var gGame = null;
-var gPaused = false;
 
 // Details of the most recent game (which might now be over), stored so the next game can be the same type.
 var gWidth = 0;
@@ -27,23 +25,21 @@ var gGameType = null;
 
 
 function pause() {
-  if(gPaused) return;
+  if(gGame.is_paused) return;
   Timer.stop();
   ui.pausedMsg.style.display = "block";
-  gPaused = true;
-  gCommandsEnabled = false;
+  gGame.is_paused = true;
 }
 
 function unpause() {
-  if(!gPaused) return;
+  if(!gGame.is_paused) return;
   Timer.start();
   ui.pausedMsg.style.display = "none";
-  gPaused = false;
-  gCommandsEnabled = true;
+  gGame.is_paused = false;
 }
 
 function togglePause() {
-  if(gPaused) unpause();
+  if(gGame.is_paused) unpause();
   else pause();
 }
 
@@ -53,14 +49,12 @@ function newGame(width, height, level) {
   ui.gameOverMsg.style.display = "none";
   gGame = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
   gGame.begin();
-  gCommandsEnabled = true;
 }
 
 function endGame() {
   if(!gGame) return;
   gGame.end();
   gGame = null;
-  gCommandsEnabled = false;
   ui.gameOverMsg.style.display = "block";
 }
 
@@ -122,8 +116,9 @@ window.onload = function onLoad() {
 
 window.onkeypress = function(ev) {
   if(ev.ctrlKey || ev.metaKey) return; // don't interfere with browser shortcuts
+  if(!gGame) return;
 
-  if(!gCommandsEnabled) {
+  if(gGame.is_paused) {
     // p for pause
     if(ev.charCode === 112) return doTogglePause(ev);
     return;
@@ -233,6 +228,7 @@ function FallingBlock(block) {
 
 function newGameObj(width, height, level, basis) {
   const game = { __proto__: basis };
+  game.is_paused = false;
   game.width = width;
   game.height = height;
   game.level = game.startingLevel = level;
