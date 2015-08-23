@@ -11,6 +11,10 @@ const HEX_WIDTH = 24;
 const HEX_HALF_HEIGHT = 10;
 const HEX_X_OFFSET = 19;
 
+const TRI_NUM_STYLES = 6;
+const TRI_WIDTH = 19;
+const TRI_HALF_HEIGHT = 10;
+
 const k_tilesets = {
   sqr: {
     width: SQR_SIZE,
@@ -23,6 +27,12 @@ const k_tilesets = {
     height: HEX_HALF_HEIGHT,
     xOffset: HEX_X_OFFSET,
     yOffset: HEX_HALF_HEIGHT,
+  },
+  tri: {
+    width: TRI_WIDTH,
+    height: TRI_HALF_HEIGHT * 2,
+    xOffset: TRI_WIDTH,
+    yOffset: TRI_HALF_HEIGHT,
   },
 };
 
@@ -43,4 +53,14 @@ function init_tilesets() {
   k_tilesets.hex.odd_tile_tops = hex_odd_tile_tops;
   k_tilesets.hex.even_tile_tops = hex_even_tile_tops;
   k_tilesets.hex.image = ui.hex_tiles;
+
+  const tri_odd_tile_tops = [];
+  const tri_even_tile_tops = [];
+  for(let i = 0; i <= TRI_NUM_STYLES; ++i) {
+    let h = tri_even_tile_tops[i] = (i + 1) * 4 * TRI_HALF_HEIGHT;
+    tri_odd_tile_tops[i] = h + 2 * TRI_HALF_HEIGHT;
+  }
+  k_tilesets.tri.odd_tile_tops = tri_odd_tile_tops;
+  k_tilesets.tri.even_tile_tops = tri_even_tile_tops;
+  k_tilesets.tri.image = ui.tri_tiles;
 };

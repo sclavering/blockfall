@@ -13,6 +13,7 @@ const ui = {
   game_type_picker: "game-type-picker",
   sqr_tiles: "sqr-tiles",
   hex_tiles: "hex-tiles",
+  tri_tiles: "tri-tiles",
 };
 
 var gCommandsEnabled = false;
