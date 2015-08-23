@@ -549,7 +549,8 @@ const FallingBlockView = {
     this._canvas.height = fallingBlock.height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
     // draw the block
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-    let firstTileOdd = (fallingBlock.left % 2) ^ (fallingBlock.top % 2);
+    // note: conceptually this is ((.left % 2) XOR (.top % 2)), but since .left can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
+    let firstTileOdd = !!((fallingBlock.left + fallingBlock.top) % 2);
     draw_tiles(this._context, fallingBlock.grid, firstTileOdd, {});
   },
 
