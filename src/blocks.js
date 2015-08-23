@@ -1,49 +1,8 @@
-/*
-blockfall.js should ignore all of this file other than the "Blocks" object.
+// A block is represented as an array of its possible orientations.  Each orientation consists of a y-x-indexed grid of tiles.  Tiles are just ints, with zero meaning empty, and any other number representing a solid tile (the value just determines the colour used).  For hexagonal games, a tile is either the top half or bottom half of a hexagon (depending on position in the grid).  For triangular games, it is always a whole triangle, but is either a left-pointing or right-pointing one depending on position in the grid.
 
-Blocks consist of arrays of possible orientations that block can be in, which
-are in turn arrays of arrays (indexed by y then x coords) of tiles. Tiles are
-represented using ints - 0 for "no tile", any other number indicating there is
-a tile.  The precise number used just determines the colour of the tile.
-*/
+// The API to this file is just a single function: get_block_sets(shape, sizes), where shape is "sqr"/"hex"/"tri", and sizes is an array of ordinals into the defined sets of blocks for that shape.
 
-
-var Blocks = {
-  currentSet: null, // an array of blocks, if using just one size
-  currentSets: null, // an array of arrays, if using several sizes
-
-  // get a random block (all rotations thereof) from the set(s) currently in use
-  getRandom: function() {
-    var set = this.currentSet, num, n;
-    if(!set) {
-      const sets = this.currentSets;
-      num = sets.length;
-      do { n = Math.random(); } while(n == 1.0);
-      n = Math.floor(n * num);
-      set = sets[n];
-    }
-    num = set.length;
-    do { n = Math.random() } while(n == 1.0);
-    n = Math.floor(n * num);
-
-    return set[n];
-  },
-
-  // shape is from {"sqr","hex","tri"}.  sizes is an int array
-  use: function(shape, sizes) {
-    var all = blocks[shape];
-    if(sizes.length==1) {
-      this.currentSet = all[sizes[0]];
-      this.currentSets = null;
-    } else {
-      this.currentSet = null;
-      var current = this.currentSets = [];
-      for(var i = 0; i != sizes.length; ++i) current.push(all[sizes[i]]);
-    }
-  }
-}
-
-
+var get_block_sets = (function() {
 
 
 var blocks = {};
@@ -483,3 +442,11 @@ blocks.tri = [
     createTriBlock(6, [], [tE,tSE,tSW,tNE,tE,tNE]),
   ]
 ];
+
+
+return function get_block_sets(shape, sizes) {
+  return [for(sz of sizes) blocks[shape][sz]];
+};
+
+
+})();

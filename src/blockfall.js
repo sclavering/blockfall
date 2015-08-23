@@ -21,7 +21,7 @@ var gGame = null;
 var gWidth = 0;
 var gHeight = 0;
 var gTileShape = null;
-var gGameType = null;
+var gBlockSetsForShape = null;
 
 
 function pause() {
@@ -47,7 +47,7 @@ function newGame(width, height, level) {
   if(gGame) gGame.end();
   ui.pausedMsg.style.display = "none";
   ui.gameOverMsg.style.display = "none";
-  gGame = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
+  gGame = newGameObj(width || gWidth, height || gHeight, level || 1, gTileShape, gBlockSetsForShape);
   gGame.begin();
 }
 
@@ -86,13 +86,11 @@ function doPickGameType(ev) {
 }
 
 function tileShapeChanged(shape, sizes) {
-  Blocks.use(shape, sizes);
-
   gTileShape = shape;
+  gBlockSetsForShape = sizes;
   // xxx hex and tri games make assumptions about their sizes.
   gWidth = 10;
   gHeight = { sqr: 25, hex: 50, tri: 51 }[shape];
-  gGameType = Games[shape];
   g_tileset = k_tilesets[shape];
   newGame();
 }
@@ -226,8 +224,8 @@ function FallingBlock(block) {
 };
 
 
-function newGameObj(width, height, level, basis) {
-  const game = { __proto__: basis };
+function newGameObj(width, height, level, shape, blockSetNumbers) {
+  const game = { __proto__: Games[shape] };
   game.is_paused = false;
   game.width = width;
   game.height = height;
@@ -237,6 +235,12 @@ function newGameObj(width, height, level, basis) {
     let line = grid[y] = new Array(width);
     for(let x = 0; x != width; x++) line[x] = 0;
   }
+
+  const sets = get_block_sets(shape, blockSetNumbers);
+  game._blocks = game._block_sets = null;
+  if(sets.length > 1) game._block_sets = sets;
+  else game._blocks = sets[0];
+
   return game;
 };
 
@@ -263,13 +267,18 @@ Games.base = {
     GridView.setSize(this.width, this.height);
     Timer.setDelay(this.startingLevel);
     GridView.update();
-    this._nextBlock = Blocks.getRandom();
+    this._nextBlock = this._get_new_block();
     this.nextBlock();
     Timer.start();
   },
 
   end: function() {
     Timer.stop();
+  },
+
+  _get_new_block: function() {
+    const blocks = this._blocks || random_element(this._block_sets);
+    return random_element(blocks);
   },
 
   updateScoreAndLevel: function(numLinesRemoves, blockDropped) {
@@ -316,7 +325,7 @@ Games.base = {
     const fb = new FallingBlock(this._nextBlock);
     this.fallingBlock = fb;
     if(!this.fallingBlockFitsAt(0,0)) return false;
-    this._nextBlock = Blocks.getRandom();
+    this._nextBlock = this._get_new_block();
     FallingBlockView.update();
     //NextBlockView.update(fb);
     return true;
@@ -500,6 +509,13 @@ Games.tri = {
     this.fallingBlock.top += 2;
     return true;
   },
+};
+
+
+function random_element(xs) {
+  let r;
+  do { r = Math.random(); } while(r === 1.0);
+  return xs[Math.floor(r * xs.length)];
 };
 
 
