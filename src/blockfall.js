@@ -18,7 +18,7 @@ const ui = {
 
 var gCommandsEnabled = false;
 
-var game = null; // a Game
+var gGame = null;
 var gPaused = false;
 
 // width/height of the most-recently started game (which might now be over)
@@ -51,25 +51,25 @@ function togglePause() {
 }
 
 function newGame(width, height, level) {
-  if(game) game.end();
+  if(gGame) gGame.end();
   ui.pausedMsg.style.display = "none";
   ui.gameOverMsg.style.display = "none";
-  game = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
-  game.begin();
+  gGame = newGameObj(width || gWidth, height || gHeight, level || 1, gGameType);
+  gGame.begin();
   gCommandsEnabled = true;
 }
 
 function endGame() {
-  if(!game) return;
-  game.end();
-  game = null;
+  if(!gGame) return;
+  gGame.end();
+  gGame = null;
   gCommandsEnabled = false;
   ui.gameOverMsg.style.display = "block";
 }
 
 
 function doShowGameTypePicker() {
-  if(game) pause();
+  if(gGame) pause();
   ui.game_type_picker.style.display = "block";
 }
 
@@ -108,7 +108,7 @@ function tileShapeChanged(shape, sizes) {
 
 
 window.onblur = function() {
-  if(game) pause();
+  if(gGame) pause();
 };
 
 
@@ -170,32 +170,32 @@ function doTogglePause(ev) {
 
 function doMoveLeft(ev) {
   ev.preventDefault();
-  game.moveFallingBlockLeft();
+  gGame.moveFallingBlockLeft();
 };
 
 function doMoveRight(ev) {
   ev.preventDefault();
-  game.moveFallingBlockRight();
+  gGame.moveFallingBlockRight();
 };
 
 function doMoveDown(ev) {
   ev.preventDefault();
-  game.moveFallingBlockDown();
+  gGame.moveFallingBlockDown();
 };
 
 function doDrop(ev) {
   ev.preventDefault();
-  game.dropFallingBlock();
+  gGame.dropFallingBlock();
 };
 
 function doRotateClockwise(ev) {
   ev.preventDefault();
-  game.rotateFallingBlockClockwise();
+  gGame.rotateFallingBlockClockwise();
 };
 
 function doRotateAntiClockwise(ev) {
   ev.preventDefault();
-  game.rotateFallingBlockAnticlockwise();
+  gGame.rotateFallingBlockAnticlockwise();
 };
 
 
@@ -205,7 +205,7 @@ const Timer = {
   delay: 0,
 
   start: function() {
-    this.interval = setInterval(game.timedMoveDown, this.delay);
+    this.interval = setInterval(gGame.timedMoveDown, this.delay);
   },
   stop: function() {
     if(!this.interval) return;
@@ -232,7 +232,7 @@ function FallingBlock(block) {
   var height = this. height = grid.length;
   var width = this.width = grid[0].length;
   // position matters a lot in hex/tri games
-  this.left = Math.floor((game.width - width) / 2);
+  this.left = Math.floor((gGame.width - width) / 2);
   this.top = 0;
 };
 
@@ -406,7 +406,7 @@ Games.base = {
 
   timedMoveDown: function() {
     // |this|==window because function is called via setInterval
-    if(!game.moveFallingBlockDown()) game.blockReachedBottom();
+    if(!gGame.moveFallingBlockDown()) gGame.blockReachedBottom();
   },
 
   moveFallingBlockDown: function() {
@@ -547,7 +547,7 @@ const GridView = {
   update: function(top, bottom) {
     if(!top) top = 0;
     if(!bottom) bottom = this.height;
-    const grid = game.grid;
+    const grid = gGame.grid;
     for(let y = top, firstTileOdd = top % 2; y != bottom; ++y, firstTileOdd = !firstTileOdd) {
       for(let x = 0, tileOdd = firstTileOdd; x != this.width; ++x, tileOdd = !tileOdd) {
         let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[grid[y][x]];
@@ -567,7 +567,7 @@ const FallingBlockView = {
   },
 
   update: function() {
-    const fb = game.fallingBlock;
+    const fb = gGame.fallingBlock;
     const w = fb.width, h = fb.height, t = fb.top, l = fb.left, grid = fb.grid;
     // position canvas
     this._canvas.style.top = (t * g_tileset.yOffset) + "px";
@@ -589,7 +589,7 @@ const FallingBlockView = {
   },
 
   move: function() {
-    this._canvas.style.top = (game.fallingBlock.top * g_tileset.yOffset) + "px";
-    this._canvas.style.left = (game.fallingBlock.left * g_tileset.xOffset) + "px";
+    this._canvas.style.top = (gGame.fallingBlock.top * g_tileset.yOffset) + "px";
+    this._canvas.style.left = (gGame.fallingBlock.left * g_tileset.xOffset) + "px";
   },
 };
