@@ -33,8 +33,8 @@ function new_game(width, height, level) {
   if(g_game) g_game.end();
   ui.paused_msg.style.display = "none";
   ui.game_over_msg.style.display = "none";
-  g_game = new_game_obj(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
-  g_game.begin(g_tile_shape);
+  g_game = { __proto__: Games[g_tile_shape] };
+  g_game.init(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
 }
 
 function end_game() {
@@ -170,41 +170,10 @@ function do_rotate_anti_clockwise(ev) {
 };
 
 
-function new_game_obj(width, height, level, shape, block_set_numbers) {
-  const game = { __proto__: Games[shape] };
-  game.is_paused = false;
-  game.width = width;
-  game.height = height;
-  game.level = game.starting_level = level;
-  const grid = game.grid = new Array(height);
-  for(let y = 0; y != height; ++y) {
-    let line = grid[y] = new Array(width);
-    for(let x = 0; x != width; x++) line[x] = 0;
-  }
-
-  const sets = get_block_sets(shape, block_set_numbers);
-  game._blocks = game._block_sets = null;
-  if(sets.length > 1) game._block_sets = sets;
-  else game._blocks = sets[0];
-
-  return game;
-};
-
-
 const Games = {};
 
 
 Games.base = {
-  width: 0,
-  height: 0,
-  starting_level: 1,
-  levels_completed: 0,
-  score: 0,
-  lines: 0,
-  level: 1,
-  grid: null, // y-x indexed
-  _next_block: null,
-
   _falling_block_states: null,
   _falling_block_state: null,
   _falling_block_grid: null,
@@ -214,11 +183,30 @@ Games.base = {
   _delay: null,
   _interval: null,
 
-  begin: function(shape) {
+  init: function(width, height, level, shape, block_set_numbers) {
     const tileset = k_tilesets[shape];
     this._main_view = new GridView(tileset, ui.grid);
     this._falling_block_view = new GridView(tileset, ui.falling_block);
     this._next_block_view = new GridView(tileset, ui.next_block);
+
+    this.levels_completed = 0;
+    this.score = 0;
+    this.lines = 0;
+
+    this.is_paused = false;
+    this.width = width;
+    this.height = height;
+    this.level = this.starting_level = level;
+    const grid = this.grid = new Array(height);
+    for(let y = 0; y != height; ++y) {
+      let line = grid[y] = new Array(width);
+      for(let x = 0; x != width; x++) line[x] = 0;
+    }
+
+    const sets = get_block_sets(shape, block_set_numbers);
+    this._blocks = this._block_sets = null;
+    if(sets.length > 1) this._block_sets = sets;
+    else this._blocks = sets[0];
 
     ui.level.textContent = this.level;
     ui.lines.textContent = this.lines;
