@@ -66,22 +66,6 @@ function init_tilesets() {
 };
 
 
-function draw_tiles(context, grid, first_tile_odd, flags) {
-  const y0 = flags.y || 0;
-  const draw_empties = flags.draw_empties || false;
-  const h = grid.length, w = grid[0].length;
-  for(let y = 0; y !== h; ++y, first_tile_odd = !first_tile_odd) {
-    for(let x = 0, tile_odd = first_tile_odd; x !== w; ++x, tile_odd = !tile_odd) {
-      let val = grid[y][x];
-      if(!val && !draw_empties) continue;
-      let tile_top = (tile_odd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
-      let dx = x * g_tileset.x_offset, dy = (y + y0) * g_tileset.y_offset;
-      context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
-    }
-  }
-};
-
-
 function GridView(canvas) {
   this._canvas = canvas;
   this._context = this._canvas.getContext("2d");
@@ -99,6 +83,17 @@ GridView.prototype = {
   },
 
   draw: function(grid, first_tile_odd, flags) {
-    draw_tiles(this._context, grid, first_tile_odd, flags);
+    const y0 = flags.y || 0;
+    const draw_empties = flags.draw_empties || false;
+    const h = grid.length, w = grid[0].length;
+    for(let y = 0; y !== h; ++y, first_tile_odd = !first_tile_odd) {
+      for(let x = 0, tile_odd = first_tile_odd; x !== w; ++x, tile_odd = !tile_odd) {
+        let val = grid[y][x];
+        if(!val && !draw_empties) continue;
+        let tile_top = (tile_odd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
+        let dx = x * g_tileset.x_offset, dy = (y + y0) * g_tileset.y_offset;
+        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
+      }
+    }
   },
 };
