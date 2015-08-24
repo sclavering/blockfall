@@ -18,6 +18,7 @@ const ui = {
 var g_game = null;
 var g_grid_view = null;
 var g_falling_block_view = null;
+var g_next_block_view = null;
 
 // Details of the most recent game (which might now be over), stored so the next game can be the same type.
 var g_width = 0;
@@ -95,6 +96,7 @@ window.onload = function() {
   init_tilesets();
   g_grid_view = new GridView(ui.grid);
   g_falling_block_view = new GridView(ui.falling_block);
+  g_next_block_view = new GridView(ui.next_block);
 
   tile_shape_changed("sqr", [1]);
 };
@@ -322,6 +324,7 @@ Games.base = {
     if(!this._falling_block_can_move_by(0, 0)) return false;
     this._next_block = this._get_new_block();
     this._redraw_falling_block();
+    this._redraw_next_block();
     return true;
   },
 
@@ -418,6 +421,15 @@ Games.base = {
     // note: conceptually this is ((x % 2) XOR (y % 2)), but since x can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
     const first_tile_odd = !!((x + y) % 2);
     g_falling_block_view.draw(grid, first_tile_odd, {});
+  },
+
+  _redraw_next_block: function() {
+    const grid = this._next_block[0];
+    g_next_block_view.resize(grid[0].length, grid.length);
+    // This is the same calculation as when deciding the initial _falling_block_x
+    const x = Math.floor((this.width - grid[0].length) / 2);
+    const first_tile_odd = !!(x % 2);
+    g_next_block_view.draw(grid, first_tile_odd, {});
   },
 };
 
