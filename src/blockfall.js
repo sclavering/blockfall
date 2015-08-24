@@ -1,10 +1,10 @@
 const ui = {
   grid: "grid",
-  gridContainer: "grid-container",
-  fallingBlock: "falling-block",
-  nextBlock: "next-block",
-  pausedMsg: "msg-paused",
-  gameOverMsg: "msg-gameover",
+  grid_container: "grid-container",
+  falling_block: "falling-block",
+  next_block: "next-block",
+  paused_msg: "msg-paused",
+  game_over_msg: "msg-gameover",
   score: "score-display",
   lines: "lines-display",
   level: "level-display",
@@ -15,51 +15,51 @@ const ui = {
 };
 
 
-var gGame = null;
+var g_game = null;
 var g_grid_view = null;
 var g_falling_block_view = null;
 
 // Details of the most recent game (which might now be over), stored so the next game can be the same type.
-var gWidth = 0;
-var gHeight = 0;
-var gTileShape = null;
-var gBlockSetsForShape = null;
+var g_width = 0;
+var g_height = 0;
+var g_tile_shape = null;
+var g_block_sets_for_shape = null;
 
 
-function togglePause() {
-  if(gGame.is_paused) gGame.unpause();
-  else gGame.pause();
+function toggle_pause() {
+  if(g_game.is_paused) g_game.unpause();
+  else g_game.pause();
 }
 
-function newGame(width, height, level) {
-  if(gGame) gGame.end();
-  ui.pausedMsg.style.display = "none";
-  ui.gameOverMsg.style.display = "none";
-  gGame = newGameObj(width || gWidth, height || gHeight, level || 1, gTileShape, gBlockSetsForShape);
-  gGame.begin();
+function new_game(width, height, level) {
+  if(g_game) g_game.end();
+  ui.paused_msg.style.display = "none";
+  ui.game_over_msg.style.display = "none";
+  g_game = new_game_obj(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
+  g_game.begin();
 }
 
-function endGame() {
-  if(!gGame) return;
-  gGame.end();
-  gGame = null;
-  ui.gameOverMsg.style.display = "block";
+function end_game() {
+  if(!g_game) return;
+  g_game.end();
+  g_game = null;
+  ui.game_over_msg.style.display = "block";
 }
 
 
-function doShowGameTypePicker() {
-  if(gGame) gGame.pause();
+function do_show_game_type_picker() {
+  if(g_game) g_game.pause();
   ui.game_type_picker.style.display = "block";
 }
 
-function doCancelGameTypePicker() {
+function do_cancel_game_type_picker() {
   ui.game_type_picker.style.display = "none";
 }
 
-function doPickGameType(ev) {
+function do_pick_game_type(ev) {
   ev.preventDefault();
-  if(gGame) gGame.end();
-  doCancelGameTypePicker();
+  if(g_game) g_game.end();
+  do_cancel_game_type_picker();
 
   const form = ev.target.form;
   let shape = null;
@@ -70,126 +70,126 @@ function doPickGameType(ev) {
   // xxx use this!
   let level = +form.elements["startinglevel"].value;
 
-  tileShapeChanged(shape, tiles);
+  tile_shape_changed(shape, tiles);
 }
 
-function tileShapeChanged(shape, sizes) {
-  gTileShape = shape;
-  gBlockSetsForShape = sizes;
+function tile_shape_changed(shape, sizes) {
+  g_tile_shape = shape;
+  g_block_sets_for_shape = sizes;
   // xxx hex and tri games make assumptions about their sizes.
-  gWidth = 10;
-  gHeight = { sqr: 25, hex: 50, tri: 51 }[shape];
+  g_width = 10;
+  g_height = { sqr: 25, hex: 50, tri: 51 }[shape];
   g_tileset = k_tilesets[shape];
-  newGame();
+  new_game();
 }
 
 
 window.onblur = function() {
-  if(gGame) gGame.pause();
+  if(g_game) g_game.pause();
 };
 
 
-window.onload = function onLoad() {
+window.onload = function() {
   for(let i in ui) ui[i] = document.getElementById(ui[i]);
 
   init_tilesets();
   g_grid_view = new GridView(ui.grid);
-  g_falling_block_view = new GridView(ui.fallingBlock);
+  g_falling_block_view = new GridView(ui.falling_block);
 
-  tileShapeChanged("sqr", [1]);
+  tile_shape_changed("sqr", [1]);
 };
 
 
 window.onkeypress = function(ev) {
   if(ev.ctrlKey || ev.metaKey) return; // don't interfere with browser shortcuts
-  if(!gGame) return;
+  if(!g_game) return;
 
-  if(gGame.is_paused) {
+  if(g_game.is_paused) {
     // p for pause
-    if(ev.charCode === 112) return doTogglePause(ev);
+    if(ev.charCode === 112) return do_toggle_pause(ev);
     return;
   }
 
   switch(ev.keyCode) {
     case 37: // left
-      return doMoveLeft(ev);
+      return do_move_left(ev);
     case 39: // right
-      return doMoveRight(ev);
+      return do_move_right(ev);
     case 40: // down
-      return doMoveDown(ev);
+      return do_move_down(ev);
     case 38: // up
-      return doRotateClockwise(ev);
+      return do_rotate_clockwise(ev);
   }
   switch(ev.charCode) {
     case 112: // p
-      return doTogglePause(ev);
+      return do_toggle_pause(ev);
     case 32: // spacebar
     case 104: // h
-      return doDrop(ev);
+      return do_drop(ev);
     case 106: // j
     case 122: // z
-      return doRotateAntiClockwise(ev);
+      return do_rotate_anti_clockwise(ev);
     case 107: // k
     case 120: // x
-      return doRotateClockwise(ev);
+      return do_rotate_clockwise(ev);
     case 44: // ","
-      return doMoveLeft(ev);
+      return do_move_left(ev);
     case 46: // "."
-      return doMoveDown(ev);
+      return do_move_down(ev);
     case 47: // "/"
-      return doMoveRight(ev);
+      return do_move_right(ev);
   }
 };
 
-function doTogglePause(ev) {
+function do_toggle_pause(ev) {
   ev.preventDefault();
-  togglePause();
+  toggle_pause();
 }
 
-function doMoveLeft(ev) {
+function do_move_left(ev) {
   ev.preventDefault();
-  gGame.moveFallingBlockLeft();
+  g_game.move_falling_block_left();
 };
 
-function doMoveRight(ev) {
+function do_move_right(ev) {
   ev.preventDefault();
-  gGame.moveFallingBlockRight();
+  g_game.move_falling_block_right();
 };
 
-function doMoveDown(ev) {
+function do_move_down(ev) {
   ev.preventDefault();
-  gGame.moveFallingBlockDown();
+  g_game.move_falling_block_down();
 };
 
-function doDrop(ev) {
+function do_drop(ev) {
   ev.preventDefault();
-  gGame.dropFallingBlock();
+  g_game.drop_falling_block();
 };
 
-function doRotateClockwise(ev) {
+function do_rotate_clockwise(ev) {
   ev.preventDefault();
-  gGame.rotateFallingBlockClockwise();
+  g_game.rotate_falling_block_clockwise();
 };
 
-function doRotateAntiClockwise(ev) {
+function do_rotate_anti_clockwise(ev) {
   ev.preventDefault();
-  gGame.rotateFallingBlockAnticlockwise();
+  g_game.rotate_falling_block_anticlockwise();
 };
 
 
-function newGameObj(width, height, level, shape, blockSetNumbers) {
+function new_game_obj(width, height, level, shape, block_set_numbers) {
   const game = { __proto__: Games[shape] };
   game.is_paused = false;
   game.width = width;
   game.height = height;
-  game.level = game.startingLevel = level;
+  game.level = game.starting_level = level;
   const grid = game.grid = new Array(height);
   for(let y = 0; y != height; ++y) {
     let line = grid[y] = new Array(width);
     for(let x = 0; x != width; x++) line[x] = 0;
   }
 
-  const sets = get_block_sets(shape, blockSetNumbers);
+  const sets = get_block_sets(shape, block_set_numbers);
   game._blocks = game._block_sets = null;
   if(sets.length > 1) game._block_sets = sets;
   else game._blocks = sets[0];
@@ -204,13 +204,13 @@ const Games = {};
 Games.base = {
   width: 0,
   height: 0,
-  startingLevel: 1,
-  levelsCompleted: 0,
+  starting_level: 1,
+  levels_completed: 0,
   score: 0,
   lines: 0,
   level: 1,
   grid: null, // y-x indexed
-  _nextBlock: null,
+  _next_block: null,
 
   _falling_block_states: null,
   _falling_block_state: null,
@@ -227,11 +227,11 @@ Games.base = {
     ui.score.textContent = this.score;
     g_grid_view.resize(this.width, this.height);
     this._delay = 1000;
-    for(let i = 1; i < this.startingLevel; ++i) this._reduce_delay();
+    for(let i = 1; i < this.starting_level; ++i) this._reduce_delay();
     this._update_grid_view(0, this.height);
-    this._nextBlock = this._get_new_block();
-    this.nextBlock();
-    this._bound_timedMoveDown = () => this.timedMoveDown();
+    this._next_block = this._get_new_block();
+    this.next_block();
+    this._bound_timed_move_down = () => this.timed_move_down();
     this._start_timer();
   },
 
@@ -247,18 +247,18 @@ Games.base = {
     if(this.is_paused) return;
     this.is_paused = true;
     this._stop_timer();
-    ui.pausedMsg.style.display = "block";
+    ui.paused_msg.style.display = "block";
   },
 
   unpause: function() {
     if(!this.is_paused) return;
     this.is_paused = false;
     this._start_timer();
-    ui.pausedMsg.style.display = "none";
+    ui.paused_msg.style.display = "none";
   },
 
   _start_timer: function() {
-    this._interval = setInterval(this._bound_timedMoveDown, this._delay);
+    this._interval = setInterval(this._bound_timed_move_down, this._delay);
   },
 
   _stop_timer: function() {
@@ -272,23 +272,23 @@ Games.base = {
     return random_element(blocks);
   },
 
-  updateScoreAndLevel: function(numLinesRemoves, blockDropped) {
-    if(numLinesRemoves) {
-      if(this.lines >= (this.levelsCompleted+1)*10) {
-        this.levelsCompleted++;
+  update_score_and_level: function(num_lines_removes, block_dropped) {
+    if(num_lines_removes) {
+      if(this.lines >= (this.levels_completed + 1) * 10) {
+        this.levels_completed++;
         ui.level.textContent = ++this.level;
         this._reduce_delay();
       }
-      ui.lines.textContent = this.lines += numLinesRemoves;
-      for(let i = 1; i <= numLinesRemoves; i++) this.score += i * 20;
+      ui.lines.textContent = this.lines += num_lines_removes;
+      for(let i = 1; i <= num_lines_removes; i++) this.score += i * 20;
     }
     let score = this.level;
-    if(blockDropped) score *= this.level / 4;
+    if(block_dropped) score *= this.level / 4;
     this.score += Math.ceil(score);
     ui.score.textContent = this.score;
   },
 
-  blockReachedBottom: function(blockDropped) {
+  block_reached_bottom: function(block_dropped) {
     this._stop_timer();
 
     const x0 = this._falling_block_x;
@@ -304,23 +304,23 @@ Games.base = {
     let top = this._falling_block_y ? this._falling_block_y - 1 : 0;
     let btm = this._falling_block_y + this._falling_block_grid.length;
     if(btm > this.height) btm = this.height;
-    const numLinesRemoves = this.removeCompleteLines(top, btm);
-    if(numLinesRemoves) top = 0; // everything's moved down
+    const num_lines_removes = this.remove_complete_lines(top, btm);
+    if(num_lines_removes) top = 0; // everything's moved down
     this._update_grid_view(top, btm);
-    this.updateScoreAndLevel(numLinesRemoves, blockDropped);
-    if(this.nextBlock()) this._start_timer();
-    else endGame()
+    this.update_score_and_level(num_lines_removes, block_dropped);
+    if(this.next_block()) this._start_timer();
+    else end_game()
   },
 
-  nextBlock: function() {
-    const block = this._falling_block_states = this._nextBlock;
+  next_block: function() {
+    const block = this._falling_block_states = this._next_block;
     this._falling_block_state = 0;
     const grid = this._falling_block_grid = block[0];
     this._falling_block_x = Math.floor((this.width - grid[0].length) / 2);
     this._falling_block_y = 0;
 
     if(!this._falling_block_can_move_by(0, 0)) return false;
-    this._nextBlock = this._get_new_block();
+    this._next_block = this._get_new_block();
     this._redraw_falling_block();
     return true;
   },
@@ -331,13 +331,13 @@ Games.base = {
     this.grid.unshift(row);
   },
 
-  _lineIsFull: function(y) {
+  _line_is_full: function(y) {
     for(let val of this.grid[y]) if(!val) return false;
     return true;
   },
 
   // block[][] (y-x indexed) is a state of some block.  x and y are offsets into this grid
-  canAdd: function(block, x, y) {
+  can_add: function(block, x, y) {
     const grid = this.grid;
     const height = block.length, width = block[0].length;
     for(let yi = 0, yj = y; yi != height; ++yi, ++yj) {
@@ -356,46 +356,46 @@ Games.base = {
   },
 
   _falling_block_can_move_by: function(dx, dy) {
-    return this.canAdd(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy)
+    return this.can_add(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy)
   },
 
   // note: block.length is the number of states this block has
-  rotateFallingBlockClockwise: function() {
+  rotate_falling_block_clockwise: function() {
     let s = this._falling_block_state + 1;
     if(s === this._falling_block_states.length) s = 0;
-    this._maybeRotateFallingBlock(s);
+    this._maybe_rotate_falling_block(s);
   },
 
-  rotateFallingBlockAnticlockwise: function() {
+  rotate_falling_block_anticlockwise: function() {
     let s = this._falling_block_state - 1;
     if(s === -1) s += this._falling_block_states.length;
-    this._maybeRotateFallingBlock(s);
+    this._maybe_rotate_falling_block(s);
   },
 
-  _maybeRotateFallingBlock: function(newstate) {
+  _maybe_rotate_falling_block: function(newstate) {
     const newgrid = this._falling_block_states[newstate];
-    if(!this.canAdd(newgrid, this._falling_block_x, this._falling_block_y)) return;
+    if(!this.can_add(newgrid, this._falling_block_x, this._falling_block_y)) return;
     this._falling_block_state = newstate;
     this._falling_block_grid = newgrid;
     this._redraw_falling_block();
   },
 
-  dropFallingBlock: function() {
-    while(this._moveFallingBlockDown());
-    this.blockReachedBottom(true);
+  drop_falling_block: function() {
+    while(this._move_falling_block_down());
+    this.block_reached_bottom(true);
   },
 
-  timedMoveDown: function() {
-    if(!this.moveFallingBlockDown()) this.blockReachedBottom();
+  timed_move_down: function() {
+    if(!this.move_falling_block_down()) this.block_reached_bottom();
   },
 
-  moveFallingBlockDown: function() {
-    if(!this._moveFallingBlockDown()) return false;
+  move_falling_block_down: function() {
+    if(!this._move_falling_block_down()) return false;
     this._reposition_falling_block_view();
     return true;
   },
 
-  _moveFallingBlock: function(dx, dy) {
+  _move_falling_block: function(dx, dy) {
     if(!this._falling_block_can_move_by(dx, dy)) return;
     this._falling_block_x += dx;
     this._falling_block_y += dy;
@@ -403,8 +403,8 @@ Games.base = {
   },
 
   _update_grid_view: function(top, bottom) {
-    const firstTileOdd = top % 2;
-    g_grid_view.draw(this.grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
+    const first_tile_odd = top % 2;
+    g_grid_view.draw(this.grid.slice(top, bottom), first_tile_odd, { y: top, draw_empties: true });
   },
 
   _reposition_falling_block_view: function() {
@@ -416,8 +416,8 @@ Games.base = {
     g_falling_block_view.resize(grid[0].length, grid.length);
     g_falling_block_view.position(x, y);
     // note: conceptually this is ((x % 2) XOR (y % 2)), but since x can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
-    const firstTileOdd = !!((x + y) % 2);
-    g_falling_block_view.draw(grid, firstTileOdd, {});
+    const first_tile_odd = !!((x + y) % 2);
+    g_falling_block_view.draw(grid, first_tile_odd, {});
   },
 };
 
@@ -425,20 +425,20 @@ Games.base = {
 Games.sqr = {
   __proto__: Games.base,
 
-  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 0); },
-  moveFallingBlockRight: function() { this._moveFallingBlock(1, 0); },
+  move_falling_block_left: function() { this._move_falling_block(-1, 0); },
+  move_falling_block_right: function() { this._move_falling_block(1, 0); },
 
   // must return a boolean for the timed drop function
-  _moveFallingBlockDown: function() {
+  _move_falling_block_down: function() {
     if(!this._falling_block_can_move_by(0, 1)) return false;
     this._falling_block_y += 1;
     return true;
   },
 
-  removeCompleteLines: function(top, bottom) {
+  remove_complete_lines: function(top, bottom) {
     let num = 0;
     for(let y = top; y != bottom; ++y) {
-      if(!this._lineIsFull(y)) continue;
+      if(!this._line_is_full(y)) continue;
       this._remove_row(y);
       ++num;
     }
@@ -450,21 +450,21 @@ Games.sqr = {
 Games.hex = {
   __proto__: Games.base,
 
-  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 1); },
-  moveFallingBlockRight: function() { this._moveFallingBlock(1, 1); },
+  move_falling_block_left: function() { this._move_falling_block(-1, 1); },
+  move_falling_block_right: function() { this._move_falling_block(1, 1); },
 
-  _moveFallingBlockDown: function() {
+  _move_falling_block_down: function() {
     if(!this._falling_block_can_move_by(0, 2)) return false;
     this._falling_block_y += 2;
     return true;
   },
 
-  removeCompleteLines: function(top, bottom) {
+  remove_complete_lines: function(top, bottom) {
     let num = 0;
     if(bottom == this.height) --bottom;
     for(let y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
       // row of half-hexes is full <==> appropriate half-hexes in row above+below are full
-      if(!this._lineIsFull(y)) continue;
+      if(!this._line_is_full(y)) continue;
       /*
       Here we're trying to remove something like:
       .#.#.#.#.#.        #.#.#.#.#.    <-- y1
@@ -487,20 +487,20 @@ Games.hex = {
 Games.tri = {
   __proto__: Games.base,
 
-  moveFallingBlockLeft: function() { this._moveFallingBlock(-1, 1); },
-  moveFallingBlockRight: function() { this._moveFallingBlock(1, 1); },
+  move_falling_block_left: function() { this._move_falling_block(-1, 1); },
+  move_falling_block_right: function() { this._move_falling_block(1, 1); },
 
   /*
   "Lines" start from the left at a tile pointing right, and then go either
   up or down for the next tile, and then proceed across and always form a
   solid block filling the two lines (which is why we just count in ones)
   */
-  removeCompleteLines: function(top, bottom) {
+  remove_complete_lines: function(top, bottom) {
     const h = this.height, w = this.width;
     if(bottom >= h - 2) bottom = h - 2;
     let num = 0;
     for(let y = bottom; y != top; --y) {
-      if(!this._lineIsFull(y) || !this._lineIsFull(y+1)) continue;
+      if(!this._line_is_full(y) || !this._line_is_full(y+1)) continue;
       this._remove_row(y);
       this._remove_row(y + 1);
       ++num;
@@ -508,8 +508,8 @@ Games.tri = {
     return num;
   },
 
-  _moveFallingBlockDown: function() {
-    // don't allow tiles to drop through ones facing the other way
+  _move_falling_block_down: function() {
+    // Don't allow tiles to drop through ones facing the other way
     if(!this._falling_block_can_move_by(0, 1) || !this._falling_block_can_move_by(0, 2)) return false;
     this._falling_block_y += 2;
     return true;

@@ -22,9 +22,9 @@
 
 <div id="main">
   <div id="sidebar">
-    <button onclick="newGame()">New</button>
-    <button onclick="doShowGameTypePicker()">Game Type</button>
-    <button onclick="togglePause()">Pause</button>
+    <button onclick="new_game()">New</button>
+    <button onclick="do_show_game_type_picker()">Game Type</button>
+    <button onclick="toggle_pause()">Pause</button>
 
     <h6>Score:</h6>
     <div id="score-display"></div>
@@ -60,8 +60,8 @@
       </div>
       <label>Starting level: <input type="number" name="startinglevel" value="1"></label>
       <p>
-        <input type="button" onclick="doCancelGameTypePicker()" value="Cancel">
-        <input type="submit" onclick="doPickGameType(event)" value="Start Game">
+        <input type="button" onclick="do_cancel_game_type_picker()" value="Cancel">
+        <input type="submit" onclick="do_pick_game_type(event)" value="Start Game">
       </p>
     </form>
   </div>
