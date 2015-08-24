@@ -324,7 +324,7 @@ Games.base = {
   },
 
   // block[][] (y-x indexed) is a state of some block.  x and y are offsets into this grid
-  can_add: function(block, x, y) {
+  _can_fit: function(block, x, y) {
     const grid = this.grid;
     const height = block.length, width = block[0].length;
     for(let yi = 0, yj = y; yi != height; ++yi, ++yj) {
@@ -343,7 +343,7 @@ Games.base = {
   },
 
   _falling_block_can_move_by: function(dx, dy) {
-    return this.can_add(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy);
+    return this._can_fit(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy);
   },
 
   // note: block.length is the number of states this block has
@@ -361,7 +361,7 @@ Games.base = {
 
   _maybe_rotate_falling_block: function(newstate) {
     const newgrid = this._falling_block_states[newstate];
-    if(!this.can_add(newgrid, this._falling_block_x, this._falling_block_y)) return;
+    if(!this._can_fit(newgrid, this._falling_block_x, this._falling_block_y)) return;
     this._falling_block_state = newstate;
     this._falling_block_grid = newgrid;
     this._redraw_falling_block();
