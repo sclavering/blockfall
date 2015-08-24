@@ -19,20 +19,20 @@ const k_tilesets = {
   sqr: {
     width: SQR_SIZE,
     height: SQR_SIZE,
-    xOffset: SQR_SIZE,
-    yOffset: SQR_SIZE,
+    x_offset: SQR_SIZE,
+    y_offset: SQR_SIZE,
   },
   hex: {
     width: HEX_WIDTH,
     height: HEX_HALF_HEIGHT,
-    xOffset: HEX_X_OFFSET,
-    yOffset: HEX_HALF_HEIGHT,
+    x_offset: HEX_X_OFFSET,
+    y_offset: HEX_HALF_HEIGHT,
   },
   tri: {
     width: TRI_WIDTH,
     height: TRI_HALF_HEIGHT * 2,
-    xOffset: TRI_WIDTH,
-    yOffset: TRI_HALF_HEIGHT,
+    x_offset: TRI_WIDTH,
+    y_offset: TRI_HALF_HEIGHT,
   },
 };
 
@@ -66,16 +66,16 @@ function init_tilesets() {
 };
 
 
-function draw_tiles(context, grid, firstTileOdd, flags) {
+function draw_tiles(context, grid, first_tile_odd, flags) {
   const y0 = flags.y || 0;
   const draw_empties = flags.draw_empties || false;
   const h = grid.length, w = grid[0].length;
-  for(let y = 0; y !== h; ++y, firstTileOdd = !firstTileOdd) {
-    for(let x = 0, tileOdd = firstTileOdd; x !== w; ++x, tileOdd = !tileOdd) {
+  for(let y = 0; y !== h; ++y, first_tile_odd = !first_tile_odd) {
+    for(let x = 0, tile_odd = first_tile_odd; x !== w; ++x, tile_odd = !tile_odd) {
       let val = grid[y][x];
       if(!val && !draw_empties) continue;
-      let tile_top = (tileOdd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
-      let dx = x * g_tileset.xOffset, dy = (y + y0) * g_tileset.yOffset;
+      let tile_top = (tile_odd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
+      let dx = x * g_tileset.x_offset, dy = (y + y0) * g_tileset.y_offset;
       context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
     }
   }
@@ -88,17 +88,17 @@ function GridView(canvas) {
 };
 GridView.prototype = {
   resize: function(w, h) {
-    this._canvas.width = w * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
-    this._canvas.height = h * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
+    this._canvas.width = w * g_tileset.x_offset - g_tileset.x_offset + g_tileset.width;
+    this._canvas.height = h * g_tileset.y_offset - g_tileset.y_offset + g_tileset.height;
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
   },
 
   position: function(x, y) {
-    this._canvas.style.left = (x * g_tileset.xOffset) + "px";
-    this._canvas.style.top = (y * g_tileset.yOffset) + "px";
+    this._canvas.style.left = (x * g_tileset.x_offset) + "px";
+    this._canvas.style.top = (y * g_tileset.y_offset) + "px";
   },
 
-  draw: function(grid, firstTileOdd, flags) {
-    draw_tiles(this._context, grid, firstTileOdd, flags);
+  draw: function(grid, first_tile_odd, flags) {
+    draw_tiles(this._context, grid, first_tile_odd, flags);
   },
 };
