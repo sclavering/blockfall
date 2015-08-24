@@ -34,7 +34,7 @@ function new_game(width, height, level) {
   ui.paused_msg.style.display = "none";
   ui.game_over_msg.style.display = "none";
   g_game = new_game_obj(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
-  g_game.begin();
+  g_game.begin(g_tile_shape);
 }
 
 function end_game() {
@@ -77,7 +77,6 @@ function tile_shape_changed(shape, sizes) {
   // xxx hex and tri games make assumptions about their sizes.
   g_width = 10;
   g_height = { sqr: 25, hex: 50, tri: 51 }[shape];
-  g_tileset = k_tilesets[shape];
   new_game();
 }
 
@@ -215,10 +214,11 @@ Games.base = {
   _delay: null,
   _interval: null,
 
-  begin: function() {
-    this._main_view = new GridView(ui.grid);
-    this._falling_block_view = new GridView(ui.falling_block);
-    this._next_block_view = new GridView(ui.next_block);
+  begin: function(shape) {
+    const tileset = k_tilesets[shape];
+    this._main_view = new GridView(tileset, ui.grid);
+    this._falling_block_view = new GridView(tileset, ui.falling_block);
+    this._next_block_view = new GridView(tileset, ui.next_block);
 
     ui.level.textContent = this.level;
     ui.lines.textContent = this.lines;

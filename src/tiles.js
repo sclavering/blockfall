@@ -1,8 +1,5 @@
 // Code related to drawing tiles (i.e. squares, or half-hexes).
 
-var g_tileset = null;
-
-
 const SQR_NUM_STYLES = 31;
 const SQR_SIZE = 20;
 
@@ -66,20 +63,21 @@ function init_tilesets() {
 };
 
 
-function GridView(canvas) {
+function GridView(tileset, canvas) {
+  this._tileset = tileset;
   this._canvas = canvas;
   this._context = this._canvas.getContext("2d");
 };
 GridView.prototype = {
   resize: function(w, h) {
-    this._canvas.width = w * g_tileset.x_offset - g_tileset.x_offset + g_tileset.width;
-    this._canvas.height = h * g_tileset.y_offset - g_tileset.y_offset + g_tileset.height;
+    this._canvas.width = w * this._tileset.x_offset - this._tileset.x_offset + this._tileset.width;
+    this._canvas.height = h * this._tileset.y_offset - this._tileset.y_offset + this._tileset.height;
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
   },
 
   position: function(x, y) {
-    this._canvas.style.left = (x * g_tileset.x_offset) + "px";
-    this._canvas.style.top = (y * g_tileset.y_offset) + "px";
+    this._canvas.style.left = (x * this._tileset.x_offset) + "px";
+    this._canvas.style.top = (y * this._tileset.y_offset) + "px";
   },
 
   draw: function(grid, first_tile_odd, flags) {
@@ -90,9 +88,9 @@ GridView.prototype = {
       for(let x = 0, tile_odd = first_tile_odd; x !== w; ++x, tile_odd = !tile_odd) {
         let val = grid[y][x];
         if(!val && !draw_empties) continue;
-        let tile_top = (tile_odd ? g_tileset.odd_tile_tops : g_tileset.even_tile_tops)[val];
-        let dx = x * g_tileset.x_offset, dy = (y + y0) * g_tileset.y_offset;
-        this._context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
+        let tile_top = (tile_odd ? this._tileset.odd_tile_tops : this._tileset.even_tile_tops)[val];
+        let dx = x * this._tileset.x_offset, dy = (y + y0) * this._tileset.y_offset;
+        this._context.drawImage(this._tileset.image, 0, tile_top, this._tileset.width, this._tileset.height, dx, dy, this._tileset.width, this._tileset.height);
       }
     }
   },
