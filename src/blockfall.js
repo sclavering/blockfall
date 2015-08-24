@@ -16,9 +16,6 @@ const ui = {
 
 
 var g_game = null;
-var g_grid_view = null;
-var g_falling_block_view = null;
-var g_next_block_view = null;
 
 // Details of the most recent game (which might now be over), stored so the next game can be the same type.
 var g_width = 0;
@@ -92,12 +89,7 @@ window.onblur = function() {
 
 window.onload = function() {
   for(let i in ui) ui[i] = document.getElementById(ui[i]);
-
   init_tilesets();
-  g_grid_view = new GridView(ui.grid);
-  g_falling_block_view = new GridView(ui.falling_block);
-  g_next_block_view = new GridView(ui.next_block);
-
   tile_shape_changed("sqr", [1]);
 };
 
@@ -224,10 +216,14 @@ Games.base = {
   _interval: null,
 
   begin: function() {
+    this._main_view = new GridView(ui.grid);
+    this._falling_block_view = new GridView(ui.falling_block);
+    this._next_block_view = new GridView(ui.next_block);
+
     ui.level.textContent = this.level;
     ui.lines.textContent = this.lines;
     ui.score.textContent = this.score;
-    g_grid_view.resize(this.width, this.height);
+    this._main_view.resize(this.width, this.height);
     this._delay = 1000;
     for(let i = 1; i < this.starting_level; ++i) this._reduce_delay();
     this._update_grid_view(0, this.height);
@@ -407,29 +403,29 @@ Games.base = {
 
   _update_grid_view: function(top, bottom) {
     const first_tile_odd = top % 2;
-    g_grid_view.draw(this.grid.slice(top, bottom), first_tile_odd, { y: top, draw_empties: true });
+    this._main_view.draw(this.grid.slice(top, bottom), first_tile_odd, { y: top, draw_empties: true });
   },
 
   _reposition_falling_block_view: function() {
-    g_falling_block_view.position(this._falling_block_x, this._falling_block_y);
+    this._falling_block_view.position(this._falling_block_x, this._falling_block_y);
   },
 
   _redraw_falling_block: function() {
     const grid = this._falling_block_grid, x = this._falling_block_x, y = this._falling_block_y;
-    g_falling_block_view.resize(grid[0].length, grid.length);
-    g_falling_block_view.position(x, y);
+    this._falling_block_view.resize(grid[0].length, grid.length);
+    this._falling_block_view.position(x, y);
     // note: conceptually this is ((x % 2) XOR (y % 2)), but since x can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
     const first_tile_odd = !!((x + y) % 2);
-    g_falling_block_view.draw(grid, first_tile_odd, {});
+    this._falling_block_view.draw(grid, first_tile_odd, {});
   },
 
   _redraw_next_block: function() {
     const grid = this._next_block[0];
-    g_next_block_view.resize(grid[0].length, grid.length);
+    this._next_block_view.resize(grid[0].length, grid.length);
     // This is the same calculation as when deciding the initial _falling_block_x
     const x = Math.floor((this.width - grid[0].length) / 2);
     const first_tile_odd = !!(x % 2);
-    g_next_block_view.draw(grid, first_tile_odd, {});
+    this._next_block_view.draw(grid, first_tile_odd, {});
   },
 };
 
