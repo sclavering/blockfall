@@ -311,7 +311,7 @@ Games.base = {
     this._update_grid_view(top, btm);
     this.update_score_and_level(num_lines_removes, block_dropped);
     if(this.next_block()) this._start_timer();
-    else end_game()
+    else end_game();
   },
 
   next_block: function() {
@@ -359,7 +359,7 @@ Games.base = {
   },
 
   _falling_block_can_move_by: function(dx, dy) {
-    return this.can_add(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy)
+    return this.can_add(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy);
   },
 
   // note: block.length is the number of states this block has
