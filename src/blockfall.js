@@ -16,6 +16,8 @@ const ui = {
 
 
 var gGame = null;
+var g_grid_view = null;
+var g_falling_block_view = null;
 
 // Details of the most recent game (which might now be over), stored so the next game can be the same type.
 var gWidth = 0;
@@ -91,8 +93,8 @@ window.onload = function onLoad() {
   for(let i in ui) ui[i] = document.getElementById(ui[i]);
 
   init_tilesets();
-  GridView.init();
-  FallingBlockView.init();
+  g_grid_view = new GridView(ui.grid);
+  g_falling_block_view = new GridView(ui.fallingBlock);
 
   tileShapeChanged("sqr", [1]);
 };
@@ -175,17 +177,6 @@ function doRotateAntiClockwise(ev) {
 };
 
 
-function FallingBlock(block) {
-  this.states = block;
-  this.state = 0;
-  const grid = this.grid = block[0];
-  this.height = grid.length;
-  this.width = grid[0].length;
-  this.left = Math.floor((gGame.width - this.width) / 2);
-  this.top = 0;
-};
-
-
 function newGameObj(width, height, level, shape, blockSetNumbers) {
   const game = { __proto__: Games[shape] };
   game.is_paused = false;
@@ -219,8 +210,13 @@ Games.base = {
   lines: 0,
   level: 1,
   grid: null, // y-x indexed
-  fallingBlock: null,
   _nextBlock: null,
+
+  _falling_block_states: null,
+  _falling_block_state: null,
+  _falling_block_grid: null,
+  _falling_block_x: null,
+  _falling_block_y: null,
 
   _delay: null,
   _interval: null,
@@ -229,10 +225,10 @@ Games.base = {
     ui.level.textContent = this.level;
     ui.lines.textContent = this.lines;
     ui.score.textContent = this.score;
-    GridView.setSize(this.width, this.height);
+    g_grid_view.resize(this.width, this.height);
     this._delay = 1000;
     for(let i = 1; i < this.startingLevel; ++i) this._reduce_delay();
-    GridView.update(0, this.height);
+    this._update_grid_view(0, this.height);
     this._nextBlock = this._get_new_block();
     this.nextBlock();
     this._bound_timedMoveDown = () => this.timedMoveDown();
@@ -295,32 +291,37 @@ Games.base = {
   blockReachedBottom: function(blockDropped) {
     this._stop_timer();
 
-    const block = this.fallingBlock;
-    const bx = block.left, by = block.top, bw = block.width, bh = block.height;
-    const bgrid = block.grid, grid = this.grid;
-    for(let yi = 0, yj = by; yi != bh; ++yi, ++yj) {
-      for(let xi = 0, xj = bx; xi != bw; ++xi, ++xj) {
-        let val = bgrid[yi][xi];
-        if(val) grid[yj][xj] = val;
+    const x0 = this._falling_block_x;
+    const y0 = this._falling_block_y;
+    const fgrid = this._falling_block_grid;
+    for(let y = 0; y !== fgrid.length; ++y) {
+      for(let x = 0; x !== fgrid[y].length; ++x) {
+        let val = fgrid[y][x];
+        if(val) this.grid[y0 + y][x0 + x] = val;
       }
     }
 
-    let top = block.top ? block.top - 1 : 0;
-    let btm = block.top + block.height;
+    let top = this._falling_block_y ? this._falling_block_y - 1 : 0;
+    let btm = this._falling_block_y + this._falling_block_grid.length;
     if(btm > this.height) btm = this.height;
     const numLinesRemoves = this.removeCompleteLines(top, btm);
     if(numLinesRemoves) top = 0; // everything's moved down
-    GridView.update(top, btm);
+    this._update_grid_view(top, btm);
     this.updateScoreAndLevel(numLinesRemoves, blockDropped);
     if(this.nextBlock()) this._start_timer();
     else endGame()
   },
 
   nextBlock: function() {
-    this.fallingBlock = new FallingBlock(this._nextBlock);
-    if(!this.fallingBlockFitsAt(0,0)) return false;
+    const block = this._falling_block_states = this._nextBlock;
+    this._falling_block_state = 0;
+    const grid = this._falling_block_grid = block[0];
+    this._falling_block_x = Math.floor((this.width - grid[0].length) / 2);
+    this._falling_block_y = 0;
+
+    if(!this._falling_block_can_move_by(0, 0)) return false;
     this._nextBlock = this._get_new_block();
-    FallingBlockView.update();
+    this._redraw_falling_block();
     return true;
   },
 
@@ -354,34 +355,29 @@ Games.base = {
     return true;
   },
 
-  // fallingBlock fits into gird at given offset from current position
-  fallingBlockFitsAt: function(dx, dy) {
-    const f = this.fallingBlock;
-    return this.canAdd(f.grid, f.left + dx, f.top + dy)
+  _falling_block_can_move_by: function(dx, dy) {
+    return this.canAdd(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy)
   },
 
   // note: block.length is the number of states this block has
   rotateFallingBlockClockwise: function() {
-    const f = this.fallingBlock;
-    let s = f.state;
-    if(++s == f.states.length) s = 0;
+    let s = this._falling_block_state + 1;
+    if(s === this._falling_block_states.length) s = 0;
     this._maybeRotateFallingBlock(s);
   },
 
   rotateFallingBlockAnticlockwise: function() {
-    const f = this.fallingBlock;
-    let s = f.state;
-    if(s-- == 0) s += f.states.length;
+    let s = this._falling_block_state - 1;
+    if(s === -1) s += this._falling_block_states.length;
     this._maybeRotateFallingBlock(s);
   },
 
   _maybeRotateFallingBlock: function(newstate) {
-    const f = this.fallingBlock;
-    const newgrid = f.states[newstate];
-    if(!this.canAdd(newgrid, f.left, f.top)) return;
-    f.state = newstate;
-    f.grid = newgrid;
-    FallingBlockView.update();
+    const newgrid = this._falling_block_states[newstate];
+    if(!this.canAdd(newgrid, this._falling_block_x, this._falling_block_y)) return;
+    this._falling_block_state = newstate;
+    this._falling_block_grid = newgrid;
+    this._redraw_falling_block();
   },
 
   dropFallingBlock: function() {
@@ -395,16 +391,33 @@ Games.base = {
 
   moveFallingBlockDown: function() {
     if(!this._moveFallingBlockDown()) return false;
-    FallingBlockView.move();
+    this._reposition_falling_block_view();
     return true;
   },
 
   _moveFallingBlock: function(dx, dy) {
-    const f = this.fallingBlock;
-    if(!this.fallingBlockFitsAt(dx, dy)) return;
-    f.left += dx;
-    f.top += dy;
-    FallingBlockView.move();
+    if(!this._falling_block_can_move_by(dx, dy)) return;
+    this._falling_block_x += dx;
+    this._falling_block_y += dy;
+    this._reposition_falling_block_view();
+  },
+
+  _update_grid_view: function(top, bottom) {
+    const firstTileOdd = top % 2;
+    g_grid_view.draw(this.grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
+  },
+
+  _reposition_falling_block_view: function() {
+    g_falling_block_view.position(this._falling_block_x, this._falling_block_y);
+  },
+
+  _redraw_falling_block: function() {
+    const grid = this._falling_block_grid, x = this._falling_block_x, y = this._falling_block_y;
+    g_falling_block_view.resize(grid[0].length, grid.length);
+    g_falling_block_view.position(x, y);
+    // note: conceptually this is ((x % 2) XOR (y % 2)), but since x can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
+    const firstTileOdd = !!((x + y) % 2);
+    g_falling_block_view.draw(grid, firstTileOdd, {});
   },
 };
 
@@ -417,8 +430,8 @@ Games.sqr = {
 
   // must return a boolean for the timed drop function
   _moveFallingBlockDown: function() {
-    if(!this.fallingBlockFitsAt(0, 1)) return false;
-    this.fallingBlock.top += 1;
+    if(!this._falling_block_can_move_by(0, 1)) return false;
+    this._falling_block_y += 1;
     return true;
   },
 
@@ -441,8 +454,8 @@ Games.hex = {
   moveFallingBlockRight: function() { this._moveFallingBlock(1, 1); },
 
   _moveFallingBlockDown: function() {
-    if(!this.fallingBlockFitsAt(0, 2)) return false;
-    this.fallingBlock.top += 2;
+    if(!this._falling_block_can_move_by(0, 2)) return false;
+    this._falling_block_y += 2;
     return true;
   },
 
@@ -488,7 +501,7 @@ Games.tri = {
     let num = 0;
     for(let y = bottom; y != top; --y) {
       if(!this._lineIsFull(y) || !this._lineIsFull(y+1)) continue;
-      this._remove_row(y)
+      this._remove_row(y);
       this._remove_row(y + 1);
       ++num;
     }
@@ -497,8 +510,8 @@ Games.tri = {
 
   _moveFallingBlockDown: function() {
     // don't allow tiles to drop through ones facing the other way
-    if(!this.fallingBlockFitsAt(0, 1) || !this.fallingBlockFitsAt(0, 2)) return false;
-    this.fallingBlock.top += 2;
+    if(!this._falling_block_can_move_by(0, 1) || !this._falling_block_can_move_by(0, 2)) return false;
+    this._falling_block_y += 2;
     return true;
   },
 };
@@ -508,54 +521,4 @@ function random_element(xs) {
   let r;
   do { r = Math.random(); } while(r === 1.0);
   return xs[Math.floor(r * xs.length)];
-};
-
-
-const GridView = {
-  init: function() {
-    this._canvas = ui.grid;
-    this._context = this._canvas.getContext("2d");
-    this._container = ui.gridContainer;
-  },
-
-  // set size to a given number of *tiles*
-  setSize: function(width, height) {
-    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-    const w = this._canvas.width = width * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
-    const h = this._canvas.height = height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
-    this._container.style.width = w + "px";
-    this._container.style.height = h + "px";
-  },
-
-  update: function(top, bottom) {
-    let firstTileOdd = top % 2;
-    draw_tiles(this._context, gGame.grid.slice(top, bottom), firstTileOdd, { y: top, draw_empties: true });
-  },
-};
-
-
-const FallingBlockView = {
-  init: function() {
-    this._canvas = ui.fallingBlock;
-    this._context = this._canvas.getContext("2d");
-  },
-
-  update: function() {
-    const fallingBlock = gGame.fallingBlock;
-    // position canvas
-    this._canvas.style.top = (fallingBlock.top * g_tileset.yOffset) + "px";
-    this._canvas.style.left = (fallingBlock.left * g_tileset.xOffset) + "px";
-    this._canvas.width = fallingBlock.width * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
-    this._canvas.height = fallingBlock.height * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
-    // draw the block
-    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-    // note: conceptually this is ((.left % 2) XOR (.top % 2)), but since .left can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
-    let firstTileOdd = !!((fallingBlock.left + fallingBlock.top) % 2);
-    draw_tiles(this._context, fallingBlock.grid, firstTileOdd, {});
-  },
-
-  move: function() {
-    this._canvas.style.top = (gGame.fallingBlock.top * g_tileset.yOffset) + "px";
-    this._canvas.style.left = (gGame.fallingBlock.left * g_tileset.xOffset) + "px";
-  },
 };

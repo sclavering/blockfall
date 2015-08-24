@@ -79,4 +79,26 @@ function draw_tiles(context, grid, firstTileOdd, flags) {
       context.drawImage(g_tileset.image, 0, tile_top, g_tileset.width, g_tileset.height, dx, dy, g_tileset.width, g_tileset.height);
     }
   }
-}
+};
+
+
+function GridView(canvas) {
+  this._canvas = canvas;
+  this._context = this._canvas.getContext("2d");
+};
+GridView.prototype = {
+  resize: function(w, h) {
+    this._canvas.width = w * g_tileset.xOffset - g_tileset.xOffset + g_tileset.width;
+    this._canvas.height = h * g_tileset.yOffset - g_tileset.yOffset + g_tileset.height;
+    this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+  },
+
+  position: function(x, y) {
+    this._canvas.style.left = (x * g_tileset.xOffset) + "px";
+    this._canvas.style.top = (y * g_tileset.yOffset) + "px";
+  },
+
+  draw: function(grid, firstTileOdd, flags) {
+    draw_tiles(this._context, grid, firstTileOdd, flags);
+  },
+};
