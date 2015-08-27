@@ -16,6 +16,7 @@ const HEX_NUM_STYLES = 13;
 const HEX_WIDTH = 24;
 const HEX_HALF_HEIGHT = 10;
 const HEX_X_OFFSET = 19;
+const HEX_SLOPE_WIDTH = 5;
 
 const TRI_NUM_STYLES = 6;
 const TRI_WIDTH = 19;
@@ -43,43 +44,37 @@ const k_tilesets = {
 };
 
 function init_tilesets() {
-  const sqr_empty_tile = create_sqr_tile(["#333333", "black", "black"]);
+  const grid_colours = ["#333333", "black", "black"];
+
   const sqr_filled_tiles = k_gradient_colours.map(create_sqr_tile);
-  const sqr_tile_tops = [];
-  for(let i = 0; i <= SQR_NUM_STYLES; ++i) sqr_tile_tops[i] = 0;
-  let sqr_tile_images = [].concat(sqr_empty_tile, sqr_filled_tiles);
+  let sqr_tile_images = [create_sqr_tile(grid_colours)];
   // Pretty sure blocks.js assumes a certain number of styles are available, so make sure they are.
   while(sqr_tile_images.length < SQR_NUM_STYLES) sqr_tile_images = sqr_tile_images.concat(sqr_filled_tiles);
   k_tilesets.sqr.odd_tile_images = k_tilesets.sqr.even_tile_images = sqr_tile_images;
-  k_tilesets.sqr.odd_tile_tops = k_tilesets.sqr.even_tile_tops = sqr_tile_tops;
 
-  const hex_odd_tile_tops = [];
-  const hex_even_tile_tops = [];
-  const hex_tile_images = [];
-  for(let i = 0; i <= HEX_NUM_STYLES; ++i) {
-    // Note: the +1 is because there's an unused completely-black (no gridlines) version of the empty hex
-    let h = hex_even_tile_tops[i] = (i + 1) * 2 * HEX_HALF_HEIGHT;
-    hex_odd_tile_tops[i] = h + HEX_HALF_HEIGHT;
-    hex_tile_images[i] = ui.hex_tiles;
+  const hex_filled_tiles = k_gradient_colours.map(create_hex_tile_pair);
+  const hex_even_filled_tiles = hex_filled_tiles.map(x => x[0]);
+  const hex_odd_filled_tiles = hex_filled_tiles.map(x => x[1]);
+  const hex_empty_tiles = create_hex_tile_pair(grid_colours);
+  let hex_even_tiles = [hex_empty_tiles[0]];
+  let hex_odd_tiles = [hex_empty_tiles[1]];
+  while(hex_odd_tiles.length < HEX_NUM_STYLES) {
+    hex_odd_tiles = hex_odd_tiles.concat(hex_odd_filled_tiles);
+    hex_even_tiles = hex_even_tiles.concat(hex_even_filled_tiles);
   }
-  k_tilesets.hex.odd_tile_tops = hex_odd_tile_tops;
-  k_tilesets.hex.even_tile_tops = hex_even_tile_tops;
-  k_tilesets.hex.odd_tile_images = hex_tile_images;
-  k_tilesets.hex.even_tile_images = hex_tile_images;
+  k_tilesets.hex.odd_tile_images = hex_odd_tiles;
+  k_tilesets.hex.even_tile_images = hex_even_tiles;
 
-  const tri_odd_tile_tops = [];
-  const tri_even_tile_tops = [];
-  const tri_tile_images = [];
-  for(let i = 0; i <= TRI_NUM_STYLES; ++i) {
-    // Note: the +1 is because there's an unused completely-black (no gridlines) version of the empty triangle
-    let h = tri_even_tile_tops[i] = (i + 1) * 4 * TRI_HALF_HEIGHT;
-    tri_odd_tile_tops[i] = h + 2 * TRI_HALF_HEIGHT;
-    tri_tile_images[i] = ui.tri_tiles;
+  const tri_filled_left_tiles = k_gradient_colours.map(create_tri_left_tile);
+  const tri_filled_right_tiles = k_gradient_colours.map(create_tri_right_tile);
+  let tri_left_tiles = [create_tri_left_tile(grid_colours)];
+  let tri_right_tiles = [create_tri_right_tile(grid_colours)];
+  while(tri_left_tiles.length < TRI_NUM_STYLES) {
+    tri_left_tiles = tri_left_tiles.concat(tri_filled_left_tiles);
+    tri_right_tiles = tri_right_tiles.concat(tri_filled_right_tiles);
   }
-  k_tilesets.tri.odd_tile_tops = tri_odd_tile_tops;
-  k_tilesets.tri.even_tile_tops = tri_even_tile_tops;
-  k_tilesets.tri.odd_tile_images = tri_tile_images;
-  k_tilesets.tri.even_tile_images = tri_tile_images;
+  k_tilesets.tri.even_tile_images = tri_left_tiles;
+  k_tilesets.tri.odd_tile_images = tri_right_tiles;
 };
 
 
@@ -108,26 +103,84 @@ GridView.prototype = {
       for(let x = 0, tile_odd = first_tile_odd; x !== w; ++x, tile_odd = !tile_odd) {
         let val = grid[y][x];
         if(!val && !draw_empties) continue;
-        let tile_top = (tile_odd ? this._tileset.odd_tile_tops : this._tileset.even_tile_tops)[val];
         let tile_image = (tile_odd ? this._tileset.odd_tile_images : this._tileset.even_tile_images)[val];
         let dx = x * this._tileset.x_offset, dy = (y + y0) * this._tileset.y_offset;
-        this._context.drawImage(tile_image, 0, tile_top, this._tileset.width, this._tileset.height, dx, dy, this._tileset.width, this._tileset.height);
+        this._context.drawImage(tile_image, 0, 0, this._tileset.width, this._tileset.height, dx, dy, this._tileset.width, this._tileset.height);
       }
     }
   },
 };
 
 
-function create_sqr_tile(colours) {
+function create_tile(colours, width, height, path_callback) {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = SQR_SIZE;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d");
-  const gradient = ctx.createLinearGradient(0, 0, 0, SQR_SIZE);
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
   gradient.addColorStop(0, colours[1]);
   gradient.addColorStop(1, colours[2]);
+  path_callback(ctx);
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, SQR_SIZE, SQR_SIZE);
+  ctx.fill();
   ctx.strokeStyle = colours[0];
-  ctx.strokeRect(0.5, 0.5, SQR_SIZE - 1, SQR_SIZE - 1);
+  ctx.stroke();
   return canvas;
+};
+
+
+function create_sqr_tile(colours) {
+  return create_tile(colours, SQR_SIZE, SQR_SIZE, ctx => {
+    ctx.beginPath();
+    ctx.moveTo(0.5, 0.5);
+    ctx.lineTo(SQR_SIZE - 0.5, 0.5);
+    ctx.lineTo(SQR_SIZE - 0.5, SQR_SIZE - 0.5);
+    ctx.lineTo(0.5, SQR_SIZE - 0.5);
+    ctx.closePath();
+  });
+};
+
+
+function create_hex_tile_pair(colours) {
+  const tmp = create_tile(colours, HEX_WIDTH, HEX_HALF_HEIGHT * 2, ctx => {
+    ctx.beginPath();
+    ctx.moveTo(0.5, HEX_HALF_HEIGHT - 0.5);
+    ctx.lineTo(HEX_SLOPE_WIDTH + 0.5, 0.5);
+    ctx.lineTo(HEX_WIDTH - HEX_SLOPE_WIDTH - 0.5, 0.5);
+    ctx.lineTo(HEX_WIDTH - 0.5, HEX_HALF_HEIGHT - 0.5);
+    ctx.lineTo(HEX_WIDTH - 0.5, HEX_HALF_HEIGHT + 0.5);
+    ctx.lineTo(HEX_WIDTH - HEX_SLOPE_WIDTH - 0.5, 2 * HEX_HALF_HEIGHT - 0.5);
+    ctx.lineTo(HEX_SLOPE_WIDTH + 0.5, 2 * HEX_HALF_HEIGHT - 0.5);
+    ctx.lineTo(0.5, HEX_HALF_HEIGHT + 0.5);
+    ctx.lineTo(0.5, HEX_HALF_HEIGHT - 0.5);
+  });
+  const top = document.createElement("canvas");
+  const btm = document.createElement("canvas");
+  top.width = btm.width = HEX_WIDTH;
+  top.height = btm.height = HEX_HALF_HEIGHT;
+  top.getContext("2d").drawImage(tmp, 0, 0, HEX_WIDTH, HEX_HALF_HEIGHT, 0, 0, HEX_WIDTH, HEX_HALF_HEIGHT);
+  btm.getContext("2d").drawImage(tmp, 0, HEX_HALF_HEIGHT, HEX_WIDTH, HEX_HALF_HEIGHT, 0, 0, HEX_WIDTH, HEX_HALF_HEIGHT);
+  return [top, btm];
+};
+
+
+function create_tri_left_tile(colours) {
+  return create_tile(colours, TRI_WIDTH, TRI_HALF_HEIGHT * 2, ctx => {
+    ctx.beginPath();
+    ctx.moveTo(0.5, TRI_HALF_HEIGHT);
+    ctx.lineTo(TRI_WIDTH - 0.5, 0.5);
+    ctx.lineTo(TRI_WIDTH - 0.5, TRI_HALF_HEIGHT * 2 - 0.5);
+    ctx.closePath();
+  });
+};
+
+
+function create_tri_right_tile(colours) {
+  return create_tile(colours, TRI_WIDTH, TRI_HALF_HEIGHT * 2, ctx => {
+    ctx.beginPath();
+    ctx.moveTo(TRI_WIDTH - 0.5, TRI_HALF_HEIGHT);
+    ctx.lineTo(0.5, 0.5);
+    ctx.lineTo(0.5, TRI_HALF_HEIGHT * 2 - 0.5);
+    ctx.closePath();
+  });
 };
