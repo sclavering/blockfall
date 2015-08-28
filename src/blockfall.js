@@ -62,18 +62,18 @@ function do_pick_game_type(ev) {
   const form = ev.target.form;
   let shape = null;
   for(let el of form.elements["shape"]) if(el.checked) { shape = el.value; break; }
-  const tiles = [];
-  for(let el of form.elements["tiles-" + shape]) if(el.checked) tiles.push(+el.value);
+  const sets = [];
+  for(let el of form.elements["tiles-" + shape]) if(el.checked) sets.push(el.value);
 
   // xxx use this!
   let level = +form.elements["startinglevel"].value;
 
-  tile_shape_changed(shape, tiles);
+  tile_shape_changed(shape, sets);
 }
 
-function tile_shape_changed(shape, sizes) {
+function tile_shape_changed(shape, sets) {
   g_tile_shape = shape;
-  g_block_sets_for_shape = sizes;
+  g_block_sets_for_shape = sets;
   // xxx hex and tri games make assumptions about their sizes.
   g_width = 10;
   g_height = { sqr: 25, hex: 50, tri: 51 }[shape];
@@ -89,7 +89,7 @@ window.onblur = function() {
 window.onload = function() {
   for(let i in ui) ui[i] = document.getElementById(ui[i]);
   init_tilesets();
-  tile_shape_changed("sqr", [1]);
+  tile_shape_changed("sqr", ["std"]);
 };
 
 
@@ -183,7 +183,7 @@ Games.base = {
   _delay: null,
   _interval: null,
 
-  init: function(width, height, level, shape, block_set_numbers) {
+  init: function(width, height, level, shape, block_set_keys) {
     const tileset = k_tilesets[shape];
     this._main_view = new GridView(tileset, ui.grid);
     this._falling_block_view = new GridView(tileset, ui.falling_block);
@@ -203,7 +203,7 @@ Games.base = {
       for(let x = 0; x != width; x++) line[x] = 0;
     }
 
-    const sets = get_block_sets(shape, block_set_numbers);
+    const sets = get_block_sets(shape, block_set_keys);
     this._blocks = this._block_sets = null;
     if(sets.length > 1) this._block_sets = sets;
     else this._blocks = sets[0];

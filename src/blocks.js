@@ -4,8 +4,9 @@
 
 var get_block_sets = (function() {
 
-
 var blocks = {};
+
+
 
 // Square blocks ==========================================
 
@@ -15,7 +16,6 @@ const sN = 0, sNE = 1, sE = 2, sSE = 3, sS = 4, sSW = 5, sW = 6, sNW = 7;
 var sqrLastBlockNumber = 25; // use the nice colours for the 4-tile blocks
 // update to match number of available sqr tile images
 const sqrMaxBlockNumber = 31;
-
 
 function createSqrBlock(size, prepath, path, numstates) {
   // use the square in the middle, or above and to the left of the middle
@@ -65,19 +65,18 @@ function createSqrBlockState(size, x, y, prepath, path, blockNum) {
   return state;
 }
 
-
-blocks.sqr = [
-  [ // 3-tile blocks.  diagonal joins allowed
+blocks.sqr = {
+  // 3-tile blocks.  diagonal joins allowed
+  small: [
     createSqrBlock(3, [sW], [sE,sE], 2),
     createSqrBlock(3, [sS], [sN,sE]),
-
     createSqrBlock(3, [sW], [sSE,sNE]),
     createSqrBlock(3, [sW], [sE,sSE]),
     createSqrBlock(3, [sSW], [sNE,sE]),
     createSqrBlock(3, [sSW], [sNE,sNE], 2)
   ],
-
-  [ // 4-tile blocks (standard)
+  // 4-tile blocks
+  std: [
     // l
     createSqrBlock(3, [sE], [sW,sW,sS]),
     // f
@@ -86,8 +85,6 @@ blocks.sqr = [
     createSqrBlock(3, [], [sS,sE,sN], 1),
     // t
     createSqrBlock(3, [], [sW,sE,sS,sN,sE]),
-    // XXX: the rotations for s+z don't match the tetris standard any more
-    // http://www.colinfahey.com/2003jan_tetris/tetris_standard_specifications.htm
     // s
     createSqrBlock(3, [sE], [sW,sS,sW], 2),
     // z
@@ -95,8 +92,8 @@ blocks.sqr = [
     // i
     createSqrBlock(4, [sW], [sE,sE,sE], 2),
   ],
-
-  [ // 5-tile blocks
+  // 5-tile blocks
+  large: [
     // f
     createSqrBlock(5, [sE,sS], [sN,sW,sW,sW]),
     createSqrBlock(5, [sW,sS], [sN,sE,sE,sE]),
@@ -127,20 +124,19 @@ blocks.sqr = [
     // 4
     createSqrBlock(5, [sS], [sN,sE,sW,sW,sN]),
     createSqrBlock(5, [sS], [sN,sW,sE,sE,sN]),
-  ]
-];
-
-
+  ],
+};
 
 
 
 // Hexagonal blocks =======================================
 
+// Note: Each hexagon is represented as two half-hexagons (top and bottom) because it's much easier to work with.
+
 // make blocks a different colour
 var hexLastBlockNumber = 2;
 // update to match number of available hex tile images
 var hexMaxBlockNumber = 13;
-
 
 // direction constants for use with function below.
 // North, North East, South East etc.
@@ -206,19 +202,15 @@ function createHexBlockState(width, height, x, y, prepath, path, blockNum) {
   return state;
 }
 
-
-
-
-// Note: Each hexagon is represented as two half-hexagons (top and bottom)
-// because it makes manipulation of the falling block much easier
-
-blocks.hex = [
-  [ // 3-tile blocks
+blocks.hex = {
+  // 3-tile blocks
+  small: [
     createHexBlock(3, [], [hNE,hS]),
     createHexBlock(3, [hSW], [hNE,hNE]),
     createHexBlock(3, [hSW], [hNE,hSE]),
   ],
-  [ // 4-tile blocks
+  // 4-tile blocks
+  std: [
     // o
     createHexBlock(3, [], [hSW,hSE,hNE]),
     // t
@@ -237,7 +229,8 @@ blocks.hex = [
     createHexBlock(5, [hSW], [hNE,hNE,hSE]),
     createHexBlock(5, [hSE], [hNW,hNW,hSW]),
   ],
-  [ // 5-tile blocks
+  // 5-tile blocks
+  large: [
     // D
     createHexBlock(3, [], [hNE,hS,hSW,hNW]),
     // x/H
@@ -287,9 +280,8 @@ blocks.hex = [
     // t
     createHexBlock(5, [hSE], [hN,hSW,hSW,hSW]),
     createHexBlock(5, [hSW], [hN,hSE,hSE,hSE]),
-  ]
-];
-
+  ],
+};
 
 
 
@@ -301,7 +293,6 @@ const tNE = 0, tE = 1, tSE = 2, tSW = 3, tW = 4, tNW = 5;
 var triLastBlockNumber = 2;
 // update to match number of available triangular tile images
 var triMaxBlockNumber = 6;
-
 
 /*
 The block grid has an even width, and triangles in each column face
@@ -352,7 +343,6 @@ function createTriBlock(size, prepath, path, numstates) {
 }
 
 function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
-//  alert("state, starting at ("+x+","+y+"), prepath="+prepath+", path="+path);
   var state = new Array(height);
   for(var i = 0; i < height; i++) {
     state[i] = new Array(width);
@@ -379,9 +369,9 @@ function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
   return state;
 }
 
-
-blocks.tri = [
-  [ // 1, 2 or 3 tiles
+blocks.tri = {
+  // 1–5 tiles
+  std: [
     // single triangle
     createTriBlock(2, [], []),
     // pair
@@ -408,8 +398,8 @@ blocks.tri = [
     createTriBlock(4, [tNW], [tSE,tSW,tNE,tE,tSE]),
     createTriBlock(4, [tSW], [tNE,tE,tNE,tSW,tSE]),
   ],
-
-  [ // 6-tile blocks
+  // 6-tile blocks
+  large: [
     // hex
     createTriBlock(4, [], [tE,tSE,tSE,tW,tNE], 1),
     // h/x (2 half hexes)
@@ -440,13 +430,13 @@ blocks.tri = [
     // h
     createTriBlock(6, [tE], [tW,tSW,tSE,tNW,tW,tNW]),
     createTriBlock(6, [], [tE,tSE,tSW,tNE,tE,tNE]),
-  ]
-];
-
-
-return function get_block_sets(shape, sizes) {
-  return [for(sz of sizes) blocks[shape][sz]];
+  ],
 };
 
+
+
+return function get_block_sets(shape, set_names) {
+  return [for(k of set_names) blocks[shape][k]];
+};
 
 })();
