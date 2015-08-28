@@ -35,6 +35,18 @@ function new_block_state(width, height, x, y, xmoves, ymoves, prepath, path, blo
   return state;
 }
 
+function create_block_rotations(num_states, pre_path, path, direction_rotator, state_func) {
+  const block = new Array(num_states);
+  let s = 0;
+  while(true) {
+    block[s] = state_func(s, pre_path, path);
+    if(++s === num_states) break;
+    pre_path = pre_path.map(direction_rotator);
+    path = path.map(direction_rotator);
+  }
+  return block;
+}
+
 
 
 // Square blocks ==========================================
@@ -47,26 +59,16 @@ const sqr_ymoves = [-1, -1, 0, 1, 1, 1, 0, -1];
 
 let sqr_prev_number = 1;
 
-function createSqrBlock(size, prepath, path, numstates) {
+function createSqrBlock(size, pre_path, path, num_states) {
   // use the square in the middle, or above and to the left of the middle
   const origin = Math.ceil(size / 2) - 1;
-  if(!numstates) numstates = 4;
 
-  const blockNum = sqr_prev_number++;
+  const block_num = sqr_prev_number++;
   if(sqr_prev_number === max_block_number) sqr_prev_number = 1;
 
-  const block = new Array(numstates);
-
-  let i = 0;
-  while(true) {
-    block[i] = new_block_state(size, size, origin, origin, sqr_xmoves, sqr_ymoves, prepath, path, blockNum, false);
-    if(++i === numstates) break;
-    // rotate the paths
-    for(let j = 0; j != prepath.length; ++j) prepath[j] = (prepath[j] + 2) % 8;
-    for(let k = 0; k != path.length; ++k) path[k] = (path[k] + 2) % 8;
-  }
-
-  return block;
+  return create_block_rotations(num_states || 4, pre_path, path, dir => (dir + 2) % 8, (s, pre_path, path) => {
+    return new_block_state(size, size, origin, origin, sqr_xmoves, sqr_ymoves, pre_path, path, block_num, false);
+  });
 }
 
 blocks.sqr = {
@@ -153,30 +155,19 @@ hex path is the list of directions to move from there, colouring each hex entere
 the path will be rotated to generate all 6 states for the block
 (some blocks don't need all six, but it's not a big deal)
 */
-function createHexBlock(size, prepath, path) {
+function createHexBlock(size, pre_path, path) {
   // these are weird because of representation being based on half-hexes
-  const x = Math.floor(size / 2);
-  const y = Math.floor(size / 2) * 2;
+  const x0 = Math.floor(size / 2);
+  const y0 = Math.floor(size / 2) * 2;
   const width = size;
   const height = size * 2 + 1;
 
-  const blockNum = hex_prev_number++;
+  const block_num = hex_prev_number++;
   if(hex_prev_number === max_block_number) hex_prev_number = 1;
 
-  const block = new Array(6);
-  block[0] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
-  for(let i = 1; i < 6; ++i) {
-    // rotate the paths
-    for(let j = 0; j < prepath.length; ++j) prepath[j] = (prepath[j] + 1) % 6;
-    for(let k = 0; k < path.length; ++k) path[k] = (path[k] + 1) % 6;
-    block[i] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
-  }
-
-  return block;
-}
-
-function createHexBlockState(width, height, x, y, prepath, path, blockNum, for_hex) {
-  return new_block_state(width, height, x, y, hex_xmoves, hex_ymoves, prepath, path, blockNum, true);
+  return create_block_rotations(6, pre_path, path, dir => (dir + 1) % 6, (s, pre_path, path) => {
+    return new_block_state(width, height, x0, y0, hex_xmoves, hex_ymoves, pre_path, path, block_num, true);
+  });
 }
 
 blocks.hex = {
@@ -289,14 +280,13 @@ the biggest possible hexagon within the grid is what the block will
 rotate within, and to get the hexagon to be the specified width the
 height must be 1.5 times that width
 */
-function createTriBlock(size, prepath, path, numstates) {
-  const x = size / 2 - 1;
-  const y = (size % 4 === 0) ? x + 1 : x;
-  if(!numstates) numstates = 6;
+function createTriBlock(size, pre_path, path, num_states) {
+  const x0 = size / 2 - 1;
+  const y0 = (size % 4 === 0) ? x0 + 1 : x0;
   const width = size;
   const height = size * 1.5;
 
-  const blockNum = tri_prev_number++;
+  const block_num = tri_prev_number++;
   if(tri_prev_number === max_block_number) tri_prev_number = 1;
 
   // triangular blocks rotate about a vertex, not about a tile.
@@ -304,23 +294,9 @@ function createTriBlock(size, prepath, path, numstates) {
   const xs = [0, 1, 1, 1, 0, 0];
   const ys = [0, 0, 1, 2, 2, 1];
 
-  const block = new Array(numstates);
-  block[0] = createTriBlockState(width, height, x, y, prepath, path, blockNum);
-  for(let i = 1; i < numstates; ++i) {
-    // rotate the paths
-    for(let j = 0; j < prepath.length; ++j) prepath[j] = (prepath[j] + 1) % 6;
-    for(let k = 0; k < path.length; ++k) path[k] = (path[k] + 1) % 6;
-    // get start coords
-    let x2 = x + xs[i];
-    let y2 = y + ys[i];
-    block[i] = createTriBlockState(width, height, x2, y2, prepath, path, blockNum);
-  }
-
-  return block;
-}
-
-function createTriBlockState(width, height, x, y, prepath, path, blockNum) {
-  return new_block_state(width, height, x, y, tri_xmoves, tri_ymoves, prepath, path, blockNum, false);
+  return create_block_rotations(num_states || 6, pre_path, path, dir => (dir + 1) % 6, (s, pre_path, path) => {
+    return new_block_state(width, height, x0 + xs[s], y0 + ys[s], tri_xmoves, tri_ymoves, pre_path, path, block_num, false);
+  });
 }
 
 blocks.tri = {
