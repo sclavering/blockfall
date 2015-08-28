@@ -69,8 +69,10 @@ canvas {
   font-size: 12px;
 }
 
-#game-type-picker div {
-  margin-left: 2em;
+#game-type-picker span {
+  display: block;
+  font-size: 0.8em;
+  margin: 0.5em 0 1em 2.5em;
 }
 
 #game-type-picker label {

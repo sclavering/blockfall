@@ -57,10 +57,19 @@ function do_pick_game_type(ev) {
   do_cancel_game_type_picker();
 
   const form = ev.target.form;
-  let shape = null;
-  for(let el of form.elements["shape"]) if(el.checked) { shape = el.value; break; }
-  const sets = [];
-  for(let el of form.elements["tiles-" + shape]) if(el.checked) sets.push(el.value);
+
+  // Note: this assumes the browser implements RadioNodeList
+  const gametype = form.elements["gametype"].value;
+  const gametype_map = {
+    // The duplicates are deliberate, and increase the probability of those blocks being chosen.
+    "sqr-std": ["sqr", ["std"]],
+    "sqr-ex": ["sqr", ["small", "std", "std", "large"]],
+    "hex-std": ["hex", ["std"]],
+    "hex-ex": ["hex", ["small", "std", "std", "large"]],
+    "tri-std": ["tri", ["std"]],
+    "tri-ex": ["tri", ["std", "std", "std", "large"]],
+  };
+  const [shape, sets] = gametype_map[gametype];
 
   // xxx use this!
   let level = +form.elements["startinglevel"].value;

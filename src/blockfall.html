@@ -37,24 +37,14 @@
     <div id="msg-gameover" class="message-wrapper"><div class="message">Game Over</div></div>
 
     <form id="game-type-picker">
-      <label><input type="radio" name="shape" value="sqr" checked> Square blocks</label>
-      <div>
-        <label><input type="checkbox" name="tiles-sqr" value="small"> Small blocks (3 tiles)</label>
-        <label><input type="checkbox" name="tiles-sqr" value="std" checked> Normal blocks (4 tiles)</label>
-        <label><input type="checkbox" name="tiles-sqr" value="large"> Large blocks (5 tiles)</label>
-      </div>
-      <label><input type="radio" name="shape" value="hex"> Hexagonal blocks</label>
-      <div>
-        <label><input type="checkbox" name="tiles-hex" value="small"> Small blocks (3 tiles)</label>
-        <label><input type="checkbox" name="tiles-hex" value="std" checked> Normal blocks (4 tiles)</label>
-        <label><input type="checkbox" name="tiles-hex" value="large"> Large blocks (5 tiles)</label>
-      </div>
-      <label><input type="radio" name="shape" value="tri"> Triangular blocks</label>
-      <div>
-        <label><input type="checkbox" name="tiles-tri" value="std" checked> Normal blocks (1 to 5 tiles)</label>
-        <label><input type="checkbox" name="tiles-tri" value="large"> Large blocks (6 tiles)</label>
-      </div>
-      <label>Starting level: <input type="number" name="startinglevel" value="1"></label>
+      <p>Game Type:</p>
+      <label><input type="radio" name="gametype" value="sqr-std" checked> Square <span>(all blocks have four tiles)</span></label>
+      <label><input type="radio" name="gametype" value="sqr-ex"> Extended Square <span>(blocks have three to five tiles)</span></label>
+      <label><input type="radio" name="gametype" value="hex-std"> Hexagonal <span>(all blocks have four tiles)</span></label>
+      <label><input type="radio" name="gametype" value="hex-ex"> Extended Hexagonal <span>(blocks have three to five tiles)</span></label>
+      <label><input type="radio" name="gametype" value="tri-std"> Triangular <span>(blocks have up to five tiles)</span></label>
+      <label><input type="radio" name="gametype" value="tri-ex"> Extended Triangular <span>(blocks have up to six tiles)</span></label>
+      <label>Starting level: <input type="number" name="startinglevel" value="1" style="width: 3em"></label>
       <p>
         <input type="button" onclick="do_cancel_game_type_picker()" value="Cancel">
         <input type="submit" onclick="do_pick_game_type(event)" value="Start Game">
