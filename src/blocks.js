@@ -4,6 +4,8 @@
 
 var get_block_sets = (function() {
 
+const max_block_number = k_tile_colours.length;
+
 var blocks = {};
 
 
@@ -13,17 +15,15 @@ var blocks = {};
 // direction consts.
 const sN = 0, sNE = 1, sE = 2, sSE = 3, sS = 4, sSW = 5, sW = 6, sNW = 7;
 
-var sqrLastBlockNumber = 25; // use the nice colours for the 4-tile blocks
-// update to match number of available sqr tile images
-const sqrMaxBlockNumber = 31;
+let sqr_prev_number = 1;
 
 function createSqrBlock(size, prepath, path, numstates) {
   // use the square in the middle, or above and to the left of the middle
   var origin = Math.ceil(size/2) - 1;
   if(!numstates) numstates = 4;
 
-  var blockNum = sqrLastBlockNumber++;
-  if(sqrLastBlockNumber==sqrMaxBlockNumber) sqrLastBlockNumber = 2;
+  var blockNum = sqr_prev_number++;
+  if(sqr_prev_number === max_block_number) sqr_prev_number = 1;
 
   var block = new Array(numstates);
 
@@ -133,10 +133,7 @@ blocks.sqr = {
 
 // Note: Each hexagon is represented as two half-hexagons (top and bottom) because it's much easier to work with.
 
-// make blocks a different colour
-var hexLastBlockNumber = 2;
-// update to match number of available hex tile images
-var hexMaxBlockNumber = 13;
+let hex_prev_number = 2;
 
 // direction constants for use with function below.
 // North, North East, South East etc.
@@ -159,8 +156,8 @@ function createHexBlock(size, prepath, path) {
   var width = size;
   var height = size * 2 + 1;
 
-  var blockNum = hexLastBlockNumber++;
-  if(hexLastBlockNumber==hexMaxBlockNumber) hexLastBlockNumber = 2;
+  var blockNum = hex_prev_number++;
+  if(hex_prev_number === max_block_number) hex_prev_number = 1;
 
   var block = new Array(6);
   block[0] = createHexBlockState(width, height, x, y, prepath, path, blockNum);
@@ -290,9 +287,7 @@ blocks.hex = {
 
 const tNE = 0, tE = 1, tSE = 2, tSW = 3, tW = 4, tNW = 5;
 
-var triLastBlockNumber = 2;
-// update to match number of available triangular tile images
-var triMaxBlockNumber = 6;
+var tri_prev_number = 1;
 
 /*
 The block grid has an even width, and triangles in each column face
@@ -319,8 +314,8 @@ function createTriBlock(size, prepath, path, numstates) {
   var width = size;
   var height = size*1.5;
 
-  var blockNum = triLastBlockNumber++;
-  if(triLastBlockNumber==triMaxBlockNumber) triLastBlockNumber = 2;
+  var blockNum = tri_prev_number++;
+  if(tri_prev_number === max_block_number) tri_prev_number = 1;
 
   // triangular blocks rotate about a vertex, not about a tile.
   // so we pass different x,y coords to each call to createTriBlockState

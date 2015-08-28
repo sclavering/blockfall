@@ -1,6 +1,9 @@
 // Code related to drawing tiles (i.e. squares, or half-hexes).
 
-const k_gradient_colours = [
+const k_tile_colours = [
+  // The colours for the special background-with-gridlines tile:
+  ["#333333", "black", "black"],
+  // Actual tiles:
   ["hsl( 41, 66%, 53%)", "hsl( 44, 99%, 72%)", "hsl( 38, 99%, 65%)"],
   ["hsl( 88, 48%, 51%)", "hsl( 85, 90%, 68%)", "hsl( 85, 69%, 61%)"],
   ["hsl( 50, 66%, 57%)", "hsl( 52, 99%, 74%)", "hsl( 47, 99%, 68%)"],
@@ -9,16 +12,13 @@ const k_gradient_colours = [
   ["hsl(306, 66%, 59%)", "hsl(309, 97%, 75%)", "hsl(303, 85%, 67%)"],
 ];
 
-const SQR_NUM_STYLES = 31;
 const SQR_SIZE = 20;
 
-const HEX_NUM_STYLES = 13;
 const HEX_WIDTH = 24;
 const HEX_HALF_HEIGHT = 10;
 const HEX_X_OFFSET = 19;
 const HEX_SLOPE_WIDTH = 5;
 
-const TRI_NUM_STYLES = 6;
 const TRI_WIDTH = 19;
 const TRI_HALF_HEIGHT = 10;
 
@@ -44,37 +44,14 @@ const k_tilesets = {
 };
 
 function init_tilesets() {
-  const grid_colours = ["#333333", "black", "black"];
+  k_tilesets.sqr.odd_tile_images = k_tilesets.sqr.even_tile_images = k_tile_colours.map(create_sqr_tile);
 
-  const sqr_filled_tiles = k_gradient_colours.map(create_sqr_tile);
-  let sqr_tile_images = [create_sqr_tile(grid_colours)];
-  // Pretty sure blocks.js assumes a certain number of styles are available, so make sure they are.
-  while(sqr_tile_images.length < SQR_NUM_STYLES) sqr_tile_images = sqr_tile_images.concat(sqr_filled_tiles);
-  k_tilesets.sqr.odd_tile_images = k_tilesets.sqr.even_tile_images = sqr_tile_images;
+  const hex_tile_pairs = k_tile_colours.map(create_hex_tile_pair);
+  k_tilesets.hex.even_tile_images = hex_tile_pairs.map(x => x[0]);
+  k_tilesets.hex.odd_tile_images = hex_tile_pairs.map(x => x[1]);
 
-  const hex_filled_tiles = k_gradient_colours.map(create_hex_tile_pair);
-  const hex_even_filled_tiles = hex_filled_tiles.map(x => x[0]);
-  const hex_odd_filled_tiles = hex_filled_tiles.map(x => x[1]);
-  const hex_empty_tiles = create_hex_tile_pair(grid_colours);
-  let hex_even_tiles = [hex_empty_tiles[0]];
-  let hex_odd_tiles = [hex_empty_tiles[1]];
-  while(hex_odd_tiles.length < HEX_NUM_STYLES) {
-    hex_odd_tiles = hex_odd_tiles.concat(hex_odd_filled_tiles);
-    hex_even_tiles = hex_even_tiles.concat(hex_even_filled_tiles);
-  }
-  k_tilesets.hex.odd_tile_images = hex_odd_tiles;
-  k_tilesets.hex.even_tile_images = hex_even_tiles;
-
-  const tri_filled_left_tiles = k_gradient_colours.map(create_tri_left_tile);
-  const tri_filled_right_tiles = k_gradient_colours.map(create_tri_right_tile);
-  let tri_left_tiles = [create_tri_left_tile(grid_colours)];
-  let tri_right_tiles = [create_tri_right_tile(grid_colours)];
-  while(tri_left_tiles.length < TRI_NUM_STYLES) {
-    tri_left_tiles = tri_left_tiles.concat(tri_filled_left_tiles);
-    tri_right_tiles = tri_right_tiles.concat(tri_filled_right_tiles);
-  }
-  k_tilesets.tri.even_tile_images = tri_left_tiles;
-  k_tilesets.tri.odd_tile_images = tri_right_tiles;
+  k_tilesets.tri.even_tile_images = k_tile_colours.map(create_tri_left_tile);
+  k_tilesets.tri.odd_tile_images = k_tile_colours.map(create_tri_right_tile);
 };
 
 
