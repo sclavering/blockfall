@@ -137,7 +137,7 @@ blocks.sqr = {
 
 // Hexagonal blocks =======================================
 
-// Note: Each hexagon is represented as two half-hexagons (top and bottom) because it's much easier to work with.
+// In hexagonal games, each cell in the grid is either the top or bottom *half* of a hexagon, with the top-left cell being the top half of a hexagon.  A move down thus moves two cells, and a move left or right is actually diagonally-downward.  The pre-path and path used to generate the blocks works in terms of the top halves of the hexes, with the bottom halves being handled automatically.  Rotations pivot the block around a full hexagon.
 
 const hN = 0, hNE = 1, hSE = 2, hS = 3, hSW = 4, hNW = 5;
 const hex_ymoves = [-2, -1, 1, 2, 1, -1];
@@ -145,18 +145,7 @@ const hex_xmoves = [0, 1, 1, 0, -1, -1];
 
 let hex_prev_number = 2;
 
-/*
-size is the width in hexes.  height will be derived to make a big container hex
-of correct size. centre of rotation is always the centre of the container hex.
-
-prepath is a list of directions to take from (x,y) to get to the first coloured
-hex path is the list of directions to move from there, colouring each hex entered
-
-the path will be rotated to generate all 6 states for the block
-(some blocks don't need all six, but it's not a big deal)
-*/
 function createHexBlock(size, pre_path, path) {
-  // these are weird because of representation being based on half-hexes
   const x0 = Math.floor(size / 2);
   const y0 = Math.floor(size / 2) * 2;
   const width = size;
@@ -206,7 +195,7 @@ blocks.hex = {
     // T
     createHexBlock(5, [], [hS,hN,hNW,hNE,hSE]),
     // t
-    // maybe this should have another ver with the other centre of rotation?
+    // maybe this should have another version with the other centre of rotation?
     createHexBlock(5, [hNE], [hSW,hS,hNW,hSW]),
     // b
     createHexBlock(5, [], [hSW,hN,hNE,hNE]),
@@ -255,31 +244,15 @@ blocks.hex = {
 
 // Triangular blocks ======================================
 
-// Note: NE/NW and SE/SW result in the same moves in the grid-representation, but give different results when the path is rotated.
+// In triangular games, each cell in the grid is a full triangle, but could be either a left- or right-pointing one, with the top-left cell being a left-pointing triangle.  Rows in the grid overlap by half their height (i.e. row n+2 starts just below row n, with row n+1 overlapping both of them).  Moves down thus skip a row, and moves sideways are actually diagonal.  Rotations have to be relative to a *vertex* rather than a tile (or we'd have half as many as is sensible), which complicates things.  We create a blocks's first state starting from the top-right triangle of a six-triangle hexagon occurring in the middle two columns.  Subsequent state start further round that hexagon.
+
+// Note: NE and NW (and SE and SW) result in the same moves in the grid, but give different results when the path is rotated.
 const tNE = 0, tE = 1, tSE = 2, tSW = 3, tW = 4, tNW = 5;
 const tri_xmoves = [0, 1, 0, 0, -1, 0];
 const tri_ymoves = [-1, 0, 1, 1, 0, -1];
 
 let tri_prev_number = 1;
 
-/*
-The block grid has an even width, and triangles in each column face
-alternate directions.  the middle pair of columns always has a pair
-of triangles that face away from one another at the top, which is
-the reason for the odd expr. for y.
-
-the prepath and path should be based on the block being drawn from
-the top right triangle in the first hexagon (of 6 triangles) in the
-middle column of the block.
-
-the successive states created for the block place the first triangle
-in each following tri of the hex moving clockwise, and adjusting
-prepath and path accordingly.
-
-the biggest possible hexagon within the grid is what the block will
-rotate within, and to get the hexagon to be the specified width the
-height must be 1.5 times that width
-*/
 function createTriBlock(size, pre_path, path, num_states) {
   const x0 = size / 2 - 1;
   const y0 = (size % 4 === 0) ? x0 + 1 : x0;
@@ -289,11 +262,9 @@ function createTriBlock(size, pre_path, path, num_states) {
   const block_num = tri_prev_number++;
   if(tri_prev_number === max_block_number) tri_prev_number = 1;
 
-  // triangular blocks rotate about a vertex, not about a tile.
-  // so we pass different x,y coords to each call to createTriBlockState
+  // We must adjust the origin for each state, because we rotate around a vertex rather than a tile.
   const xs = [0, 1, 1, 1, 0, 0];
   const ys = [0, 0, 1, 2, 2, 1];
-
   return create_block_rotations(num_states || 6, pre_path, path, dir => (dir + 1) % 6, (s, pre_path, path) => {
     return new_block_state(width, height, x0 + xs[s], y0 + ys[s], tri_xmoves, tri_ymoves, pre_path, path, block_num, false);
   });
