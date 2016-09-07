@@ -59,7 +59,7 @@ const sqr_ymoves = [-1, -1, 0, 1, 1, 1, 0, -1];
 
 let sqr_prev_number = 1;
 
-function createSqrBlock(size, pre_path, path, num_states) {
+function createSqrBlock(size: number, pre_path: number[], path: number[], num_states?: number) {
   // use the square in the middle, or above and to the left of the middle
   const origin = Math.ceil(size / 2) - 1;
 
@@ -71,7 +71,7 @@ function createSqrBlock(size, pre_path, path, num_states) {
   });
 }
 
-blocks.sqr = {
+blocks["sqr"] = {
   // 3-tile blocks.  diagonal joins allowed
   small: [
     createSqrBlock(3, [sW], [sE,sE], 2),
@@ -145,7 +145,7 @@ const hex_xmoves = [0, 1, 1, 0, -1, -1];
 
 let hex_prev_number = 2;
 
-function createHexBlock(size, pre_path, path) {
+function createHexBlock(size: number, pre_path: number[], path: number[]) {
   const x0 = Math.floor(size / 2);
   const y0 = Math.floor(size / 2) * 2;
   const width = size;
@@ -159,7 +159,7 @@ function createHexBlock(size, pre_path, path) {
   });
 }
 
-blocks.hex = {
+blocks["hex"] = {
   // 3-tile blocks
   small: [
     createHexBlock(3, [], [hNE,hS]),
@@ -253,7 +253,7 @@ const tri_ymoves = [-1, 0, 1, 1, 0, -1];
 
 let tri_prev_number = 1;
 
-function createTriBlock(size, pre_path, path, num_states) {
+function createTriBlock(size: number, pre_path: number[], path: number[], num_states?: number) {
   const x0 = size / 2 - 1;
   const y0 = (size % 4 === 0) ? x0 + 1 : x0;
   const width = size;
@@ -270,7 +270,7 @@ function createTriBlock(size, pre_path, path, num_states) {
   });
 }
 
-blocks.tri = {
+blocks["tri"] = {
   // 1–5 tiles
   std: [
     // single triangle
@@ -337,7 +337,7 @@ blocks.tri = {
 
 
 return function get_block_sets(shape, set_names) {
-  return [for(k of set_names) blocks[shape][k]];
+  return set_names.map(name => blocks[shape][name]);
 };
 
 })();

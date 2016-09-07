@@ -1,16 +1,29 @@
 const game_classes = {};
 
-const ui = {
-  grid: "grid",
-  grid_container: "grid-container",
-  falling_block: "falling-block",
-  next_block: "next-block",
-  paused_msg: "msg-paused",
-  game_over_msg: "msg-gameover",
-  score: "score-display",
-  lines: "lines-display",
-  level: "level-display",
-  game_type_picker: "game-type-picker",
+class ui {
+  static grid: HTMLElement;
+  static grid_container: HTMLElement;
+  static falling_block: HTMLElement;
+  static next_block: HTMLElement;
+  static paused_msg: HTMLElement;
+  static game_over_msg: HTMLElement;
+  static score: HTMLElement;
+  static lines: HTMLElement;
+  static level: HTMLElement;
+  static game_type_picker: HTMLElement;
+
+  static init() {
+    this.grid = document.getElementById("grid");
+    this.grid_container = document.getElementById("grid-container");
+    this.falling_block = document.getElementById("falling-block");
+    this.next_block = document.getElementById("next-block");
+    this.paused_msg = document.getElementById("msg-paused");
+    this.game_over_msg = document.getElementById("msg-gameover");
+    this.score = document.getElementById("score-display");
+    this.lines = document.getElementById("lines-display");
+    this.level = document.getElementById("level-display");
+    this.game_type_picker = document.getElementById("game-type-picker");
+  };
 };
 
 
@@ -28,7 +41,7 @@ function toggle_pause() {
   else g_game.pause();
 }
 
-function new_game(width, height, level) {
+function new_game(width?: number, height?: number, level?: number) {
   if(g_game) g_game.end();
   ui.paused_msg.style.display = "none";
   ui.game_over_msg.style.display = "none";
@@ -95,7 +108,7 @@ window.onblur = function() {
 
 
 window.onload = function() {
-  for(let i in ui) ui[i] = document.getElementById(ui[i]);
+  ui.init();
   init_tilesets();
   tile_shape_changed("sqr", ["std"]);
 };
@@ -178,7 +191,32 @@ function do_rotate_anti_clockwise(ev) {
 };
 
 
-class Game {
+abstract class Game {
+  private _falling_block_states: any;
+  private _falling_block_state: any;
+  private _falling_block_grid: any;
+  protected _falling_block_x: any;
+  protected _falling_block_y: any;
+  private _delay: any;
+  private _interval: any;
+  private _main_view: any;
+  private _falling_block_view: any;
+  private _next_block_view: any;
+  private levels_completed: any;
+  private score: any;
+  private lines: any;
+  private is_paused: any;
+  protected width: any;
+  protected height: any;
+  private level: any;
+  private starting_level: any;
+  protected grid: any;
+  private _blocks: any;
+  private _block_sets: any;
+  private _next_block: any;
+  private _bound_timed_move_down: any;
+
+
   constructor(width, height, level, shape, block_set_keys) {
     this._falling_block_states = null;
     this._falling_block_state = null;
@@ -267,7 +305,7 @@ class Game {
     if(num_lines_removes) {
       if(this.lines >= (this.levels_completed + 1) * 10) {
         this.levels_completed++;
-        ui.level.textContent = ++this.level;
+        ui.level.textContent = (++this.level).toString();
         this._reduce_delay();
       }
       ui.lines.textContent = this.lines += num_lines_removes;
@@ -279,7 +317,7 @@ class Game {
     ui.score.textContent = this.score;
   }
 
-  block_reached_bottom(block_dropped) {
+  block_reached_bottom(block_dropped?: boolean) {
     this._stop_timer();
 
     const x0 = this._falling_block_x;
@@ -420,6 +458,10 @@ class Game {
     const first_tile_odd = !!(x % 2);
     this._next_block_view.draw(grid, first_tile_odd, {});
   }
+
+  abstract remove_complete_lines(top, bottom);
+
+  abstract _move_falling_block_down();
 };
 
 
@@ -470,7 +512,7 @@ class HexGame extends Game {
   remove_complete_lines(top, bottom) {
     let num = 0;
     if(bottom == this.height) --bottom;
-    for(let y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
+    for(let y = top, odd = !!(top % 2); y != bottom; ++y, odd = !odd) {
       // row of half-hexes is full <==> appropriate half-hexes in row above+below are full
       if(!this._line_is_full(y)) continue;
       /*

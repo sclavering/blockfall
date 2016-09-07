@@ -22,40 +22,54 @@ const HEX_SLOPE_WIDTH = 5;
 const TRI_WIDTH = 19;
 const TRI_HALF_HEIGHT = 10;
 
-const k_tilesets = {
-  sqr: {
+interface Tileset {
+  width: number;
+  height: number;
+  x_offset: number;
+  y_offset: number;
+  odd_tile_images: any;
+  even_tile_images: any;
+}
+
+const k_tilesets: { [key: string]: Tileset } = {};
+
+function init_tilesets() {
+  const sqr_tile_images = k_tile_colours.map(create_sqr_tile);
+  k_tilesets["sqr"] = {
     width: SQR_SIZE,
     height: SQR_SIZE,
     x_offset: SQR_SIZE,
     y_offset: SQR_SIZE,
-  },
-  hex: {
+    odd_tile_images: sqr_tile_images,
+    even_tile_images: sqr_tile_images,
+  };
+
+  const hex_tile_pairs = k_tile_colours.map(create_hex_tile_pair);
+  k_tilesets["hex"] = {
     width: HEX_WIDTH,
     height: HEX_HALF_HEIGHT,
     x_offset: HEX_X_OFFSET,
     y_offset: HEX_HALF_HEIGHT,
-  },
-  tri: {
+    odd_tile_images: hex_tile_pairs.map(x => x[1]),
+    even_tile_images: hex_tile_pairs.map(x => x[0]),
+  };
+
+  k_tilesets["tri"] = {
     width: TRI_WIDTH,
     height: TRI_HALF_HEIGHT * 2,
     x_offset: TRI_WIDTH,
     y_offset: TRI_HALF_HEIGHT,
-  },
-};
-
-function init_tilesets() {
-  k_tilesets.sqr.odd_tile_images = k_tilesets.sqr.even_tile_images = k_tile_colours.map(create_sqr_tile);
-
-  const hex_tile_pairs = k_tile_colours.map(create_hex_tile_pair);
-  k_tilesets.hex.even_tile_images = hex_tile_pairs.map(x => x[0]);
-  k_tilesets.hex.odd_tile_images = hex_tile_pairs.map(x => x[1]);
-
-  k_tilesets.tri.even_tile_images = k_tile_colours.map(create_tri_left_tile);
-  k_tilesets.tri.odd_tile_images = k_tile_colours.map(create_tri_right_tile);
+    odd_tile_images: k_tile_colours.map(create_tri_right_tile),
+    even_tile_images: k_tile_colours.map(create_tri_left_tile),
+  };
 };
 
 
 class GridView {
+  private _canvas: HTMLCanvasElement;
+  private _context: CanvasRenderingContext2D;
+  private _tileset: any;
+
   constructor(tileset, canvas) {
     this._tileset = tileset;
     this._canvas = canvas;
