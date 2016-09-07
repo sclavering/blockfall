@@ -55,24 +55,25 @@ function init_tilesets() {
 };
 
 
-function GridView(tileset, canvas) {
-  this._tileset = tileset;
-  this._canvas = canvas;
-  this._context = this._canvas.getContext("2d");
-};
-GridView.prototype = {
-  resize: function(w, h) {
+class GridView {
+  constructor(tileset, canvas) {
+    this._tileset = tileset;
+    this._canvas = canvas;
+    this._context = this._canvas.getContext("2d");
+  }
+
+  resize(w, h) {
     this._canvas.width = w * this._tileset.x_offset - this._tileset.x_offset + this._tileset.width;
     this._canvas.height = h * this._tileset.y_offset - this._tileset.y_offset + this._tileset.height;
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-  },
+  }
 
-  position: function(x, y) {
+  position(x, y) {
     this._canvas.style.left = (x * this._tileset.x_offset) + "px";
     this._canvas.style.top = (y * this._tileset.y_offset) + "px";
-  },
+  }
 
-  draw: function(grid, first_tile_odd, flags) {
+  draw(grid, first_tile_odd, flags) {
     const y0 = flags.y || 0;
     const draw_empties = flags.draw_empties || false;
     const h = grid.length, w = grid[0].length;
@@ -85,7 +86,7 @@ GridView.prototype = {
         this._context.drawImage(tile_image, 0, 0, this._tileset.width, this._tileset.height, dx, dy, this._tileset.width, this._tileset.height);
       }
     }
-  },
+  }
 };
 
 

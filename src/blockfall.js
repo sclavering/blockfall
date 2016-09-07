@@ -1,3 +1,5 @@
+const game_classes = {};
+
 const ui = {
   grid: "grid",
   grid_container: "grid-container",
@@ -30,8 +32,8 @@ function new_game(width, height, level) {
   if(g_game) g_game.end();
   ui.paused_msg.style.display = "none";
   ui.game_over_msg.style.display = "none";
-  g_game = { __proto__: Games[g_tile_shape] };
-  g_game.init(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
+  const GameClass = game_classes[g_tile_shape];
+  g_game = new GameClass(width || g_width, height || g_height, level || 1, g_tile_shape, g_block_sets_for_shape);
 }
 
 function end_game() {
@@ -176,20 +178,17 @@ function do_rotate_anti_clockwise(ev) {
 };
 
 
-const Games = {};
+class Game {
+  constructor(width, height, level, shape, block_set_keys) {
+    this._falling_block_states = null;
+    this._falling_block_state = null;
+    this._falling_block_grid = null;
+    this._falling_block_x = null;
+    this._falling_block_y = null;
 
+    this._delay = null;
+    this._interval = null;
 
-Games.base = {
-  _falling_block_states: null,
-  _falling_block_state: null,
-  _falling_block_grid: null,
-  _falling_block_x: null,
-  _falling_block_y: null,
-
-  _delay: null,
-  _interval: null,
-
-  init: function(width, height, level, shape, block_set_keys) {
     const tileset = k_tilesets[shape];
     this._main_view = new GridView(tileset, ui.grid);
     this._falling_block_view = new GridView(tileset, ui.falling_block);
@@ -225,46 +224,46 @@ Games.base = {
     this.next_block();
     this._bound_timed_move_down = () => this.timed_move_down();
     this._start_timer();
-  },
+  }
 
-  _reduce_delay: function() {
+  _reduce_delay() {
     this._delay = Math.ceil(this._delay * 0.8);
-  },
+  }
 
-  end: function() {
+  end() {
     this._stop_timer();
-  },
+  }
 
-  pause: function() {
+  pause() {
     if(this.is_paused) return;
     this.is_paused = true;
     this._stop_timer();
     ui.paused_msg.style.display = "block";
-  },
+  }
 
-  unpause: function() {
+  unpause() {
     if(!this.is_paused) return;
     this.is_paused = false;
     this._start_timer();
     ui.paused_msg.style.display = "none";
-  },
+  }
 
-  _start_timer: function() {
+  _start_timer() {
     this._interval = setInterval(this._bound_timed_move_down, this._delay);
-  },
+  }
 
-  _stop_timer: function() {
+  _stop_timer() {
     if(!this._interval) return;
     clearInterval(this._interval);
     this._interval = null;
-  },
+  }
 
-  _get_new_block: function() {
+  _get_new_block() {
     const blocks = this._blocks || random_element(this._block_sets);
     return random_element(blocks);
-  },
+  }
 
-  update_score_and_level: function(num_lines_removes, block_dropped) {
+  update_score_and_level(num_lines_removes, block_dropped) {
     if(num_lines_removes) {
       if(this.lines >= (this.levels_completed + 1) * 10) {
         this.levels_completed++;
@@ -278,9 +277,9 @@ Games.base = {
     if(block_dropped) score *= this.level / 4;
     this.score += Math.ceil(score);
     ui.score.textContent = this.score;
-  },
+  }
 
-  block_reached_bottom: function(block_dropped) {
+  block_reached_bottom(block_dropped) {
     this._stop_timer();
 
     const x0 = this._falling_block_x;
@@ -302,9 +301,9 @@ Games.base = {
     this.update_score_and_level(num_lines_removes, block_dropped);
     if(this.next_block()) this._start_timer();
     else end_game();
-  },
+  }
 
-  next_block: function() {
+  next_block() {
     const block = this._falling_block_states = this._next_block;
     this._falling_block_state = 0;
     const grid = this._falling_block_grid = block[0];
@@ -316,21 +315,21 @@ Games.base = {
     this._redraw_falling_block();
     this._redraw_next_block();
     return true;
-  },
+  }
 
-  _remove_row: function(y) {
+  _remove_row(y) {
     let row = this.grid.splice(y, 1);
     for(let x = 0; x !== this.width; ++x) row[x] = 0;
     this.grid.unshift(row);
-  },
+  }
 
-  _line_is_full: function(y) {
+  _line_is_full(y) {
     for(let val of this.grid[y]) if(!val) return false;
     return true;
-  },
+  }
 
   // block[][] (y-x indexed) is a state of some block.  x and y are offsets into this grid
-  _can_fit: function(block, x, y) {
+  _can_fit(block, x, y) {
     const grid = this.grid;
     const height = block.length, width = block[0].length;
     for(let yi = 0, yj = y; yi != height; ++yi, ++yj) {
@@ -346,98 +345,101 @@ Games.base = {
       }
     }
     return true;
-  },
+  }
 
-  _falling_block_can_move_by: function(dx, dy) {
+  _falling_block_can_move_by(dx, dy) {
     return this._can_fit(this._falling_block_grid, this._falling_block_x + dx, this._falling_block_y + dy);
-  },
+  }
 
   // note: block.length is the number of states this block has
-  rotate_falling_block_clockwise: function() {
+  rotate_falling_block_clockwise() {
     let s = this._falling_block_state + 1;
     if(s === this._falling_block_states.length) s = 0;
     this._maybe_rotate_falling_block(s);
-  },
+  }
 
-  rotate_falling_block_anticlockwise: function() {
+  rotate_falling_block_anticlockwise() {
     let s = this._falling_block_state - 1;
     if(s === -1) s += this._falling_block_states.length;
     this._maybe_rotate_falling_block(s);
-  },
+  }
 
-  _maybe_rotate_falling_block: function(newstate) {
+  _maybe_rotate_falling_block(newstate) {
     const newgrid = this._falling_block_states[newstate];
     if(!this._can_fit(newgrid, this._falling_block_x, this._falling_block_y)) return;
     this._falling_block_state = newstate;
     this._falling_block_grid = newgrid;
     this._redraw_falling_block();
-  },
+  }
 
-  drop_falling_block: function() {
+  drop_falling_block() {
     while(this._move_falling_block_down());
     this.block_reached_bottom(true);
-  },
+  }
 
-  timed_move_down: function() {
+  timed_move_down() {
     if(!this.move_falling_block_down()) this.block_reached_bottom();
-  },
+  }
 
-  move_falling_block_down: function() {
+  move_falling_block_down() {
     if(!this._move_falling_block_down()) return false;
     this._reposition_falling_block_view();
     return true;
-  },
+  }
 
-  _move_falling_block: function(dx, dy) {
+  _move_falling_block(dx, dy) {
     if(!this._falling_block_can_move_by(dx, dy)) return;
     this._falling_block_x += dx;
     this._falling_block_y += dy;
     this._reposition_falling_block_view();
-  },
+  }
 
-  _update_grid_view: function(top, bottom) {
+  _update_grid_view(top, bottom) {
     const first_tile_odd = top % 2;
     this._main_view.draw(this.grid.slice(top, bottom), first_tile_odd, { y: top, draw_empties: true });
-  },
+  }
 
-  _reposition_falling_block_view: function() {
+  _reposition_falling_block_view() {
     this._falling_block_view.position(this._falling_block_x, this._falling_block_y);
-  },
+  }
 
-  _redraw_falling_block: function() {
+  _redraw_falling_block() {
     const grid = this._falling_block_grid, x = this._falling_block_x, y = this._falling_block_y;
     this._falling_block_view.resize(grid[0].length, grid.length);
     this._falling_block_view.position(x, y);
     // note: conceptually this is ((x % 2) XOR (y % 2)), but since x can be negative (and thus lead to (-1 ^ 1) not giving the answer we want), it's easier to write it this way.
     const first_tile_odd = !!((x + y) % 2);
     this._falling_block_view.draw(grid, first_tile_odd, {});
-  },
+  }
 
-  _redraw_next_block: function() {
+  _redraw_next_block() {
     const grid = this._next_block[0];
     this._next_block_view.resize(grid[0].length, grid.length);
     // This is the same calculation as when deciding the initial _falling_block_x
     const x = Math.floor((this.width - grid[0].length) / 2);
     const first_tile_odd = !!(x % 2);
     this._next_block_view.draw(grid, first_tile_odd, {});
-  },
+  }
 };
 
 
-Games.sqr = {
-  __proto__: Games.base,
+class SquareGame extends Game {
+  move_falling_block_left() {
+    this._move_falling_block(-1, 0);
+  }
 
-  move_falling_block_left: function() { this._move_falling_block(-1, 0); },
-  move_falling_block_right: function() { this._move_falling_block(1, 0); },
+  move_falling_block_right() {
+    this._move_falling_block(1, 0);
+  }
 
   // must return a boolean for the timed drop function
-  _move_falling_block_down: function() {
+  _move_falling_block_down() {
     if(!this._falling_block_can_move_by(0, 1)) return false;
     this._falling_block_y += 1;
     return true;
-  },
+  }
 
-  remove_complete_lines: function(top, bottom) {
+  remove_complete_lines(top, bottom) {
     let num = 0;
     for(let y = top; y != bottom; ++y) {
       if(!this._line_is_full(y)) continue;
@@ -445,23 +447,27 @@ Games.sqr = {
       ++num;
     }
     return num;
-  },
+  }
 };
+game_classes["sqr"] = SquareGame;
 
 
-Games.hex = {
-  __proto__: Games.base,
+class HexGame extends Game {
+  move_falling_block_left() {
+    this._move_falling_block(-1, 1);
+  }
 
-  move_falling_block_left: function() { this._move_falling_block(-1, 1); },
-  move_falling_block_right: function() { this._move_falling_block(1, 1); },
+  move_falling_block_right() {
+    this._move_falling_block(1, 1);
+  }
 
-  _move_falling_block_down: function() {
+  _move_falling_block_down() {
     if(!this._falling_block_can_move_by(0, 2)) return false;
     this._falling_block_y += 2;
     return true;
-  },
+  }
 
-  remove_complete_lines: function(top, bottom) {
+  remove_complete_lines(top, bottom) {
     let num = 0;
     if(bottom == this.height) --bottom;
     for(let y = top, odd = top % 2; y != bottom; ++y, odd = !odd) {
@@ -482,22 +488,22 @@ Games.hex = {
       ++num;
     }
     return num;
-  },
+  }
 };
+game_classes["hex"] = HexGame;
 
 
-Games.tri = {
-  __proto__: Games.base,
+class TriGame extends Game {
+  move_falling_block_left() {
+    this._move_falling_block(-1, 1);
+  }
 
-  move_falling_block_left: function() { this._move_falling_block(-1, 1); },
-  move_falling_block_right: function() { this._move_falling_block(1, 1); },
+  move_falling_block_right() {
+    this._move_falling_block(1, 1);
+  }
 
-  /*
-  "Lines" start from the left at a tile pointing right, and then go either
-  up or down for the next tile, and then proceed across and always form a
-  solid block filling the two lines (which is why we just count in ones)
-  */
-  remove_complete_lines: function(top, bottom) {
+  // "Lines" start from the left at a tile pointing right, and then go either up or down for the next tile, and then proceed across and always form a solid block filling the two lines (which is why we just count in ones)
+  remove_complete_lines(top, bottom) {
     const h = this.height, w = this.width;
     if(bottom >= h - 2) bottom = h - 2;
     let num = 0;
@@ -508,15 +514,16 @@ Games.tri = {
       ++num;
     }
     return num;
-  },
+  }
 
-  _move_falling_block_down: function() {
+  _move_falling_block_down() {
     // Don't allow tiles to drop through ones facing the other way
     if(!this._falling_block_can_move_by(0, 1) || !this._falling_block_can_move_by(0, 2)) return false;
     this._falling_block_y += 2;
     return true;
-  },
+  }
 };
+game_classes["tri"] = TriGame;
 
 
 function random_element(xs) {
