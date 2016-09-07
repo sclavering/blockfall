@@ -357,7 +357,7 @@ abstract class Game {
   }
 
   _remove_row(y: number): void {
-    let row = this.grid.splice(y, 1);
+    let row = this.grid.splice(y, 1)[0];
     for(let x = 0; x !== this.width; ++x) row[x] = 0;
     this.grid.unshift(row);
   }
