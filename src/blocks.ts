@@ -2,14 +2,14 @@
 
 // The API to this file is just a single function: get_block_sets(shape, sizes), where shape is "sqr"/"hex"/"tri", and sizes is an array of ordinals into the defined sets of blocks for that shape.
 
-var get_block_sets = (function() {
+const get_block_sets = (function() {
 
 const max_block_number = k_tile_colours.length;
 
-const blocks = {};
+const blocks: { [shape: string]: { [set_name: string]: BlockDefinition[] }} = {};
 
 
-function new_empty_block_state(width, height) {
+function new_empty_block_state(width: number, height: number): GridState {
   const rv = new Array(height);
   for(let y = 0; y !== height; ++y) {
     rv[y] = new Array(width);
@@ -18,7 +18,7 @@ function new_empty_block_state(width, height) {
   return rv;
 }
 
-function new_block_state(width, height, x, y, xmoves, ymoves, prepath, path, block_colour_num, for_hex) {
+function new_block_state(width: number, height: number, x: number, y: number, xmoves: number[], ymoves: number[], prepath: number[], path: number[], block_colour_num: number, for_hex?: boolean): GridState {
   const state = new_empty_block_state(width, height);
   for(let n = 0; n != prepath.length; ++n) {
     x += xmoves[prepath[n]];
@@ -35,7 +35,7 @@ function new_block_state(width, height, x, y, xmoves, ymoves, prepath, path, blo
   return state;
 }
 
-function create_block_rotations(num_states, pre_path, path, direction_rotator, state_func) {
+function create_block_rotations(num_states: number, pre_path: number[], path: number[], direction_rotator: (_: number) => number, state_func: (index: number, pre_path: number[], path: number[]) => GridState): GridState[] {
   const block = new Array(num_states);
   let s = 0;
   while(true) {
@@ -73,7 +73,7 @@ function createSqrBlock(size: number, pre_path: number[], path: number[], num_st
 
 blocks["sqr"] = {
   // 3-tile blocks.  diagonal joins allowed
-  small: [
+  "small": [
     createSqrBlock(3, [sW], [sE,sE], 2),
     createSqrBlock(3, [sS], [sN,sE]),
     createSqrBlock(3, [sW], [sSE,sNE]),
@@ -82,7 +82,7 @@ blocks["sqr"] = {
     createSqrBlock(3, [sSW], [sNE,sNE], 2),
   ],
   // 4-tile blocks
-  std: [
+  "std": [
     // l
     createSqrBlock(3, [sE], [sW,sW,sS]),
     // f
@@ -99,7 +99,7 @@ blocks["sqr"] = {
     createSqrBlock(4, [sW], [sE,sE,sE], 2),
   ],
   // 5-tile blocks
-  large: [
+  "large": [
     // f
     createSqrBlock(5, [sE,sS], [sN,sW,sW,sW]),
     createSqrBlock(5, [sW,sS], [sN,sE,sE,sE]),
@@ -161,13 +161,13 @@ function createHexBlock(size: number, pre_path: number[], path: number[]) {
 
 blocks["hex"] = {
   // 3-tile blocks
-  small: [
+  "small": [
     createHexBlock(3, [], [hNE,hS]),
     createHexBlock(3, [hSW], [hNE,hNE]),
     createHexBlock(3, [hSW], [hNE,hSE]),
   ],
   // 4-tile blocks
-  std: [
+  "std": [
     // o
     createHexBlock(3, [], [hSW,hSE,hNE]),
     // t
@@ -187,7 +187,7 @@ blocks["hex"] = {
     createHexBlock(5, [hSE], [hNW,hNW,hSW]),
   ],
   // 5-tile blocks
-  large: [
+  "large": [
     // D
     createHexBlock(3, [], [hNE,hS,hSW,hNW]),
     // x/H
@@ -272,7 +272,7 @@ function createTriBlock(size: number, pre_path: number[], path: number[], num_st
 
 blocks["tri"] = {
   // 1–5 tiles
-  std: [
+  "std": [
     // single triangle
     createTriBlock(2, [], []),
     // pair
@@ -300,7 +300,7 @@ blocks["tri"] = {
     createTriBlock(4, [tSW], [tNE,tE,tNE,tSW,tSE]),
   ],
   // 6-tile blocks
-  large: [
+  "large": [
     // hex
     createTriBlock(4, [], [tE,tSE,tSE,tW,tNE], 1),
     // h/x (2 half hexes)
@@ -336,7 +336,7 @@ blocks["tri"] = {
 
 
 
-return function get_block_sets(shape, set_names) {
+return function get_block_sets(shape: string, set_names: string[]) {
   return set_names.map(name => blocks[shape][name]);
 };
 

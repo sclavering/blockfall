@@ -1,5 +1,10 @@
 // Code related to drawing tiles (i.e. squares, or half-hexes).
 
+type TileColour = string;
+type GridState = number[][]; // y-x indexed
+type BlockDefinition = GridState[]; // A block consists of an array of its possible rotations, which are each a GridState.
+
+
 const k_tile_colours = [
   // The colours for the special background-with-gridlines tile:
   ["#333333", "black", "black"],
@@ -27,8 +32,8 @@ interface Tileset {
   height: number;
   x_offset: number;
   y_offset: number;
-  odd_tile_images: any;
-  even_tile_images: any;
+  odd_tile_images: HTMLCanvasElement[];
+  even_tile_images: HTMLCanvasElement[];
 }
 
 const k_tilesets: { [key: string]: Tileset } = {};
@@ -68,26 +73,26 @@ function init_tilesets() {
 class GridView {
   private _canvas: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
-  private _tileset: any;
+  private _tileset: Tileset;
 
-  constructor(tileset, canvas) {
+  constructor(tileset: Tileset, canvas: HTMLCanvasElement) {
     this._tileset = tileset;
     this._canvas = canvas;
     this._context = this._canvas.getContext("2d");
   }
 
-  resize(w, h) {
+  resize(w: number, h: number): void {
     this._canvas.width = w * this._tileset.x_offset - this._tileset.x_offset + this._tileset.width;
     this._canvas.height = h * this._tileset.y_offset - this._tileset.y_offset + this._tileset.height;
     this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
   }
 
-  position(x, y) {
+  position(x: number, y: number): void {
     this._canvas.style.left = (x * this._tileset.x_offset) + "px";
     this._canvas.style.top = (y * this._tileset.y_offset) + "px";
   }
 
-  draw(grid, first_tile_odd, flags) {
+  draw(grid: GridState, first_tile_odd: boolean, flags?: { y?: number; draw_empties?: boolean }): void {
     const y0 = flags.y || 0;
     const draw_empties = flags.draw_empties || false;
     const h = grid.length, w = grid[0].length;
@@ -104,7 +109,7 @@ class GridView {
 };
 
 
-function create_tile(colours, width, height, path_callback) {
+function create_tile(colours: TileColour[], width: number, height: number, path_callback: (ctx: CanvasRenderingContext2D) => void): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -121,7 +126,7 @@ function create_tile(colours, width, height, path_callback) {
 };
 
 
-function create_sqr_tile(colours) {
+function create_sqr_tile(colours: TileColour[]) {
   return create_tile(colours, SQR_SIZE, SQR_SIZE, ctx => {
     ctx.beginPath();
     ctx.moveTo(0.5, 0.5);
@@ -133,7 +138,7 @@ function create_sqr_tile(colours) {
 };
 
 
-function create_hex_tile_pair(colours) {
+function create_hex_tile_pair(colours: TileColour[]) {
   const tmp = create_tile(colours, HEX_WIDTH, HEX_HALF_HEIGHT * 2, ctx => {
     ctx.beginPath();
     ctx.moveTo(0.5, HEX_HALF_HEIGHT - 0.5);
@@ -156,7 +161,7 @@ function create_hex_tile_pair(colours) {
 };
 
 
-function create_tri_left_tile(colours) {
+function create_tri_left_tile(colours: TileColour[]) {
   return create_tile(colours, TRI_WIDTH, TRI_HALF_HEIGHT * 2, ctx => {
     ctx.beginPath();
     ctx.moveTo(0.5, TRI_HALF_HEIGHT);
@@ -167,7 +172,7 @@ function create_tri_left_tile(colours) {
 };
 
 
-function create_tri_right_tile(colours) {
+function create_tri_right_tile(colours: TileColour[]) {
   return create_tile(colours, TRI_WIDTH, TRI_HALF_HEIGHT * 2, ctx => {
     ctx.beginPath();
     ctx.moveTo(TRI_WIDTH - 0.5, TRI_HALF_HEIGHT);

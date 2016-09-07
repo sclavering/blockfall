@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "target": "ES5",
         "outFile": "tsc_output.js"
     },
     "files": [
         "src/tiles.ts",
-        "src/blockfall.ts",
-        "src/blocks.ts"
+        "src/blocks.ts",
+        "src/blockfall.ts"
     ]
 }
